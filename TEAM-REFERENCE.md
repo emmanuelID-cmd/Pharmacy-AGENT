@@ -18,7 +18,7 @@ October 8, 2026: GitHub authentication verified as emmanuelID-cmd. Private repos
 
 ## Next collaboration steps
 
-Review the foundation pull request on `chore/pharmacy-agent-foundation`. GitHub authentication is restored. Follow the external Git workflow for staging, commits, pushes, and PR review. Resolve proposed PRD changes through team discussion before implementation.
+Foundation PR #1 was merged into main on October 8, 2026 (e57ee15). Review the documentation reorganization PR on `chore/pharmacy-agent-foundation`. GitHub authentication is restored. Follow the external Git workflow for staging, commits, pushes, and PR review. Resolve proposed PRD changes through team discussion before implementation.
 
 # Date and Timestamp of Push
 
@@ -29,3 +29,21 @@ Review the foundation pull request on `chore/pharmacy-agent-foundation`. GitHub 
 - Workspace JSON, local links, source preservation, and ignore rules verified. Original template whitespace retained; remaining staged files pass whitespace checks.
 - Main contains only empty baseline c8aa69c. No merge performed.
 - Baseline push succeeded earlier in this session; its exact push timestamp was not captured and remains unverified.
+
+## File organization handoff
+
+Documentation is grouped in docs/requirements, docs/templates, docs/planning, and docs/architecture. Ten moved files retain their original bytes. Root collaboration and configuration files remain accessible. SQL/database work and Team Alignment remain deferred.
+
+## 2026-10-08T13:41:57-04:00
+
+- Verified remote branch at 4596ae3; pushed range 2f1dfce..4596ae3 includes synchronization with merged main e57ee15 and the folder reorganization.
+- Ten files moved without byte changes; README links/directory guide and team handoff updated.
+- SHA-256 checks, local links, workspace JSON, .env exclusion, and staged whitespace checks passed.
+- Review: https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/2 targets main. No merge performed.
+
+## 2026-10-08T16:05:28-04:00
+
+- Verified push 29c67a7..c4eed69 against the remote feature branch.
+- Added all current untracked files: MOD PRD and HTML changes report. README references both and preserves review-copy status.
+- Supplied file hashes unchanged; README links, staged whitespace, and .env exclusion checks passed.
+- PR #2 remains the review boundary into main; no merge performed.

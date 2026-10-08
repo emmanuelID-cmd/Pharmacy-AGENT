@@ -18,15 +18,19 @@ The proposed agent helps an inventory manager at one configured store review syn
 
 The complete PRD, including journeys, priorities, success metrics, tool contracts, safeguards, prompts, and evaluation cases, remains the requirements source:
 
-- [Draft PRD](Pharmacy%20Inventory%20Logistics%5BPRD%5D-draft.md)
-- [Original PRD template](Copy%20of%2020260515%20PRD%20Template%20%281%29.md)
-- [Current synthetic policy](POLICY.md)
-- [Proposed changes: discussion only](PRD-POLICY-PROPOSED-CHANGES.md)
-- [Original documentation plan](PLAN.md)
-- [Original documentation review](REVIEW.md)
-- [Digital architecture](Pharmacy-Agent-Architecture-Digital.png)
-- [Handwritten architecture](Pharmacy-Agent-Architecture-Handwritten.png)
-- [Web architecture reference](Web-Application-Architecture-Reference.png)
+- [Updated PRD — MOD review copy](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-Mod.md)
+- [PRD changes report](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-Changes.html)
+- [Original draft PRD](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-draft.md)
+- [Original PRD template](docs/templates/Copy%20of%2020260515%20PRD%20Template%20%281%29.md)
+- [Current synthetic policy](docs/requirements/POLICY.md)
+- [Proposed changes: discussion only](docs/requirements/PRD-POLICY-PROPOSED-CHANGES.md)
+- [Original documentation plan](docs/planning/PLAN.md)
+- [Original documentation review](docs/planning/REVIEW.md)
+- [Digital architecture](docs/architecture/Pharmacy-Agent-Architecture-Digital.png)
+- [Handwritten architecture](docs/architecture/Pharmacy-Agent-Architecture-Handwritten.png)
+- [Web architecture reference](docs/architecture/Web-Application-Architecture-Reference.png)
+
+The MOD PRD is the updated consolidated review copy; it does not automatically replace the original draft or POLICY.md. The HTML report preserves the comparison prepared before this commit.
 
 Architecture images are design references, not evidence of implemented controls. Proposed changes do not supersede the current PRD or policy until explicitly approved and synchronized.
 
@@ -53,3 +57,12 @@ GitHub repository: [emmanuelID-cmd/Pharmacy-AGENT](https://github.com/emmanuelID
 Follow [project agent instructions](AGENTS.md) and [team handoff](TEAM-REFERENCE.md). Use feature branches and pull requests for shared work. Review before merging into `main`; do not assign teammate ownership or permissions without agreement.
 
 As approved behavior changes, update the affected PRD sections, policy, architecture references, README status, and team handoff in the same work. Preserve discussion proposals separately until accepted. Record verified push history after every push. Automatic documentation updates require an agent or contributor to perform them; this repository does not run a background updater.
+
+## Repository folders
+
+- `docs/requirements/`: draft PRD, current synthetic policy, and deferred proposals.
+- `docs/templates/`: unchanged original PRD template.
+- `docs/planning/`: historical plan/review and [setup plan](docs/planning/SETUP-PLAN.md).
+- `docs/architecture/`: original architecture images.
+
+README, AGENTS, Team Reference, workspace, and environment configuration remain at the root. Historical documents retain their original filenames and references; use this directory map to locate them.
