@@ -1,0 +1,4 @@
+{
+  "folders": [{ "name": "Pharmacy-AGENT", "path": "." }],
+  "settings": { "files.exclude": { "**/__pycache__": true } }
+}
