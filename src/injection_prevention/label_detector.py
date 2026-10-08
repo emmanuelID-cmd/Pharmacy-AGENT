@@ -1,6 +1,7 @@
 """Single-line medication display-label validation, before model context."""
 import unicodedata
 from .contracts import Decision, DetectionResult, Finding, LabelPolicy
+from .patterns import matched_patterns
 
 _HIDDEN_CATEGORIES = {"Cf", "Cs"}
 # Invisible marks not categorized as format/control by Unicode.
@@ -50,7 +51,13 @@ def detect_label(label: object, *, item_reference: str, field_reference: str = "
                                     position, f"U+{ord(ch):04X}"))
             if len(findings) >= policy.max_findings:
                 break
+    format_failed = bool(findings)
+    for pattern in matched_patterns(label):
+        if len(findings) >= policy.max_findings:
+            break
+        findings.append(Finding("SUSPICIOUS_TEXT_PATTERN", pattern.rationale,
+                                pattern_id=pattern.pattern_id))
     if findings:
-        return result(Decision.REJECT, findings)
+        return result(Decision.REJECT if format_failed else Decision.FLAG, findings)
     normalized = unicodedata.normalize("NFC", label)
     return result(Decision.ACCEPT, normalized=normalized)
