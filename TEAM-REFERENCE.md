@@ -18,7 +18,7 @@ October 8, 2026: GitHub authentication verified as emmanuelID-cmd. Private repos
 
 ## Next collaboration steps
 
-Review the foundation pull request on `chore/pharmacy-agent-foundation`. GitHub authentication is restored. Follow the external Git workflow for staging, commits, pushes, and PR review. Resolve proposed PRD changes through team discussion before implementation.
+Foundation PR #1 was merged into main on October 8, 2026 (e57ee15). Review the documentation reorganization PR on `chore/pharmacy-agent-foundation`. GitHub authentication is restored. Follow the external Git workflow for staging, commits, pushes, and PR review. Resolve proposed PRD changes through team discussion before implementation.
 
 # Date and Timestamp of Push
 
@@ -29,3 +29,7 @@ Review the foundation pull request on `chore/pharmacy-agent-foundation`. GitHub 
 - Workspace JSON, local links, source preservation, and ignore rules verified. Original template whitespace retained; remaining staged files pass whitespace checks.
 - Main contains only empty baseline c8aa69c. No merge performed.
 - Baseline push succeeded earlier in this session; its exact push timestamp was not captured and remains unverified.
+
+## File organization handoff
+
+Documentation is grouped in docs/requirements, docs/templates, docs/planning, and docs/architecture. Ten moved files retain their original bytes. Root collaboration and configuration files remain accessible. SQL/database work and Team Alignment remain deferred.
