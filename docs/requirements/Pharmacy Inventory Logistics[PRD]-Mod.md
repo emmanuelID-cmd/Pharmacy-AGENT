@@ -266,3 +266,11 @@ Foreign keys preserve item/store links. Staff writes require transactions and au
 - Brahim and Kerrian messages supplied directly in this chat are incorporated above; no message was sent to teammates.
 - [FDA overview](https://open.fda.gov/apis/drug/drugshortages/) and field/query documentation remain reference sources from the original draft; no fresh API success is claimed.
 - Documentation checks only: calculation examples 80/(180/14)=6.2222 and 80/(280/14)=4; threshold branches and context boundaries reviewed. Harness/database/API enforcement, adversarial performance, privacy compliance and metric achievement remain untested until implementation.
+
+### Injection Prevention Implementation Status - October 8, 2026
+
+User-approved detector lane: five phases completed locally. Type/length/Unicode validation, seven versioned instruction signals, safe structured exceptions and an evidence-aware context gate are implemented in src/injection_prevention. The gate excludes FLAG/REJECT labels; uncertain required evidence gets MANUAL_REVIEW with calculation/recommendation flags false. Optional label rejection permits only independently supported downstream review. Flags never authorize orders or inventory changes.
+
+Evidence: 32 local test methods pass and all 25 synthetic label fixtures match their predefined outcomes (9 benign, 16 expected exceptions). These numbers describe this selected sample only. An accepted label remains untrusted; unknown paraphrases and factual lies can pass. No live model, CVS/FDA API, database, dispatcher, numeric validator or production output enforcement was tested. The wider harness/database/API limitations above remain in force.
+
+See [PLANNER phase plan and team handoff](../planning/INJECTION-PREVENTION-HANDOFF.md), [two-round security review and exact lines](../planning/INJECTION-PREVENTION-REVIEW.md) and [this build's green/red document comparison](../planning/INJECTION-PREVENTION-CHANGES.html). Original draft and POLICY.md remain unchanged; prior Mod edits are preserved separately from this build's staged changes.

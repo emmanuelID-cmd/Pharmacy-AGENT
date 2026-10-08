@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><title>Injection prevention document changes</title>
+<style>body{font-family:system-ui;margin:2rem}pre{white-space:pre-wrap}.added{background:#d8f5df;color:#14532d}.deleted{background:#ffe0e0;color:#7f1d1d}.context{color:#333}</style>
+<h1>Injection prevention build: document changes</h1>
+<p>Only this build action is compared. Earlier uncommitted Mod edits are the preserved baseline. Plus signs and green mark additions; minus signs and red mark deletions. No deletions in this action. Code changes are reviewed in the five local commits; original comparison is unchanged.</p>
+<h2>README.md</h2><pre><div class="context">--- README.md</div>
+<div class="context">+++ README.md</div>
+<div class="context">@@ -66,3 +66,13 @@</div>
+<div class="context"> - `docs/architecture/`: original architecture images.</div>
+<div class="context"> </div>
+<div class="context"> README, AGENTS, Team Reference, workspace, and environment configuration remain at the root. Historical documents retain their original filenames and references; use this directory map to locate them.</div>
+<div class="added">+</div>
+<div class="added">+## Injection prevention implementation</div>
+<div class="added">+</div>
+<div class="added">+The local label detector and context gate are implemented on feature/injection-risk-prevention. The full pharmacy application, live API, database and tool dispatcher remain unbuilt. Python 3.13 is available through the Windows launcher; this component uses the standard library only.</div>
+<div class="added">+</div>
+<div class="added">+- [Five-phase plan, integration contract and local test commands](docs/planning/INJECTION-PREVENTION-HANDOFF.md)</div>
+<div class="added">+- [Security rounds, final review and exact changed lines](docs/planning/INJECTION-PREVENTION-REVIEW.md)</div>
+<div class="added">+- [Document change comparison for this build](docs/planning/INJECTION-PREVENTION-CHANGES.html)</div>
+<div class="added">+</div>
+<div class="added">+Run `py -3.13 -m unittest discover -s tests -v` and `py -3.13 -m src.injection_prevention.evaluate` from the repository root. Evidence: 32 passing test methods and 25/25 synthetic fixture cases. These results cover label checks and safe handoff only; no universal injection defense or production readiness is claimed. Five phase commits are local; no push or merge is part of this build.</div></pre>
+<h2>docs\requirements\Pharmacy Inventory Logistics[PRD]-Mod.md</h2><pre><div class="context">--- docs\requirements\Pharmacy Inventory Logistics[PRD]-Mod.md</div>
+<div class="context">+++ docs\requirements\Pharmacy Inventory Logistics[PRD]-Mod.md</div>
+<div class="context">@@ -280,3 +280,11 @@</div>
+<div class="context"> - Brahim and Kerrian messages supplied directly in this chat are incorporated above; no message was sent to teammates.</div>
+<div class="context"> - [FDA overview](https://open.fda.gov/apis/drug/drugshortages/) and field/query documentation remain reference sources from the original draft; no fresh API success is claimed.</div>
+<div class="context"> - Documentation checks only: calculation examples 80/(180/14)=6.2222 and 80/(280/14)=4; threshold branches and context boundaries reviewed. Harness/database/API enforcement, adversarial performance, privacy compliance and metric achievement remain untested until implementation.</div>
+<div class="added">+</div>
+<div class="added">+### Injection Prevention Implementation Status - October 8, 2026</div>
+<div class="added">+</div>
+<div class="added">+User-approved detector lane: five phases completed locally. Type/length/Unicode validation, seven versioned instruction signals, safe structured exceptions and an evidence-aware context gate are implemented in src/injection_prevention. The gate excludes FLAG/REJECT labels; uncertain required evidence gets MANUAL_REVIEW with calculation/recommendation flags false. Optional label rejection permits only independently supported downstream review. Flags never authorize orders or inventory changes.</div>
+<div class="added">+</div>
+<div class="added">+Evidence: 32 local test methods pass and all 25 synthetic label fixtures match their predefined outcomes (9 benign, 16 expected exceptions). These numbers describe this selected sample only. An accepted label remains untrusted; unknown paraphrases and factual lies can pass. No live model, CVS/FDA API, database, dispatcher, numeric validator or production output enforcement was tested. The wider harness/database/API limitations above remain in force.</div>
+<div class="added">+</div>
+<div class="added">+See [PLANNER phase plan and team handoff](../planning/INJECTION-PREVENTION-HANDOFF.md), [two-round security review and exact lines](../planning/INJECTION-PREVENTION-REVIEW.md) and [this build&#x27;s green/red document comparison](../planning/INJECTION-PREVENTION-CHANGES.html). Original draft and POLICY.md remain unchanged; prior Mod edits are preserved separately from this build&#x27;s staged changes.</div></pre>
+</html>

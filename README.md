@@ -66,3 +66,13 @@ As approved behavior changes, update the affected PRD sections, policy, architec
 - `docs/architecture/`: original architecture images.
 
 README, AGENTS, Team Reference, workspace, and environment configuration remain at the root. Historical documents retain their original filenames and references; use this directory map to locate them.
+
+## Injection prevention implementation
+
+The local label detector and context gate are implemented on feature/injection-risk-prevention. The full pharmacy application, live API, database and tool dispatcher remain unbuilt. Python 3.13 is available through the Windows launcher; this component uses the standard library only.
+
+- [Five-phase plan, integration contract and local test commands](docs/planning/INJECTION-PREVENTION-HANDOFF.md)
+- [Security rounds, final review and exact changed lines](docs/planning/INJECTION-PREVENTION-REVIEW.md)
+- [Document change comparison for this build](docs/planning/INJECTION-PREVENTION-CHANGES.html)
+
+Run `py -3.13 -m unittest discover -s tests -v` and `py -3.13 -m src.injection_prevention.evaluate` from the repository root. Evidence: 32 passing test methods and 25/25 synthetic fixture cases. These results cover label checks and safe handoff only; no universal injection defense or production readiness is claimed. Five phase commits are local; no push or merge is part of this build.
