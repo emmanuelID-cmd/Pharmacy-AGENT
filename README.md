@@ -18,7 +18,9 @@ The proposed agent helps an inventory manager at one configured store review syn
 
 The complete PRD, including journeys, priorities, success metrics, tool contracts, safeguards, prompts, and evaluation cases, remains the requirements source:
 
-- [Draft PRD](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-draft.md)
+- [Updated PRD — MOD review copy](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-Mod.md)
+- [PRD changes report](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-Changes.html)
+- [Original draft PRD](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-draft.md)
 - [Original PRD template](docs/templates/Copy%20of%2020260515%20PRD%20Template%20%281%29.md)
 - [Current synthetic policy](docs/requirements/POLICY.md)
 - [Proposed changes: discussion only](docs/requirements/PRD-POLICY-PROPOSED-CHANGES.md)
@@ -27,6 +29,8 @@ The complete PRD, including journeys, priorities, success metrics, tool contract
 - [Digital architecture](docs/architecture/Pharmacy-Agent-Architecture-Digital.png)
 - [Handwritten architecture](docs/architecture/Pharmacy-Agent-Architecture-Handwritten.png)
 - [Web architecture reference](docs/architecture/Web-Application-Architecture-Reference.png)
+
+The MOD PRD is the updated consolidated review copy; it does not automatically replace the original draft or POLICY.md. The HTML report preserves the comparison prepared before this commit.
 
 Architecture images are design references, not evidence of implemented controls. Proposed changes do not supersede the current PRD or policy until explicitly approved and synchronized.
 
