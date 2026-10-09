@@ -64,7 +64,8 @@ As approved behavior changes, update the affected PRD sections, policy, architec
 
 - `docs/requirements/`: draft PRD, current synthetic policy, and deferred proposals.
 - `docs/templates/`: unchanged original PRD template.
-- `docs/planning/`: historical plan/review and [setup plan](docs/planning/SETUP-PLAN.md).
+- `docs/planning/`: historical foundation plan/review and [setup plan](docs/planning/SETUP-PLAN.md).
+- `docs/planning/Phase/`: [phase index](docs/planning/Phase/README.md), Phase1 through Phase6, with sub-phase plans inside their parent.
 - `docs/architecture/`: original architecture images.
 
 README, AGENTS, Team Reference, workspace, and environment configuration remain at the root. Historical documents retain their original filenames and references; use this directory map to locate them.
@@ -93,10 +94,10 @@ Open http://127.0.0.1:8765 after starting the tester. No credentials or third-pa
 
 Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe detected,30 benign accepted), zero fixture misses/false positives; external text excluded 85/85. These count fixtures, not distinct attack techniques or a general detection rate. SECURITY Round1 found two MAJOR and five MINOR gaps; Round2 verified remediation. Live model/harness, real data provenance and database/deployment controls remain untested.
 
-- [Approved Phase 6 plan](docs/planning/PHASE-6-PLAN.md)
-- [Integration contract, coverage matrix and pattern-building process](docs/planning/PHASE-6-HANDOFF.md)
-- [Two-round security evidence](docs/planning/PHASE-6-SECURITY.md)
-- [Final review and exact changed lines](docs/planning/PHASE-6-REVIEW.md)
-- [Green additions/red deletions for updated documents](docs/planning/PHASE-6-CHANGES.html)
+- [Approved Phase 6 plan](docs/planning/Phase/Phase6/PHASE-6-PLAN.md)
+- [Integration contract, coverage matrix and pattern-building process](docs/planning/Phase/Phase6/PHASE-6-HANDOFF.md)
+- [Two-round security evidence](docs/planning/Phase/Phase6/PHASE-6-SECURITY.md)
+- [Final review and exact changed lines](docs/planning/Phase/Phase6/PHASE-6-REVIEW.md)
+- [Green additions/red deletions for updated documents](docs/planning/Phase/Phase6/PHASE-6-CHANGES.html)
 
-Historical five-phase handoff/review/comparison files describe their earlier baseline; Phase 6 supersedes their accepted-label forwarding and no-dispatch statements. Original draft and POLICY.md are preserved. All Pharmacy build commits remain local; no push or merge is part of Phase 6.
+Historical five-phase handoff/review/comparison files describe their earlier baseline; Phase 6 supersedes their accepted-label forwarding and no-dispatch statements. Original draft and POLICY.md are preserved. Phase 6 was completed with local commits. The later authorized publication publishes this standalone work through a PR to main; merging requires separate approval.

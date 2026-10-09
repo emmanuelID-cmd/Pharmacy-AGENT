@@ -64,4 +64,8 @@ Documentation is grouped in docs/requirements, docs/templates, docs/planning, an
 
 Branch feature/injection-risk-prevention. Phase 6 recovery baseline 0f9c657; local sub-phase commits c7006c0,ee289b3,5a43c73,ab8af2a,78c39e9 precede final qualification/handoff. No Pharmacy push or merge performed; this entry is not a push log. External AGENTS changes remain in their separate repository.
 
-Validation: 66 behavior methods and85 selected fixtures;55 unsafe detected,30 benign accepted,0 fixture misses/false positives,85 external-text exclusions. Two sequential SECURITY rounds resolved seven findings. See [handoff](docs/planning/PHASE-6-HANDOFF.md), [security](docs/planning/PHASE-6-SECURITY.md) and [review/lines](docs/planning/PHASE-6-REVIEW.md). These results do not establish live model/harness/API/database readiness. Original draft/POLICY and unrelated preexisting Mod/skills work are preserved.
+Validation: 66 behavior methods and85 selected fixtures;55 unsafe detected,30 benign accepted,0 fixture misses/false positives,85 external-text exclusions. Two sequential SECURITY rounds resolved seven findings. See [handoff](docs/planning/Phase/Phase6/PHASE-6-HANDOFF.md), [security](docs/planning/Phase/Phase6/PHASE-6-SECURITY.md) and [review/lines](docs/planning/Phase/Phase6/PHASE-6-REVIEW.md). These results do not establish live model/harness/API/database readiness. Original draft/POLICY and unrelated preexisting Mod/skills work are preserved.
+
+## Phase folder organization
+
+The active phase records live under [docs/planning/Phase](docs/planning/Phase/README.md). Historical Phases 1-5 and sub-phases 6.1-6.6 have explicitly reconstructed plan records referencing their verified implementation commits. Parent Phase 6 approval and historical comparison content are preserved. Publication is separately authorized after the original local Phase 6 handoff; verified pushes are recorded below after remote confirmation.

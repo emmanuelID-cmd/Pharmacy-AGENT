@@ -287,11 +287,11 @@ User-approved detector lane: five phases completed locally. Type/length/Unicode 
 
 Evidence: 32 local test methods pass and all 25 synthetic label fixtures match their predefined outcomes (9 benign, 16 expected exceptions). These numbers describe this selected sample only. An accepted label remains untrusted; unknown paraphrases and factual lies can pass. No live model, CVS/FDA API, database, dispatcher, numeric validator or production output enforcement was tested. The wider harness/database/API limitations above remain in force.
 
-See [PLANNER phase plan and team handoff](../planning/INJECTION-PREVENTION-HANDOFF.md), [two-round security review and exact lines](../planning/INJECTION-PREVENTION-REVIEW.md) and [this build's green/red document comparison](../planning/INJECTION-PREVENTION-CHANGES.html). Original draft and POLICY.md remain unchanged; prior Mod edits are preserved separately from this build's staged changes.
+See [PLANNER phase plan and team handoff](../planning/Phase/Phase5/INJECTION-PREVENTION-HANDOFF.md), [two-round security review and exact lines](../planning/Phase/Phase5/INJECTION-PREVENTION-REVIEW.md) and [this build's green/red document comparison](../planning/Phase/Phase5/INJECTION-PREVENTION-CHANGES.html). Original draft and POLICY.md remain unchanged; prior Mod edits are preserved separately from this build's staged changes.
 
 ### Phase 6 implementation status — standalone injection prevention
 
-This appendix records the approved standalone implementation, without making the draft canonical or implementing the pharmacy application. Historical Phases 1–5 continue as Phase 6/sub-phases 6.1–6.6. The detailed security/integration contract is [Phase 6 handoff](../planning/PHASE-6-HANDOFF.md).
+This appendix records the approved standalone implementation, without making the draft canonical or implementing the pharmacy application. Historical Phases 1–5 continue as Phase 6/sub-phases 6.1–6.6. The detailed security/integration contract is [Phase 6 handoff](../planning/Phase/Phase6/PHASE-6-HANDOFF.md).
 
 | Requirement | Implemented security behavior | Integration boundary |
 |---|---|---|
