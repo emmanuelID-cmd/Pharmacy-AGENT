@@ -19,3 +19,25 @@ Update relevant PRD, policy, README, and architecture documentation alongside ap
 Use the Team Reference skill and maintain `TEAM-REFERENCE.md` inside this project. Inspect actual Git status/history before handoffs. Append verified push timestamps with America/New_York UTC offsets and commit ranges after pushes; do not invent attribution or push evidence.
 
 Follow the external Git approval gates, Conventional Commits, and collaboration body sections: What changed, Why, Collaboration, Boundaries, Validation. Propose branch names before creation. Use pull requests for shared changes; merging into main requires approval and required checks. Preview changes before committing. Never stage unrelated work or secrets. Repository creation does not grant teammate invitations or alter GitHub access permissions.
+
+## Approved responsibilities and Phase 6 boundary
+
+| Member | Part | Verified contribution/status |
+|---|---|---|
+| Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
+| Brahim Maouloud | Agent Instructions and Tooling | Assigned part; implementation status not established by this build |
+| Kerrian Gordan | Harness | Assigned part; implementation status not established by this build |
+
+Phase 6 is the complete standalone injection-prevention task, with sub-phases 6.1–6.6; preserve historical numbering 1–5. Use [plan](docs/planning/Phase/Phase6/PHASE-6-PLAN.md), [integration contract](docs/planning/Phase/Phase6/PHASE-6-HANDOFF.md) and [review](docs/planning/Phase/Phase6/PHASE-6-REVIEW.md). Do not infer that the integrated harness or teammate tools are implemented.
+
+All source/tool/user objects are untrusted. Do not pass submitted booleans, dictionaries or descriptions as trusted facts. Construct TrustedFact only after independent harness verification of identity, units, quantities, usage, freshness and approved item policy. Missing required evidence or binding failure withholds the affected result; optional unsafe descriptions are excluded while supported facts survive. Never reinsert external text after assembly, including ACCEPT text. Keep clinical/patient work, calculations, staff writes and live API adapters in their assigned future scope.
+
+The prevention dispatcher authorizes fixed reads only, using captured arguments and trusted callbacks. Actual adapters need independent IO timeouts; RunBudget cannot interrupt a blocking callback. Never enable order/write/SQL/shell/secret/outbound-disclosure tools. Separate authenticated staff services and read-only database grants must be tested when built. Server-side location and parameterized SQL do not establish prompt-injection safety.
+
+Run the full local unittest suite and qualification CLI before handoff; display misses, containment and false positives separately. New patterns require a prior failing synthetic case, a benign counterexample, rationale and versioned review. Do not train a model or collect hidden reasoning through this component. SECURITY runs exactly two sequential rounds with remediation accounted for; final REVIEWER is read-only.
+
+Keep Pharmacy commits, staging and push history entirely separate from C:/Users/Github/AGENTS. Phase 6 originally authorized local commits only. The later user-approved documentation reroute authorizes project commits, branch synchronization, push and a PR targeting main; merging remains separately gated. Review and isolate pending approved Mod/skill changes before staging. Before any later authorized push, follow external git.md's normal commit body plus appended consolidated ##REVIEW/#RANGE convention. No push-review marker is needed merely to complete a local phase.
+
+## Phase documentation layout
+
+Use `docs/planning/Phase/Phase<n>/` for each numbered phase and `Phase<n>.<m>/` beneath its parent for sub-phases. Keep the approved parent plan authoritative. Label reconstructed records explicitly; do not invent past approvals or renumber Phases 1-6. Use [phase index](docs/planning/Phase/README.md) for current locations. External AGENTS work is a separate repository/task, never a Pharmacy phase.

@@ -1,0 +1,19 @@
+# Sub-phase 6.3 - Context isolation
+
+## Record status
+
+Reconstructed from the approved [parent Phase 6 plan](../PHASE-6-PLAN.md) and verified implementation commit `5a43c731e4d890bd78ab1f419dc46914b9125e5f`. The parent plan remains authoritative. No new phase or approval is introduced.
+
+## Build process
+
+Controlled context assembly and independently verified typed facts.
+
+## Acceptance and evidence
+
+All external free text is omitted, including ACCEPT text; required-evidence failures withhold affected results.
+
+See the final [handoff](../PHASE-6-HANDOFF.md), [security evidence](../PHASE-6-SECURITY.md) and [review](../PHASE-6-REVIEW.md). Later sub-phase 6.6 remediations supersede earlier stage code; do not attribute all final fixes to this earlier commit.
+
+## Integration boundary
+
+Emmanuel's standalone prevention lane. Brahim owns Agent Instructions and Tooling; Kerrian owns Harness. No teammate progress inferred. Future trusted harness integration, live APIs, database authorization and production deployment require their own validation.
