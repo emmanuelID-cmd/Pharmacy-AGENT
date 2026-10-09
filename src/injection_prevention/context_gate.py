@@ -27,9 +27,8 @@ def gate_label(result: DetectionResult, *, required_evidence_validated: bool) ->
                "calculations_permitted": permitted,
                "recommendation_permitted": permitted,
                "action": "CONTINUE_VALIDATED_REVIEW" if permitted else "MANUAL_REVIEW"}
-    if accepted:
-        context["display_label"] = result.normalized_label
-    else:
+    context["external_text_included"] = False
+    if not accepted:
         context["label_exception"] = result.safe_summary()
     if not required_evidence_validated:
         context["evidence_exception"] = "REQUIRED_EVIDENCE_UNVERIFIED"

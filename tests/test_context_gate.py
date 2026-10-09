@@ -31,7 +31,8 @@ class ContextGateTests(unittest.TestCase):
     def test_clean_label_context_and_safe_log(self):
         result = detect_label("Médication A", item_reference="item-A")
         gate = gate_label(result, required_evidence_validated=True)
-        self.assertEqual(gate.model_context["display_label"], "Médication A")
+        self.assertNotIn("display_label", gate.model_context)
+        self.assertFalse(gate.model_context["external_text_included"])
         self.assertNotIn("Médication", json.dumps(gate.audit_event, ensure_ascii=False))
 
     def test_flag_not_accepted(self):
