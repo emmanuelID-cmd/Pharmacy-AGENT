@@ -274,3 +274,24 @@ User-approved detector lane: five phases completed locally. Type/length/Unicode 
 Evidence: 32 local test methods pass and all 25 synthetic label fixtures match their predefined outcomes (9 benign, 16 expected exceptions). These numbers describe this selected sample only. An accepted label remains untrusted; unknown paraphrases and factual lies can pass. No live model, CVS/FDA API, database, dispatcher, numeric validator or production output enforcement was tested. The wider harness/database/API limitations above remain in force.
 
 See [PLANNER phase plan and team handoff](../planning/INJECTION-PREVENTION-HANDOFF.md), [two-round security review and exact lines](../planning/INJECTION-PREVENTION-REVIEW.md) and [this build's green/red document comparison](../planning/INJECTION-PREVENTION-CHANGES.html). Original draft and POLICY.md remain unchanged; prior Mod edits are preserved separately from this build's staged changes.
+
+### Phase 6 implementation status — standalone injection prevention
+
+This appendix records the approved standalone implementation, without making the draft canonical or implementing the pharmacy application. Historical Phases 1–5 continue as Phase 6/sub-phases 6.1–6.6. The detailed security/integration contract is [Phase 6 handoff](../planning/PHASE-6-HANDOFF.md).
+
+| Requirement | Implemented security behavior | Integration boundary |
+|---|---|---|
+| Untrusted intake | Source shapes, bounded JSON, legitimate Unicode counterexamples, hidden-character and versioned instruction signals | Synthetic prototype; not pharmacy accuracy/authenticity validation |
+| Context isolation | No external free text reaches context, including ACCEPT text or missed wording | Harness supplies independently validated facts; never reinsert raw records |
+| Required uncertainty | Missing verification or item/store/NDC binding failure withholds affected supply/classification; UNKNOWN/manual review | Unaffected verified rows remain usable; no invented values |
+| Optional description exception | Exclude description and add safe exception without altering independently supported facts | Label safety cannot approve evidence or policy |
+| Actions | Capture arguments before permission check; only fixed store 1618/NDC read callbacks dispatch | No order, inventory write, arbitrary SQL/shell, secret read or disclosure tool |
+| Output | Check exact facts/classes/warnings/action claims; reject tampering and return deterministic manual-review fallback | Security-facing report-v1 is a subset, not the complete future PRD/model report |
+| FDA role | Separate External supporting context - national shortage signal; synthetic state remains UNVERIFIED/UNAVAILABLE | Never replaces or overrides local days of supply; no live FDA adapter built |
+| Visual lens | Loopback-only Python tester displays actual results and visible code points using safe text rendering | Synthetic fixed facts; no model, operational calculations, database or real write |
+
+This standalone intake uses 64 KiB JSON, depth 6,2048 nodes,20 rows,1000 characters per generic field and4096 total value-text characters; single-line label limit 120. These explicit prototype limits are stricter than the future adapter's proposed 1 MiB ceiling in 3a; they are not approved operational pharmacy thresholds. Unsupported media is rejected; legitimate languages requiring joiners need a field-policy decision before integration. Detection signals may miss unfamiliar meaning; omission, scoped permissions and exact output checks provide independent containment.
+
+Evidence:66 passing behavior-test methods;85 selected label fixtures,55 unsafe detected,30 benign accepted,0 fixture misses/false positives,85 external-text exclusions. Seven Round1 security findings were remediated and checked in sequential Round2. This is not a count of unique attack types or universal detection. Live model/harness, evidence provenance, FDA/CVS connectivity, database grants, staff authorization, deployment and blocking-IO cancellation remain untested.
+
+Ownership: Emmanuel De Jesus—Injection Risk Prevention; Brahim Maouloud—Agent Instructions and Tooling; Kerrian Gordan—Harness. Teammate implementation status is not inferred. Ordering/reordering and inventory changes remain outside agent authority; humans execute operational actions outside the agent. No clinical/patient data or policy changes are introduced. Original draft and POLICY.md remain preserved.

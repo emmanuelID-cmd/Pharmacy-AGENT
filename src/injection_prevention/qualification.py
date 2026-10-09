@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from .contracts import Decision
 from .label_detector import detect_label
-from .boundary_contracts import Source
+from .boundary_contracts import Source, ContractError, opaque_reference
 from .safe_context import TrustedFact, assemble_context
 
 
@@ -12,7 +12,16 @@ def qualification_report():
     files=(root/'tests/fixtures/labels.json',root/'tests/fixtures/phase6_labels.json')
     rows=[]
     for file in files:
-        for case in json.loads(file.read_text(encoding='utf-8')):
+        try:
+            if file.stat().st_size>1024*1024:raise ValueError()
+            cases=json.loads(file.read_text(encoding='utf-8'))
+            if type(cases) is not list or not 1<=len(cases)<=1000:raise ValueError()
+            if any(type(c) is not dict or not opaque_reference(c.get('id')) or
+                   c.get('expected') not in ('ACCEPT','FLAG','REJECT','BLOCK') or 'label' not in c for c in cases):raise ValueError()
+            if len({c['id'] for c in cases})!=len(cases):raise ValueError()
+        except (OSError,UnicodeError,ValueError,TypeError,RecursionError):
+            raise ContractError('QUALIFICATION_UNAVAILABLE') from None
+        for case in cases:
             result=detect_label(case['label'],item_reference=case['id'])
             attack=case['expected']!='ACCEPT'
             detected=result.decision!=Decision.ACCEPT
@@ -37,7 +46,13 @@ def qualification_report():
                                          'No live model, inventory API, FDA API or production harness exercised.']}
 
 
-if __name__=='__main__':
-    report=qualification_report()
+def main():
+    try:report=qualification_report()
+    except (ContractError,ValueError,TypeError,KeyError):
+        print(json.dumps({'state':'MANUAL_REVIEW','reason_code':'QUALIFICATION_UNAVAILABLE'}))
+        return 2
     print(json.dumps(report,indent=2))
-    raise SystemExit(0 if report['expected_agreement']==report['cases'] and report['misses']==0 and report['false_positives']==0 else 1)
+    return 0 if report['expected_agreement']==report['cases'] and report['misses']==0 and report['false_positives']==0 else 1
+
+
+if __name__=='__main__':raise SystemExit(main())

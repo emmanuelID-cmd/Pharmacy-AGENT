@@ -6,7 +6,7 @@
 - Emmanuel De Jesus
 - Brahim Maouloud
 
-Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy-AGENT. Target GitHub owner: emmanuelID-cmd. Intended repository: Pharmacy-AGENT. Individual work ownership is not assigned yet.
+Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy-AGENT. Target GitHub owner: emmanuelID-cmd. Intended repository: Pharmacy-AGENT. Approved ownership is shown in the latest Phase 6 handoff below; historical push records remain unchanged.
 
 ## Current handoff
 
@@ -47,3 +47,21 @@ Documentation is grouped in docs/requirements, docs/templates, docs/planning, an
 - Added all current untracked files: MOD PRD and HTML changes report. README references both and preserves review-copy status.
 - Supplied file hashes unchanged; README links, staged whitespace, and .env exclusion checks passed.
 - PR #2 remains the review boundary into main; no merge performed.
+
+## Latest local handoff — Phase 6, October 8, 2026
+
+| Member | Part | Verified contribution/status |
+|---|---|---|
+| Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
+| Brahim Maouloud | Agent Instructions and Tooling | Assigned part; implementation status not established by this build |
+| Kerrian Gordan | Harness | Assigned part; implementation status not established by this build |
+
+| Part | Integration handoff | Status |
+|---|---|---|
+| Injection Risk Prevention | Import src/injection_prevention controls before context assembly/dispatch and after proposed output | Standalone implementation qualified locally; see Phase 6 evidence |
+| Agent Instructions and Tooling | Define authoritative instructions and real read-only inventory/FDA adapters; omit unsafe free text | Teammate work; status unverified |
+| Harness | Independently validate identity/units/policy/freshness, calculate deterministic facts, honor guards and enforce IO/loop limits | Teammate work; status unverified |
+
+Branch feature/injection-risk-prevention. Phase 6 recovery baseline 0f9c657; local sub-phase commits c7006c0,ee289b3,5a43c73,ab8af2a,78c39e9 precede final qualification/handoff. No Pharmacy push or merge performed; this entry is not a push log. External AGENTS changes remain in their separate repository.
+
+Validation: 66 behavior methods and85 selected fixtures;55 unsafe detected,30 benign accepted,0 fixture misses/false positives,85 external-text exclusions. Two sequential SECURITY rounds resolved seven findings. See [handoff](docs/planning/PHASE-6-HANDOFF.md), [security](docs/planning/PHASE-6-SECURITY.md) and [review/lines](docs/planning/PHASE-6-REVIEW.md). These results do not establish live model/harness/API/database readiness. Original draft/POLICY and unrelated preexisting Mod/skills work are preserved.

@@ -2,6 +2,7 @@
 import unicodedata
 from .contracts import Decision, DetectionResult, Finding
 from .patterns import matched_patterns
+from .label_detector import _hidden
 
 
 def inspect_text(text: object, *, item_reference: str = "record", source: str = "external") -> DetectionResult:
@@ -14,7 +15,7 @@ def inspect_text(text: object, *, item_reference: str = "record", source: str = 
     findings=[]
     for index,ch in enumerate(text):
         cat=unicodedata.category(ch)
-        if cat in {"Cf", "Cs"} or (cat.startswith("C") and ch not in "\n\r\t") or ord(ch) == 0x034F or 0xFE00 <= ord(ch) <= 0xFE0F or 0xE0100 <= ord(ch) <= 0xE01EF:
+        if _hidden(ch) or (cat.startswith("C") and ch not in "\n\r\t"):
             findings.append(Finding("UNEXPECTED_HIDDEN_CHARACTER", "Review the original source field.", index, f"U+{ord(ch):04X}"))
             if len(findings)>=16:
                 break

@@ -179,7 +179,9 @@ def assemble_context(payload: object, *, source: Source, facts: tuple[TrustedFac
         for row in rows:
             matched=source_rows.get(row['item_reference'])
             if matched is None or ('package_ndc' in matched and matched['package_ndc']!=row['package_ndc']):
-                row.update(review_permitted=False,action='MANUAL_REVIEW')
+                row.update(review_permitted=False,action='MANUAL_REVIEW',days_of_supply=None,
+                           local_class='UNKNOWN',usable_quantity=None,
+                           evidence_state='IDENTITY_UNVERIFIED')
     if source==Source.USER_REQUEST and assessment.decision!=Decision.ACCEPT:
         for row in rows:
             row.update(review_permitted=False,action='MANUAL_REVIEW')

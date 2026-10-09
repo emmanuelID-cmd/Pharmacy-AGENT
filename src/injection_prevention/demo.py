@@ -6,6 +6,7 @@ from .boundary_contracts import ContractError, Source, validate_tree
 from .safe_context import TrustedFact, inspect_payload, assemble_context
 from .action_guard import RunBudget, execute_guarded
 from .output_guard import expected_report, validate_report
+from .label_detector import _hidden
 
 
 def inventory(label='Medication A 300 mg'):
@@ -39,7 +40,7 @@ def human_inspection(payload):
     collect(payload)
     views=[]
     for text in texts:
-        visible=''.join(f'[U+{ord(ch):04X} {unicodedata.name(ch,"UNKNOWN")}]' if unicodedata.category(ch).startswith('C') or ord(ch)==0x034F else ch for ch in text)
+        visible=''.join(f'[U+{ord(ch):04X} {unicodedata.name(ch,"UNKNOWN")}]' if unicodedata.category(ch).startswith('C') or _hidden(ch) else ch for ch in text)
         special=[{'position':i,'code_point':f'U+{ord(ch):04X}','name':unicodedata.name(ch,'UNKNOWN')} for i,ch in enumerate(text) if ord(ch)>127 or unicodedata.category(ch).startswith('C')]
         views.append({'visible_text':visible,'unicode_points':special[:120],'points_complete':len(special)<=120})
     return views

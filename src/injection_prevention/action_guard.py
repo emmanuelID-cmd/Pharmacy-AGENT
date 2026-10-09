@@ -75,7 +75,17 @@ def execute_guarded(call, *, executors: dict, budget: RunBudget, allowed_package
     """
     if type(budget) is not RunBudget or type(executors) is not dict:
         raise ContractError('TRUSTED_EXECUTION_CONFIGURATION_REQUIRED')
-    decision=authorize_tool_call(call,allowed_package_ndcs=allowed_package_ndcs)
+    # Capture only exact built-in containers. Allowed arguments are immutable
+    # scalar values; never dispatch from the caller's mutable object again.
+    snapshot=None
+    try:
+        if type(call) is dict and set(call)=={'name','arguments'}:
+            name=call['name'];arguments=call['arguments']
+            if type(arguments) is dict:
+                snapshot={'name':name,'arguments':dict(arguments)}
+    except (KeyError,RuntimeError):
+        pass
+    decision=authorize_tool_call(snapshot,allowed_package_ndcs=allowed_package_ndcs)
     with budget.lock:
         budget.attempted+=1
         if budget.attempted>budget.max_attempts or budget.expired():
@@ -90,7 +100,7 @@ def execute_guarded(call, *, executors: dict, budget: RunBudget, allowed_package
             return DispatchResult('MANUAL_REVIEW','READ_ADAPTER_UNAVAILABLE',decision.tool_reference,budget.counts())
         budget.dispatched+=1
     try:
-        raw=executor(**dict(call['arguments']))
+        raw=executor(**dict(snapshot['arguments']))
         assessment=inspect_payload(raw,source=Source.INVENTORY if decision.tool_reference=='read_store_inventory' else Source.FDA)
     except Exception:
         return DispatchResult('MANUAL_REVIEW','READ_FAILED_OR_UNAVAILABLE',decision.tool_reference,budget.counts())

@@ -4,13 +4,15 @@ Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD de
 
 ## Team
 
-- Kerrian Gordan
-- Emmanuel De Jesus
-- Brahim Maouloud
+| Member | Part | Verified contribution/status |
+|---|---|---|
+| Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
+| Brahim Maouloud | Agent Instructions and Tooling | Assigned part; implementation status not established by this build |
+| Kerrian Gordan | Harness | Assigned part; implementation status not established by this build |
 
 ## Current status
 
-The PRD is a draft. No application or live CVS integration exists. SQL, database implementation, per-item policy changes, and other proposed requirements remain deferred while the team discusses the specification. Team Alignment is excluded for now.
+The PRD remains a draft specification. A standalone injection-prevention package and local synthetic visual tester are implemented; the integrated pharmacy application and live CVS integration are not built. SQL, database implementation, per-item policy changes, and other proposed requirements remain deferred while the team discusses the specification. Team Alignment is excluded for now.
 
 ## Product foundation
 
@@ -38,13 +40,13 @@ Architecture images are design references, not evidence of implemented controls.
 
 Open `Pharmacy-AGENT.code-workspace` in VS Code. Its folder is this repository root, `Pharmacy-Agent-Role`.
 
-`.env.example` documents nonsecret configuration. `.env` is local and ignored; it initially contains only safe placeholders. Never commit populated environment files, credentials, or tokens. There is no application start command yet.
+`.env.example` documents nonsecret configuration. `.env` is local and ignored; it initially contains only safe placeholders. Never commit populated environment files, credentials, or tokens. The standalone synthetic tester has the start command below; the integrated pharmacy application has no start command yet.
 
 ## Proposed technology stack
 
 Python with FastAPI and Pydantic for validated backend/tool contracts; pytest for deterministic calculations and fault cases; simple HTML/CSS/JavaScript for the initial interface. Versions and dependencies will be selected and locked during the approved application plan. No packages are installed by this setup.
 
-Python was unavailable through `python` on PATH during inspection. Verify the Windows launcher before recommending an installation. Git is available. Node.js is available but is not required by this documentation setup.
+Python 3.13 is available through the Windows launcher. The prevention component uses only the standard library and does not adopt the proposed full-application framework.
 
 SQLite and other SQL/database work are deferred. No database engine is selected for implementation.
 
@@ -69,10 +71,32 @@ README, AGENTS, Team Reference, workspace, and environment configuration remain 
 
 ## Injection prevention implementation
 
-The local label detector and context gate are implemented on feature/injection-risk-prevention. The full pharmacy application, live API, database and tool dispatcher remain unbuilt. Python 3.13 is available through the Windows launcher; this component uses the standard library only.
+Phase 6 continues completed historical Phases 1–5 on `feature/injection-risk-prevention`. This is Emmanuel's standalone prevention lane. Typed facts and fixed read callbacks are supplied by trusted harness code; a model, live source, database, staff-write service and operational calculations are not implemented here. Server-side placement alone does not make a record safe.
 
-- [Five-phase plan, integration contract and local test commands](docs/planning/INJECTION-PREVENTION-HANDOFF.md)
-- [Security rounds, final review and exact changed lines](docs/planning/INJECTION-PREVENTION-REVIEW.md)
-- [Document change comparison for this build](docs/planning/INJECTION-PREVENTION-CHANGES.html)
+| Boundary | Implemented behavior | Evidence |
+|---|---|---|
+| Intake | Bounded UTF-8 JSON, source shapes, hidden/control checks and versioned instruction signals | Contract, Unicode, evasion and source tests |
+| Context | All external free text omitted, including detector misses; independently verified facts only | Binding/missing-evidence and reinsertion tests |
+| Action | Snapshot then authorize; fixed store/NDC read scope; forbidden tools denied before executor | Mutation, permission and simulated-call tests |
+| Output | Exact structured facts/warnings checked; altered reports produce deterministic manual-review fallback | Tampering and false action-claim tests |
+| Local tester | Loopback-only actual Python results, visible character evidence, safe display and stale-result handling | Local HTTP tests and desktop/mobile browser checks |
 
-Run `py -3.13 -m unittest discover -s tests -v` and `py -3.13 -m src.injection_prevention.evaluate` from the repository root. Evidence: 32 passing test methods and 25/25 synthetic fixture cases. These results cover label checks and safe handoff only; no universal injection defense or production readiness is claimed. Five phase commits are local; no push or merge is part of this build.
+From this repository root:
+
+```powershell
+py -3.13 -m unittest discover -s tests -q
+py -3.13 -m src.injection_prevention.qualification
+py -3.13 -m src.injection_prevention.local_tester --port 8765
+```
+
+Open http://127.0.0.1:8765 after starting the tester. No credentials or third-party packages are required. This page executes synthetic controls; it does not call a model, FDA/CVS, SQL, a shell or an ordering service.
+
+Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe detected,30 benign accepted), zero fixture misses/false positives; external text excluded 85/85. These count fixtures, not distinct attack techniques or a general detection rate. SECURITY Round1 found two MAJOR and five MINOR gaps; Round2 verified remediation. Live model/harness, real data provenance and database/deployment controls remain untested.
+
+- [Approved Phase 6 plan](docs/planning/PHASE-6-PLAN.md)
+- [Integration contract, coverage matrix and pattern-building process](docs/planning/PHASE-6-HANDOFF.md)
+- [Two-round security evidence](docs/planning/PHASE-6-SECURITY.md)
+- [Final review and exact changed lines](docs/planning/PHASE-6-REVIEW.md)
+- [Green additions/red deletions for updated documents](docs/planning/PHASE-6-CHANGES.html)
+
+Historical five-phase handoff/review/comparison files describe their earlier baseline; Phase 6 supersedes their accepted-label forwarding and no-dispatch statements. Original draft and POLICY.md are preserved. All Pharmacy build commits remain local; no push or merge is part of Phase 6.

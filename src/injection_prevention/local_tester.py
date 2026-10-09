@@ -40,11 +40,16 @@ class TesterHandler(BaseHTTPRequestHandler):
     def error_json(self,status,code):
         self.send_content(status,json.dumps({'state':'MANUAL_REVIEW','reason_code':code}).encode())
 
+    def send_error(self,code,message=None,explain=None):
+        self.error_json(code,'HTTP_REQUEST_REJECTED')
+
     def boundary_ok(self):
         expected=f'127.0.0.1:{self.server.server_port}'
         if self.headers.get_all('Host')!=[expected]:
             self.error_json(403,'INVALID_HOST');return False
-        if self.headers.get('Origin') not in (None,'http://'+expected) or self.headers.get('Sec-Fetch-Site')=='cross-site':
+        origins=self.headers.get_all('Origin',[])
+        sites=self.headers.get_all('Sec-Fetch-Site',[])
+        if len(origins)>1 or len(sites)>1 or (origins and origins[0]!='http://'+expected) or (sites and sites[0]=='cross-site'):
             self.error_json(403,'CROSS_ORIGIN_DENIED');return False
         now=time.monotonic()
         while self.server.requests and now-self.server.requests[0]>60:self.server.requests.popleft()
@@ -55,18 +60,23 @@ class TesterHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if not self.boundary_ok():return
-        path=urlsplit(self.path).path
-        assets={'/':('index.html','text/html; charset=utf-8'),'/bench.js':('bench.js','text/javascript; charset=utf-8'),'/bench.css':('bench.css','text/css; charset=utf-8')}
-        if path in assets:
-            name,kind=assets[path]
-            self.send_content(200,(ASSETS/name).read_bytes(),kind)
-        elif path=='/api/samples':self.send_content(200,json.dumps(SAMPLES,ensure_ascii=True).encode())
-        elif path=='/api/evaluation':self.send_content(200,json.dumps(qualification_report(),ensure_ascii=True).encode())
-        else:self.error_json(404,'UNKNOWN_ROUTE')
+        try:
+            path=urlsplit(self.path).path
+            assets={'/':('index.html','text/html; charset=utf-8'),'/bench.js':('bench.js','text/javascript; charset=utf-8'),'/bench.css':('bench.css','text/css; charset=utf-8')}
+            if path in assets:
+                name,kind=assets[path]
+                self.send_content(200,(ASSETS/name).read_bytes(),kind)
+            elif path=='/api/samples':self.send_content(200,json.dumps(SAMPLES,ensure_ascii=True).encode())
+            elif path=='/api/evaluation':self.send_content(200,json.dumps(qualification_report(),ensure_ascii=True).encode())
+            else:self.error_json(404,'UNKNOWN_ROUTE')
+        except (OSError,ValueError,TypeError,KeyError):
+            self.error_json(503,'LOCAL_TEST_UNAVAILABLE')
 
     def do_POST(self):
         if not self.boundary_ok():return
-        if urlsplit(self.path).path!='/api/test':self.error_json(404,'UNKNOWN_ROUTE');return
+        try:path=urlsplit(self.path).path
+        except ValueError:self.error_json(400,'INVALID_REQUEST_TARGET');return
+        if path!='/api/test':self.error_json(404,'UNKNOWN_ROUTE');return
         if self.headers.get('Transfer-Encoding') or len(self.headers.get_all('Content-Length',[]))!=1:
             self.error_json(400,'INVALID_BODY_LENGTH');return
         if self.headers.get('Content-Type','').split(';')[0].strip().lower()!='application/json':
@@ -89,6 +99,8 @@ class TesterHandler(BaseHTTPRequestHandler):
     do_DELETE=unsupported
     do_PATCH=unsupported
     do_HEAD=unsupported
+    do_TRACE=unsupported
+    do_CONNECT=unsupported
 
 
 def main():
