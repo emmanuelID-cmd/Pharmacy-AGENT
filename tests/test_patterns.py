@@ -23,7 +23,7 @@ class PatternTests(unittest.TestCase):
                     self.assertNotIn("display_label", gate_label(result, required_evidence_validated=True).model_context)
 
     def test_each_pattern_has_example_counterexample_and_rationale(self):
-        self.assertEqual(PATTERN_VERSION, "label-signals-v1")
+        self.assertEqual(PATTERN_VERSION, "label-signals-v2")
         self.assertEqual(len(set(p.pattern_id for p in PATTERNS)), len(PATTERNS))
         for pattern in PATTERNS:
             with self.subTest(pattern=pattern.pattern_id):
