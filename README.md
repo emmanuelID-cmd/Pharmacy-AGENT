@@ -107,6 +107,7 @@ The checked-in snapshot is dated 2026-10-07. Freeze the clock for a fresh eval; 
 ```powershell
 python3 -m unittest discover -s tests -q
 python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00 --json
 ```
 
 On Windows, create the project virtual environment if it does not already exist, then install its timezone data and use its interpreter:
@@ -116,9 +117,10 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-harness.txt
 .\.venv\Scripts\python.exe -B -m unittest discover -s tests -q
 .\.venv\Scripts\python.exe -B -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00 --json
 ```
 
-Unit tests stub FDA HTTP. The CLI performs real openFDA reads. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
+Unit tests stub FDA HTTP. The CLI performs real openFDA reads and prints a manager table; `--json` prints `harness-report-v1`. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
 
 - [Phase 7 plan](docs/planning/Phase/Phase7/PHASE-7-PLAN.md)
 - [Phase 7 handoff](docs/planning/Phase/Phase7/PHASE-7-HANDOFF.md)

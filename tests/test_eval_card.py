@@ -1,3 +1,4 @@
+import copy
 import socket
 import unittest
 
@@ -9,6 +10,7 @@ from src.pharmacy_harness.run import run_review
 from src.pharmacy_harness.validate import inspect_item, inspect_snapshot, parse_run_at
 from src.pharmacy_tools.inventory import read_store_inventory
 from tests.test_fda_shortage_adapter import NOT_FOUND, RECORD, ok
+from tests.test_harness_invariants import write_payload
 
 EVAL_RUN = "2026-10-07T10:00:00-04:00"
 CASE1_NDC = "42023-240-01"
@@ -64,6 +66,31 @@ class EvalCardTests(unittest.TestCase):
         self.assertIn("infinite", row["explanation"].lower())
         self.assertEqual(row["fda_state"], "NO_MATCH")
         self.assertIn("not guaranteed supply", row["explanation"])
+
+    def test_case_2_same_ndc_does_not_infer_local_shortage(self):
+        base = read_store_inventory(1618)
+        item = copy.deepcopy(next(row for row in base["items"] if row["item_id"] == "item-002"))
+        item["package_ndc"] = CASE1_NDC
+        payload = {
+            "store_id": 1618, "synthetic": True,
+            "snapshot_reference": "synthetic-snapshot-2026-10-07",
+            "snapshot_timestamp": "2026-10-07T09:00:00-04:00",
+            "policy_version": "SYNTHETIC-v0",
+            "items": [item],
+        }
+        report = run_review(run_at=EVAL_RUN, inventory_path=write_payload(payload),
+                            fda_http_get=eval_http())
+        row = by_id(report, "item-002")
+        self.assertEqual(row["package_ndc"], CASE1_NDC)
+        self.assertEqual(row["fda_state"], "MATCH")
+        self.assertEqual(row["fda_status"], "Current")
+        self.assertEqual(row["fda_availability"], "Unavailable")
+        self.assertEqual(row["external_action"], "REVIEW")
+        self.assertEqual(row["local_class"], "UNKNOWN")
+        self.assertEqual(row["local_action"], "MANUAL_REVIEW")
+        self.assertIsNone(row["days_of_supply"])
+        self.assertIn("infinite", row["explanation"].lower())
+        self.assertIn("does not change the local class", row["explanation"])
 
     def test_case_3_missing_stock_incomplete_window_and_fda_timeout(self):
         report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http(timeout_ndc="99901-111-01"))

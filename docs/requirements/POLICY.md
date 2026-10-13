@@ -48,6 +48,8 @@ SYNTHETIC-v0 prototype defaults (not PRD-approved operational pharmacy rules): a
 
 The harness lists every exact-match record. Adapter MATCH means at least one exact package_ndc hit; the harness further labels NEEDS_REVIEW when those records disagree on identity, status, availability, or update_date. Summary status/availability/update_date are shown only when the listed records agree; they never pick a winner from a conflict. A Current/Unavailable row still adds a separate external-risk REVIEW without changing the local class.
 
+The CLI prints a manager table from that same report: SYNTHETIC INVENTORY TEST, store, run/snapshot time, usage window, manual-review rows first, then the inventory table with text statuses. `--json` is the machine copy. FDA related_info is not copied into the table as instructions.
+
 FDA availability/status may add a human external-risk review action but never change the local threshold class or establish clinical urgency. Valid local arithmetic can remain visible during an FDA failure with explicit qualification; recommendations dependent on unavailable external facts must be withheld.
 
 ## Review, changes, and recovery

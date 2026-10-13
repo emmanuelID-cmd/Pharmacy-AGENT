@@ -17,9 +17,10 @@ From the repository root. The dated fixture snapshot is `2026-10-07T09:00:00-04:
 ```powershell
 python3 -m unittest discover -s tests -q
 python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00 --json
 ```
 
-`--run-at` is required for a fresh eval against the checked-in fixture. Omitting it uses the current time. The CLI calls the real openFDA shortages endpoint; unit tests inject `fda_http_get` and do not use the network.
+`--run-at` is required for a fresh eval against the checked-in fixture. Omitting it uses the current time. The CLI prints the PRD manager table by default and `harness-report-v1` JSON with `--json`. It calls the real openFDA shortages endpoint; unit tests inject `fda_http_get` and do not use the network.
 
 ## Integration
 
@@ -33,7 +34,7 @@ TrustedFact cannot store CRITICAL with a missing duration. A verified zero-stock
 
 ## Validation
 
-Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, output-guard fallback on a tampered `report-v1`, Decimal exact-2/exact-5 boundaries, source vs row isolation, shared-NDC reuse, the human/`report-v1` invariant, and multi-record FDA agreement versus conflict/`NEEDS_REVIEW`. Run the full unittest suite before handoff.
+Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, output-guard fallback on a tampered `report-v1`, Decimal exact-2/exact-5 boundaries, source vs row isolation, shared-NDC reuse, the human/`report-v1` invariant, multi-record FDA agreement versus conflict/`NEEDS_REVIEW`, PARTIAL/malformed/package-mismatch survival through `run_review`, a Case 2 same-NDC overlay, and the manager-table CLI. Run the full unittest suite before handoff.
 
 These evals test harness arithmetic and prevention guards. They do not test how a language model reacts to injected text. A future model whose report must match `expected_report` exactly adds no independent judgment. Live FDA provenance, database grants, and operational pharmacy policy remain untested.
 
