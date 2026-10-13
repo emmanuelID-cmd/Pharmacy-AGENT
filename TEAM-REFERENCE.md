@@ -49,6 +49,13 @@ The active phase records live under [docs/planning/Phase](docs/planning/Phase/RE
 # Date and Timestamp of Push
 
 Push records are ordered newest first.
+## 2026-10-13T10:39:56-04:00
+
+- Verified documentation-branch push e1a1729858be0bcdd26ac159a61233ce4768a959..477806563ca72508150492d2779dcff8c8769dc3; reviewed endpoint e56bffe960c49aa7b6b3e8f7242d9e9db907930b.
+- Synchronized previously merged inventory/FDA tooling from main; moved the byte-identical team HTML into docs/presentations and added ten-slide editable ODP/PPTX copies plus the README folder entry.
+- Both new decks retain French notes on every slide and three editable tables. PowerPoint rendering checked all slides; PPTX fullscreen playback advanced through slides 1–10 and remained on the final slide until explicitly exited.
+- Presentation PR [#12](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/12) targets main. PR #11 remains a draft pending a confirmed late-FDA-result guard finding; its 33 harness-specific tests pass, but the complete 127-method suite has the existing Windows oversized-request connection-abort failure.
+- Database migrations and additional standalone tests remain local on feature/supabase-inventory-schema. No credentials, database deployment or harness implementation changes were included in this push. This handoff entry is published in a subsequent documentation commit.
 
 ## 2026-10-12T23:01:26-04:00
 
