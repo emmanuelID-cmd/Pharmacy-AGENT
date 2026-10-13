@@ -68,6 +68,12 @@ The active phase records live under [docs/planning/Phase](docs/planning/Phase/RE
 
 Push records are ordered newest first.
 
+## 2026-10-13T11:53:33-04:00
+
+- Verified feature/pharmacy-harness push d61414aa9044b824e947e19517e681eecaca28d1..dd181cad9ffacbfc77ea52fae53d6b629efe1b4a.
+- Default CLI is the PRD manager table; `--json` prints harness-report-v1. PARTIAL, malformed FDA, package-mismatch, and Case 2 same-NDC overlay tests added. No main merge. Draft PR #13 remains the review.
+- Harness tests: 56 OK.
+
 ## 2026-10-13T11:26:17-04:00
 
 - Verified feature/pharmacy-harness push 4b5817225ede54224793d308fa84c782fe065cd6..a7201b9fc87aedb338e9226ede0d3949108a0e48.
