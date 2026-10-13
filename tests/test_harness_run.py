@@ -1,6 +1,7 @@
 import json
 import socket
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 
 from src.injection_prevention.action_guard import RunBudget
@@ -74,6 +75,37 @@ class HarnessRunTests(unittest.TestCase):
         fda_states = {row["fda_state"] for row in report["items"]}
         self.assertIn("NOT_CALLED", fda_states)
         self.assertEqual(report["source_state"], "COMPLETE")
+
+    def test_late_fda_result_is_discarded_and_further_reads_stop(self):
+        clock = [0.0]
+        calls = []
+        budget = RunBudget(seconds=1, clock=lambda: clock[0])
+
+        def late_http(url, timeout):
+            calls.append(url)
+            clock[0] = 2.0
+            return ok([RECORD])
+
+        report = run(budget=budget, fda_http_get=late_http)
+        row = next(item for item in report["items"] if item["package_ndc"] == NDC)
+        self.assertEqual(row["fda_state"], "UNAVAILABLE")
+        self.assertIsNone(row["fda_status"])
+        self.assertIsNone(row["fda_availability"])
+        self.assertIsNone(row["external_action"])
+        self.assertEqual(len(calls), 1)
+        self.assertEqual(budget.counts()["completed"], 1)
+        self.assertIn("NOT_CALLED", {item["fda_state"] for item in report["items"]})
+        self.assertEqual(row["days_of_supply_display"], "6.22")
+        self.assertEqual(row["local_action"], "MAINTAIN")
+        self.assertIn("UNAVAILABLE", row["explanation"])
+
+    def test_invalid_captured_fda_result_cannot_bypass_dispatch_rejection(self):
+        invalid = {"results": "invalid source rows", "meta": {"state": "MATCH"}}
+        with patch("src.pharmacy_harness.run.get_fda_shortage_context", return_value=invalid):
+            report = run()
+        self.assertEqual({item["fda_state"] for item in report["items"]}, {"UNAVAILABLE"})
+        self.assertTrue(all(item["fda_status"] is None for item in report["items"]))
+        self.assertTrue(all(item["external_action"] is None for item in report["items"]))
 
     def test_safety_report_is_report_v1_and_never_claims_an_order(self):
         report = run()

@@ -82,14 +82,16 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
                 budget=budget,
                 allowed_package_ndcs=accepted_ndcs,
             )
-            if dispatch.reason_code in {"RUN_BUDGET_EXHAUSTED", "RUN_DEADLINE_EXCEEDED"}:
-                break
-            if ndc not in fda_payloads:
+            # Capturing a callback result does not authorize its use. A failed
+            # inspection or deadline must replace even an already captured result.
+            if dispatch.state != "COMPLETE" or ndc not in fda_payloads:
                 fda_payloads[ndc] = {
                     "results": [],
                     "meta": {"state": "UNAVAILABLE", "package_ndc": ndc,
                              "reason": dispatch.reason_code, "source": "openFDA drug shortages"},
                 }
+            if dispatch.reason_code in {"RUN_BUDGET_EXHAUSTED", "RUN_DEADLINE_EXCEEDED"}:
+                break
 
     fda_views = {}
     for ndc, payload_fda in fda_payloads.items():
