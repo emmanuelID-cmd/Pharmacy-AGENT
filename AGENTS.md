@@ -16,7 +16,7 @@ Update relevant PRD, policy, README, and architecture documentation alongside ap
 
 ## Team Reference and Git
 
-Use the Team Reference skill and maintain `TEAM-REFERENCE.md` inside this project. Inspect actual Git status/history before handoffs. Append verified push timestamps with America/New_York UTC offsets and commit ranges after pushes; do not invent attribution or push evidence.
+Use the Team Reference skill and maintain `TEAM-REFERENCE.md` inside this project. Inspect actual Git status/history before handoffs. Record verified push timestamps with America/New_York UTC offsets and commit ranges after pushes, placing the latest dated entry first in descending order; do not invent attribution or push evidence.
 
 Follow the external Git approval gates, Conventional Commits, and collaboration body sections: What changed, Why, Collaboration, Boundaries, Validation. Propose branch names before creation. Use pull requests for shared changes; merging into main requires approval and required checks. Preview changes before committing. Never stage unrelated work or secrets. Repository creation does not grant teammate invitations or alter GitHub access permissions.
 
