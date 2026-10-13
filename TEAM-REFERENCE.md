@@ -68,6 +68,12 @@ The active phase records live under [docs/planning/Phase](docs/planning/Phase/RE
 
 Push records are ordered newest first.
 
+## 2026-10-13T15:06:17-04:00
+
+- Verified feature/pharmacy-harness push fed64285454849e4b3b8f973f4b4349f79b69b8a..176b80f65e7fbcee1b36a525afc71360e9e1846d.
+- One guarded model turn: copy report-v1 or reject invented numbers. `--model-copy` is a wire check, not an LLM. No main merge. Draft PR #13 remains the review.
+- Harness tests: 71 OK.
+
 ## 2026-10-13T12:01:35-04:00
 
 - Verified feature/pharmacy-harness push 8ef41d2889afb812b080e555b5544c2cecb59b6d..7dbf6d8f13951fa0e31369e607b72fb1bb3ddbeb.
