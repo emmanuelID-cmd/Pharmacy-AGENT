@@ -36,3 +36,11 @@ TrustedFact cannot store CRITICAL with a missing duration. A verified zero-stock
 Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, output-guard fallback on a tampered `report-v1`, Decimal exact-2/exact-5 boundaries, source vs row isolation, shared-NDC reuse, and the human/`report-v1` invariant. Run the full unittest suite before handoff.
 
 These evals test harness arithmetic and prevention guards. They do not test how a language model reacts to injected text. A future model whose report must match `expected_report` exactly adds no independent judgment. Live FDA provenance, database grants, and operational pharmacy policy remain untested.
+
+## Approved guard follow-up — October 13, 2026
+
+- A captured FDA callback result is usable only after its dispatcher completes. Deadline and source-contract failures replace it with UNAVAILABLE; deadline/budget exhaustion stops further reads. Verified local calculations remain unchanged.
+- Tester error responses are flushed and half-closed before draining rejected request bytes. Cleanup is bounded to 65,537 bytes and one second; rejected bodies never enter JSON evaluation. Content-type, origin, route and malformed-request denials are preserved.
+- Windows startup needs the IANA timezone data in requirements-harness.txt; see the README virtual-environment commands. No full application framework was adopted.
+- Review first reproduced late/invalid FDA-result use and the Windows connection abort. After remediation, all 141 discovered methods and all 85 qualification fixtures passed. Three targeted Tester reruns passed 9/9 each, including stalled-body cleanup and headerless parse failures.
+- These checks use synthetic local inputs and stubbed FDA HTTP. They do not prove universal injection prevention, a model loop, database integration or operational pharmacy readiness. Database policy-write work remains deferred.

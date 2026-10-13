@@ -46,7 +46,7 @@ Open `Pharmacy-AGENT.code-workspace` in VS Code. Its folder is this repository r
 
 Python with FastAPI and Pydantic for validated backend/tool contracts; pytest for deterministic calculations and fault cases; simple HTML/CSS/JavaScript for the initial interface. Versions and dependencies will be selected and locked during the approved application plan. No packages are installed by this setup.
 
-Python 3.13 is available through the Windows launcher. The prevention, tools, and harness packages use only the standard library and do not adopt the proposed full-application framework.
+Python 3.13 is available through the Windows launcher. The prevention, tools, and harness logic uses the standard library and does not adopt the proposed full-application framework. Windows also needs the IANA timezone data pinned in `requirements-harness.txt` for `ZoneInfo("America/New_York")`.
 
 SQLite and other SQL/database work are deferred. No database engine is selected for implementation.
 
@@ -106,6 +106,15 @@ The checked-in snapshot is dated 2026-10-07. Freeze the clock for a fresh eval; 
 ```powershell
 python3 -m unittest discover -s tests -q
 python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+```
+
+On Windows, create the project virtual environment if it does not already exist, then install its timezone data and use its interpreter:
+
+```powershell
+py -3.13 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-harness.txt
+.\.venv\Scripts\python.exe -B -m unittest discover -s tests -q
+.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
 ```
 
 Unit tests stub FDA HTTP. The CLI performs real openFDA reads. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage.
