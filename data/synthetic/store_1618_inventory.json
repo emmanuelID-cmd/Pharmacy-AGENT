@@ -10,7 +10,7 @@
    "package_ndc": "42023-240-01",
    "product_label": "Methylprednisolone Acetate Injection",
    "dosage_form": "Injection",
-   "dispensing_unit": "vial",
+   "dispensing_unit": "unit",
    "daily_usage": {
     "window_end": "2026-10-06",
     "units": [
@@ -37,7 +37,7 @@
    "package_ndc": "0009-0280-02",
    "product_label": "Methylprednisolone Acetate Injection",
    "dosage_form": "Injection",
-   "dispensing_unit": "vial",
+   "dispensing_unit": "unit",
    "daily_usage": {
     "window_end": "2026-10-06",
     "units": [
@@ -359,7 +359,7 @@
    "package_ndc": "99901-112-01",
    "product_label": "Synthetic Medication N",
    "dosage_form": "Inhaler",
-   "dispensing_unit": "inhaler",
+   "dispensing_unit": "unit",
    "daily_usage": {
     "window_end": "2026-10-06",
     "units": [
@@ -467,7 +467,7 @@
    "package_ndc": "99901-116-01",
    "product_label": "Synthetic Medication R",
    "dosage_form": "Injection",
-   "dispensing_unit": "vial",
+   "dispensing_unit": "unit",
    "daily_usage": {
     "window_end": "2026-10-06",
     "units": [
@@ -521,7 +521,7 @@
    "package_ndc": "99901-118-01",
    "product_label": "Synthetic Medication T",
    "dosage_form": "Cream",
-   "dispensing_unit": "tube",
+   "dispensing_unit": "unit",
    "daily_usage": {
     "window_end": "2026-10-06",
     "units": [

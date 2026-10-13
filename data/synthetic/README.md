@@ -7,6 +7,9 @@ Only `42023-240-01` and `0009-0280-02` are real package NDCs (FDA shortage recor
 `daily_usage.units` holds 14 daily totals in date order, ending on `window_end`
 (the last completed local day before `snapshot_timestamp`).
 
+`dispensing_unit` uses only the units `TrustedFact` accepts: `tablet`, `capsule`, `mL`, `unit`
+(vials, inhalers and tubes are counted as `unit`).
+
 | Item | Purpose |
 |---|---|
 | item-001 | Eval Case 1: 6.22 days ABOVE_THRESHOLD |

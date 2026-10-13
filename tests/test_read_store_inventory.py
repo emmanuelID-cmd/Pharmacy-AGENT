@@ -6,7 +6,7 @@ from pathlib import Path
 from src.injection_prevention.action_guard import RunBudget, execute_guarded
 from src.injection_prevention.boundary_contracts import Source
 from src.injection_prevention.contracts import Decision
-from src.injection_prevention.safe_context import inspect_payload
+from src.injection_prevention.safe_context import TrustedFact, inspect_payload
 from src.pharmacy_tools.inventory import FIXTURE_PATH, InventoryUnavailable, read_store_inventory
 
 
@@ -52,6 +52,11 @@ class ReadStoreInventoryTests(unittest.TestCase):
         rows = {r["item_id"]: r for r in self.payload["items"]}
         self.assertNotIn("usable_quantity", rows["item-013"])  # missing stock is absent, never 0
         self.assertEqual(rows["item-012"]["usable_quantity"], -5)  # negative stock is passed through, not fixed
+
+    def test_every_row_fits_the_harness_trusted_fact_contract(self):
+        # Identity and unit fields must be accepted by TrustedFact so the harness can build facts
+        for row in self.payload["items"]:
+            TrustedFact(row["item_id"], row["package_ndc"], 0, row["dispensing_unit"], None, "UNKNOWN", "synthetic-check")
 
     def test_wrong_store_is_refused_before_reading(self):
         for store in (1619, "1618", 1618.0, True, None):
