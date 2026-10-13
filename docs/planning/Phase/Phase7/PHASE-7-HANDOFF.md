@@ -17,10 +17,11 @@ From the repository root. The dated fixture snapshot is `2026-10-07T09:00:00-04:
 ```powershell
 python3 -m unittest discover -s tests -q
 python3 -m src.pharmacy_harness --offline
+python3 -m src.pharmacy_harness --offline --model-copy
 python3 -m src.pharmacy_harness --offline --json
 ```
 
-The CLI defaults to `2026-10-07T10:00:00-04:00` so the dated fixture is fresh. `--now` uses the current clock (the snapshot will be stale). `--offline` injects the recorded Case 1 FDA payload and does not call openFDA. Omit `--offline` for a live read-only openFDA request. `--json` prints `harness-report-v1`. Unit tests inject `fda_http_get` and do not use the network.
+The CLI defaults to `2026-10-07T10:00:00-04:00` so the dated fixture is fresh. `--now` uses the current clock (the snapshot will be stale). `--offline` injects the recorded Case 1 FDA payload and does not call openFDA. `--model-copy` runs one guarded model turn without an LLM; `--model` requires `PHARMACY_MODEL_URL`. Omit `--offline` for a live read-only openFDA request. `--json` prints `harness-report-v1`. Unit tests inject `fda_http_get` and do not use the network.
 
 ## Integration
 

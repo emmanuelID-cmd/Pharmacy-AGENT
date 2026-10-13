@@ -13,6 +13,7 @@ One common parent contains each complete phase: `docs/planning/Phase/Phase<n>/`.
 | 5 | [Handoff and security review](Phase5/PLAN.md) | Reconstructed historical record |
 | 6 | [Approved parent plan](Phase6/PHASE-6-PLAN.md) | Completed standalone prevention build |
 | 7 | [Deterministic pharmacy harness](Phase7/PHASE-7-PLAN.md) | Completed guarded inventory/FDA run and POLICY.md calculations |
+| 8 | [One guarded model turn](Phase8/PHASE-8-PLAN.md) | Harness calls a model once; invented numbers are rejected |
 
 Missing older plans are explicitly reconstructed from verified commits. They do not replace the approved parent plan or invent historical authorization. Phase 7 is new harness work; it does not rewrite Phases 1–6.
 

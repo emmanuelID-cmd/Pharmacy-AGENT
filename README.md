@@ -8,11 +8,11 @@ Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD de
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display implemented on main |
-| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction, PRD report, and one guarded model turn implemented in Phases 7–8 |
 
 ## Current status
 
-The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. There is no language-model loop, FastAPI application, database, or live CVS inventory. SQL, per-item policy changes, and other proposed requirements remain deferred.
+The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, a deterministic harness, and one guarded model turn are implemented. There is no FastAPI application, database, or live CVS inventory. SQL, per-item policy changes, and other proposed requirements remain deferred. Do not train a model.
 
 ## Product foundation
 
@@ -107,6 +107,7 @@ The checked-in snapshot is dated 2026-10-07. The CLI defaults to that Eval Card 
 ```powershell
 python3 -m unittest discover -s tests -q
 python3 -m src.pharmacy_harness --offline
+python3 -m src.pharmacy_harness --offline --model-copy
 python3 -m src.pharmacy_harness --offline --json
 ```
 
@@ -117,10 +118,11 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-harness.txt
 .\.venv\Scripts\python.exe -B -m unittest discover -s tests -q
 .\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline
+.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline --model-copy
 .\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline --json
 ```
 
-Unit tests stub FDA HTTP. The CLI defaults to the Eval Card clock and prints a manager table. `--offline` uses the recorded Case 1 FDA payload (no network). Omit `--offline` for a live openFDA read; `--now` uses the current clock; `--json` prints `harness-report-v1`. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
+Unit tests stub FDA HTTP. The CLI defaults to the Eval Card clock and prints a manager table. `--offline` uses the recorded Case 1 FDA payload (no network). `--model-copy` runs one guarded model turn without an LLM; `--model` uses `PHARMACY_MODEL_URL` and rejects invented numbers. Omit `--offline` for a live openFDA read; `--now` uses the current clock; `--json` prints `harness-report-v1`. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
 
 - [Phase 7 plan](docs/planning/Phase/Phase7/PHASE-7-PLAN.md)
 - [Phase 7 handoff](docs/planning/Phase/Phase7/PHASE-7-HANDOFF.md)

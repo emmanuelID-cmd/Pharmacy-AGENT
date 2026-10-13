@@ -15,11 +15,11 @@ from .validate import STORE_ID, duplicate_item_ids, inspect_item, inspect_snapsh
 
 
 def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_get=None,
-               fda_sleep=None, budget=None):
+               fda_sleep=None, budget=None, complete=None):
     """Execute one synthetic-store review. Tool JSON stays untrusted until this function verifies it.
 
     Tests and `--offline` inject fda_http_get. The CLI omits it so get_fda_shortage_context
-    performs a real read.
+    performs a real read. `complete` is one optional model turn; invented numbers are rejected.
     """
     moment = parse_run_at(run_at)
     budget = budget if budget is not None else RunBudget()
@@ -106,5 +106,5 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
     return build_report(
         run_at=moment, snapshot=snapshot, item_results=item_results, payload=payload,
         facts=facts, fda_views=fda_views, inventory_dispatch=inventory_dispatch,
-        fda_source=fda_source,
+        fda_source=fda_source, complete=complete,
     )

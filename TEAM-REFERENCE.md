@@ -26,13 +26,13 @@ Documentation is grouped in docs/requirements, docs/templates, docs/planning, an
 
 ## Latest local handoff — Phase 7 harness
 
-Branch `feature/pharmacy-harness`. Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW`. The CLI prints a manager table by default (`--json` for the machine copy), freezes the Eval Card clock unless `--now` is passed, and uses `--offline` for a recorded FDA payload. No language-model loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
+Branch `feature/pharmacy-harness`. Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW`. The CLI prints a manager table by default (`--json` for the machine copy), freezes the Eval Card clock unless `--now` is passed, and uses `--offline` for a recorded FDA payload. Phase 8 adds one guarded model turn (`--model-copy` or `--model`); invented numbers are rejected. No language-model loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
 
 | Member | Part | Verified contribution/status |
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display merged on main (PRs #5–#8) |
-| Kerrian Gordon | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+| Kerrian Gordon | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction, PRD report, and one guarded model turn implemented in Phases 7–8 |
 
 | Part | Integration handoff | Status |
 |---|---|---|

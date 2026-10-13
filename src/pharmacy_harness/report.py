@@ -13,6 +13,7 @@ except ImportError:
     from injection_prevention.boundary_contracts import Source
     from pharmacy_tools.instructions import HUMAN_NEXT_STEP, render_warnings
 
+from .loop import run_model_turn
 from .validate import POLICY_VERSION, STORE_ID, USAGE_DAYS, last_completed_day
 
 CLASS_ORDER = {"MANUAL_REVIEW": 0, "CRITICAL": 1, "LOW": 2, "ABOVE_THRESHOLD": 3, "UNKNOWN": 4}
@@ -192,7 +193,7 @@ def build_item_row(result, *, input_index, fda, run_at):
 
 
 def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, inventory_dispatch,
-                 fda_source="LIVE"):
+                 fda_source="LIVE", complete=None):
     rows = []
     for index, result in enumerate(item_results):
         ndc = result.package_ndc
@@ -204,15 +205,27 @@ def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, i
         run_state = "MANUAL_REVIEW"
     if inventory_dispatch.state != "COMPLETE":
         run_state = "MANUAL_REVIEW"
+    model_turn = {"state": "SKIPPED", "reason_code": None}
     try:
         context = assemble_context(payload, source=Source.INVENTORY, facts=facts)
-        safety = expected_report(context)
+        if complete is None:
+            safety = expected_report(context)
+        else:
+            outcome = run_model_turn(context, complete)
+            safety = outcome.report
+            model_turn = {
+                "state": "ACCEPTED" if outcome.accepted else "REJECTED",
+                "reason_code": outcome.reason_code,
+            }
+            if not outcome.accepted:
+                run_state = "MANUAL_REVIEW"
         warning_codes = list(safety["warning_codes"])
     except Exception:
         context = None
         safety = None
         warning_codes = ["MANUAL_REVIEW_REQUIRED"]
         run_state = "MANUAL_REVIEW"
+        model_turn = {"state": "ERROR", "reason_code": "CONTEXT_ASSEMBLY_FAILED"}
     if run_state == "MANUAL_REVIEW" and "MANUAL_REVIEW_REQUIRED" not in warning_codes:
         warning_codes.append("MANUAL_REVIEW_REQUIRED")
     window_end = last_completed_day(run_at)
@@ -239,6 +252,7 @@ def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, i
         "order_placed": False,
         "inventory_changed": False,
         "fda_source": fda_source,
+        "model_turn": model_turn,
         "safety_report": safety,
     }
 
@@ -265,5 +279,6 @@ def failed_source_report(*, run_at, inventory_dispatch, fda_source="LIVE"):
         "order_placed": False,
         "inventory_changed": False,
         "fda_source": fda_source,
+        "model_turn": {"state": "NOT_REACHED", "reason_code": None},
         "safety_report": None,
     }
