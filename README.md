@@ -12,7 +12,7 @@ Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD de
 
 ## Current status
 
-The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. There is no language-model loop, FastAPI application, database, or live CVS inventory. SQL, per-item policy changes, and other proposed requirements remain deferred.
+The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. The initial private Supabase schema, synthetic seed, and restricted database reader are also implemented. There is no language-model loop, FastAPI application, or live CVS inventory. Database-reader integration with the harness, per-item policy changes, and other proposed requirements remain separate work.
 
 ## Product foundation
 
@@ -48,7 +48,7 @@ Python with FastAPI and Pydantic for validated backend/tool contracts; pytest fo
 
 Python 3.13 is available through the Windows launcher. The prevention, tools, and harness logic uses the standard library and does not adopt the proposed full-application framework. Windows also needs the IANA timezone data pinned in `requirements-harness.txt` for `ZoneInfo("America/New_York")`.
 
-SQLite and other SQL/database work are deferred. No database engine is selected for implementation.
+Database: Supabase PostgreSQL 17.11, project `xrptinavijhwvydoqdni`. See [schema and migration guide](docs/database/SCHEMA.md). The original file reader remains available. `read_store_inventory_database` now reads Supabase with dedicated restricted backend credentials; full harness integration remains separate.
 
 References: [FastAPI features](https://fastapi.tiangolo.com/features/) and [FDA shortages endpoint](https://open.fda.gov/apis/drug/drugshortages/how-to-use-the-endpoint/).
 
@@ -130,3 +130,7 @@ Unit tests stub FDA HTTP. The CLI performs real openFDA reads. Empty, unreadable
 - [Green additions/red deletions for updated documents](docs/planning/Phase/Phase6/PHASE-6-CHANGES.html)
 
 Historical five-phase handoff/review/comparison files describe their earlier baseline; Phase 6 supersedes their accepted-label forwarding and no-dispatch statements. Original draft and POLICY.md are preserved. Phase 6 was completed with local commits. The later authorized publication publishes this standalone work through a PR to main; merging requires separate approval.
+
+## Local read-only database check
+
+Install the optional database requirements in the project virtual environment, then run `.venv/Scripts/python.exe -B scripts/check_database_reader.py`. It loads only the ignored generated `.env.database` credential file and prints safe counts. This read-only tool returns untrusted source evidence; it does not validate pharmacy truth, calculate supply, or approve operational actions. See [backend reader guide](docs/database/BACKEND-READER.md).

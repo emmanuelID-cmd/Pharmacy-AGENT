@@ -10,7 +10,7 @@ User instructions take precedence. Use the prescribed PLANNER, ARCHIVIST, BUILDE
 
 ## Requirements and documentation
 
-The PRD is a draft. SQL/database work and the proposed-change document remain deferred. Do not silently apply proposed requirements or infer live pharmacy access. Preserve the original template and historical documentation.
+The PRD is a draft. Initial Supabase schema/seed work was approved and deployed October 13, 2026. Database-reader integration, staff writes, and unrelated proposed changes remain separately scoped. Do not silently apply proposed requirements or infer live pharmacy access. Preserve the original template and historical documentation.
 
 Update relevant PRD, policy, README, and architecture documentation alongside approved behavior changes. Keep synthetic data labels, read-only agent authority, and human review explicit. Do not use Team Alignment until the user authorizes it.
 
@@ -41,3 +41,7 @@ Keep Pharmacy commits, staging and push history entirely separate from C:/Users/
 ## Phase documentation layout
 
 Use `docs/planning/Phase/Phase<n>/` for each numbered phase and `Phase<n>.<m>/` beneath its parent for sub-phases. Keep the approved parent plan authoritative. Label reconstructed records explicitly; do not invent past approvals or renumber Phases 1-6. Use [phase index](docs/planning/Phase/README.md) for current locations. External AGENTS work is a separate repository/task, never a Pharmacy phase.
+
+## Supabase migration boundary
+
+Target project: xrptinavijhwvydoqdni. Use CLI authenticated management access for migrations; the connector targets another account. Keep pharmacy data private, use versioned migrations, and do not grant anonymous access or Agent writes. Dedicated backend login pharmacy_agent_backend and read-only adapter were approved October 13, 2026. Public API exposure and staff write access remain unapproved. See docs/database/SCHEMA.md. Preserve the original fixture and its unknown/invalid test cases.

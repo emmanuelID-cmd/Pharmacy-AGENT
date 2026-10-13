@@ -1,0 +1,40 @@
+-- Run inside a transaction; fixture seeded twice before these assertions.
+do $$ begin
+ if (select count(*) from pharmacy.medication_items)<>20 then raise exception 'ITEM_COUNT'; end if;
+ if (select count(*) from pharmacy.inventory_snapshots)<>20 then raise exception 'SNAPSHOT_COUNT'; end if;
+ if (select count(*) from pharmacy.daily_usage)<>266 then raise exception 'USAGE_COUNT'; end if;
+ if (select count(*) from pharmacy.synthetic_imports)<>1 then raise exception 'IMPORT_IDEMPOTENCY'; end if;
+ if (select count(*) from pharmacy.inventory_exceptions)<>20 then raise exception 'EXCEPTION_COUNT'; end if;
+ if exists(select 1 from pharmacy.item_policies) then raise exception 'FABRICATED_POLICY'; end if;
+ if exists(select 1 from pharmacy.daily_usage where item_id='item-008') then raise exception 'GUESSED_USAGE_DATES'; end if;
+ if (select count(*) from pharmacy.inventory_snapshots where usable_quantity is null)<>2 then raise exception 'UNKNOWN_STOCK'; end if;
+ if not exists(select 1 from pharmacy.synthetic_imports s cross join lateral jsonb_array_elements(s.payload->'items') i where i->>'item_id'='item-012' and (i->>'usable_quantity')::numeric<0) then raise exception 'RAW_NEGATIVE_LOST'; end if;
+ if not exists(select 1 from pharmacy.daily_usage where item_id='item-001' and usage_date='2026-09-23') then raise exception 'DATE_MAPPING'; end if;
+ if exists(select 1 from pharmacy.inventory_snapshots where as_of<>'2026-10-07T09:00:00-04:00'::timestamptz) then raise exception 'RESTAMPED_SNAPSHOT'; end if;
+ if exists(select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='pharmacy' and c.relkind='r' and not c.relrowsecurity) then raise exception 'RLS_DISABLED'; end if;
+ begin update pharmacy.inventory_snapshots set usable_quantity=-1 where item_id='item-001'; raise exception 'NEGATIVE_ACCEPTED'; exception when check_violation then null; end;
+ begin update pharmacy.inventory_snapshots set usable_quantity='NaN' where item_id='item-001'; raise exception 'NAN_ACCEPTED'; exception when check_violation then null; end;
+ begin update pharmacy.inventory_snapshots set dispensing_unit='mL' where item_id='item-001'; raise exception 'UNIT_MISMATCH_ACCEPTED'; exception when foreign_key_violation then null; end;
+ begin insert into pharmacy.stores values(9999,'America/New_York'); raise exception 'WRONG_STORE_ACCEPTED'; exception when check_violation then null; end;
+ begin insert into pharmacy.daily_usage select * from pharmacy.daily_usage limit 1; raise exception 'DUPLICATE_USAGE'; exception when unique_violation then null; end;
+ begin insert into pharmacy.item_policies values('bad',1618,'item-001','test','TEST_APPROVED',5,2,'2026-10-01','2026-11-01'); raise exception 'BAD_THRESHOLDS'; exception when check_violation then null; end;
+ insert into pharmacy.item_policies values('test-policy',1618,'item-001','test','TEST_APPROVED',2,5,'2026-10-01','2026-11-01');
+ begin insert into pharmacy.item_policies values('overlap',1618,'item-001','test','TEST_APPROVED',2,5,'2026-10-15','2026-11-15'); raise exception 'OVERLAP_ACCEPTED'; exception when check_violation then null; end;
+ delete from pharmacy.item_policies where policy_id='test-policy';
+end $$;
+set local role pharmacy_inventory_reader;
+do $$ begin
+ if (select count(*) from pharmacy.medication_items)<>20 then raise exception 'READER_CANNOT_READ'; end if;
+ begin delete from pharmacy.medication_items; raise exception 'READER_DELETE'; exception when insufficient_privilege then null; end;
+ begin update pharmacy.inventory_snapshots set usable_quantity=1; raise exception 'READER_UPDATE'; exception when insufficient_privilege then null; end;
+ begin insert into pharmacy.stores values(1618,'America/New_York'); raise exception 'READER_INSERT'; exception when insufficient_privilege then null; end;
+ begin perform payload from pharmacy.synthetic_imports; raise exception 'RAW_PAYLOAD_EXPOSED'; exception when insufficient_privilege then null; end;
+end $$;
+reset role;
+set local role anon;
+do $$ begin begin perform 1 from pharmacy.medication_items; raise exception 'ANON_READ'; exception when insufficient_privilege then null; end; end $$;
+reset role;
+set local role authenticated;
+do $$ begin begin perform 1 from pharmacy.medication_items; raise exception 'UNAPPROVED_READ'; exception when insufficient_privilege then null; end; end $$;
+reset role;
+select 'PASS: constraints, idempotency, evidence preservation, RLS and read/write permissions' as verification;

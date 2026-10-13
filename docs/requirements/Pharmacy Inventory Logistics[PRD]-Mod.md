@@ -8,7 +8,7 @@
 
 **Date:** October 8, 2026
 
-**Status:** Consolidated Mod review copy; no application, database or CVS integration is implemented. Original PRD and POLICY.md remain unchanged; this copy is not silently made canonical.
+**Status:** Consolidated Mod review copy; no production application or CVS integration is implemented. The initial private Supabase schema and read-only database reader are implemented as project infrastructure. Original PRD and POLICY.md remain unchanged; this copy is not silently made canonical.
 
 **Industry + function:** Pharmaceuticals + Inventory Logistics.
 
@@ -308,4 +308,14 @@ This standalone intake uses 64 KiB JSON, depth 6,2048 nodes,20 rows,1000 charact
 
 Evidence:66 passing behavior-test methods;85 selected label fixtures,55 unsafe detected,30 benign accepted,0 fixture misses/false positives,85 external-text exclusions. Seven Round1 security findings were remediated and checked in sequential Round2. This is not a count of unique attack types or universal detection. Live model/harness, evidence provenance, FDA/CVS connectivity, database grants, staff authorization, deployment and blocking-IO cancellation remain untested.
 
-Ownership: Emmanuel De Jesus—Injection Risk Prevention; Brahim Maouloud—Agent Instructions and Tooling; Kerrian Gordon—Harness. Teammate implementation status is not inferred. Ordering/reordering and inventory changes remain outside agent authority; humans execute operational actions outside the agent. No clinical/patient data or policy changes are introduced. Original draft and POLICY.md remain preserved.
+Ownership: Emmanuel De Jesus?Injection Risk Prevention; Brahim Maouloud?Agent Instructions and Tooling; Kerrian Gordon?Harness. Teammate implementation status is not inferred. Ordering/reordering and inventory changes remain outside agent authority; humans execute operational actions outside the agent. No clinical/patient data or policy changes are introduced. Original draft and POLICY.md remain preserved.
+
+### Supabase storage implementation ? October 13, 2026
+
+Approved initial private schema and synthetic seed deployed to project xrptinavijhwvydoqdni. See [schema guide](../database/SCHEMA.md). Nine tables have RLS. Source fixture, original PRD and POLICY.md remain unchanged. No account memberships or public inventory access were granted.
+
+20 source items and snapshots are retained; 266 usage rows come only from complete documented windows. Negative/missing stock is unknown with exceptions, not zero. No policies/events/audit actors were fabricated. Imported item identities and source evidence remain unverified, so this storage does not approve operational classifications. At this stage, read_store_inventory remained file-backed; subsequent read-only backend integration is documented below. Harness, access identity and database-reader integration need separate work.
+
+### Read-only backend integration ? October 13, 2026
+
+Approved dedicated login and database-backed inventory reader are implemented. [Backend reader guide](../database/BACKEND-READER.md) records credential isolation, fixed queries, limits and actual permission tests. The reader returns untrusted source data and preserves manual-review evidence; it does not perform harness verification or calculations. Full harness integration remains separate. Original file reader, source fixture and POLICY.md are preserved.

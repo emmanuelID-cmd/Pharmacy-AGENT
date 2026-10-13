@@ -64,6 +64,20 @@ Validation: 66 behavior methods and85 selected fixtures;55 unsafe detected,30 be
 
 The active phase records live under [docs/planning/Phase](docs/planning/Phase/README.md). Historical Phases 1-5 and sub-phases 6.1-6.6 have explicitly reconstructed plan records referencing their verified implementation commits. Phase 7 is the harness implementation. Parent Phase 6 approval and historical comparison content are preserved. Publication is separately authorized after the original local Phase 6 handoff; verified pushes are recorded below after remote confirmation.
 
+## Supabase schema handoff — October 13, 2026
+
+Approved initial schema and seed deployed to xrptinavijhwvydoqdni using CLI management access. Nine pharmacy tables have RLS; no anon/authenticated grants or reader account memberships were added. Source imports are private; the scoped reader has SELECT only on six approved tables.
+
+Two migrations recorded: 20261013040620 and 20261013040621. Seed: 20 items, 20 snapshots, 266 dated usage rows, 20 review exceptions, two unknown stock values, zero fabricated policies/events/audit records. Historical source dates and original JSON remain unchanged. All records still need independent harness verification.
+
+Two rollback-only database/security rounds passed; 94 application tests and 85 qualification fixtures passed. The repository .env has a CLI parsing error; secret values were not inspected. Deployment used byte-verified temporary config/migration/seed copies. Existing presentation cleanup remains separate. No Git commit or push for this schema work yet. This is a deployment handoff, not a Git push record.
+
+## Read-only backend handoff — October 13, 2026
+
+Approved dedicated backend login and database reader implemented independently of the full harness. Migration 20261013042410 deployed; pharmacy_agent_backend inherits the restricted reader and defaults to read-only transactions. Generated password is only in ignored .env.database; no credential values were shown or committed.
+
+New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
+
 # Date and Timestamp of Push
 
 Push records are ordered newest first.
