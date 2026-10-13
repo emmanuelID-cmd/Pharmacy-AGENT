@@ -99,16 +99,16 @@
   </div>
   <p id="pa5bb3ed3d706r1-e22bf261" style="position:absolute; top:288px; left:128px; width:1664px; padding:20px 28px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:26px; color:#14213d; background:#e8ebf1; border-radius:12px">Input → validation → minimal facts → model → guarded tools → output → human</p>
   <table id="pa5bb3ed3d706r2-e22bf261" style="position:absolute; top:50%; left:112.37px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:26px; color:#14213d; transform:translateY(-50%)">
-    <tr><th style="width:24%">Component</th><th style="width:15%">Owner</th><th style="width:36%">Responsibility</th><th style="width:25%">Status</th></tr>
-    <tr><td>Harness</td><td>Kerrian</td><td>Verify units, freshness, policy; calculate; run the loop</td><td></td></tr>
-    <tr><td>Tools + instructions</td><td>Brahim</td><td>Inventory reader, FDA adapter, system prompt</td><td></td></tr>
-    <tr><td>Prevention</td><td>Emmanuel</td><td>Isolate context; enforce action and output contracts</td><td></td></tr>
+    <tr><th style="width:22%">Component</th><th style="width:21%">Owner</th><th style="width:37%">Responsibility</th><th style="width:20%">Status</th></tr>
+    <tr><td>Harness</td><td>Kerrian Gordon</td><td>Verify units, freshness, policy; calculate; run the loop</td><td></td></tr>
+    <tr><td>Tools + instructions</td><td>Brahim Maouloud</td><td>Inventory reader, FDA adapter, system prompt</td><td></td></tr>
+    <tr><td>Prevention</td><td>Emmanuel De Jesus</td><td>Isolate context; enforce action and output contracts</td><td></td></tr>
   </table>
   <p id="pa5bb3ed3d706r3-e22bf261" style="position:absolute; top:746px; left:128px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; line-height:1.4; color:#4a5568">Next milestone: connect the three parts end to end, with a real model loop.</p>
-  <aside>Voici comment les trois parties s'assemblent. Les données entrent, sont validées, réduites aux faits minimaux, puis passent au modèle. Le modèle ne peut appeler que des outils protégés, et sa réponse est vérifiée avant d'arriver à l'humain. Ma partie et celle d'Emmanuel sont construites. Le harnais de Kerrian est prévu. La prochaine étape : tout connecter avec une vraie boucle de modèle.</aside>
+  <aside>Voici comment les trois parties s'assemblent. Les données entrent, sont validées, réduites aux faits minimaux, puis passent au modèle. Le modèle ne peut appeler que des outils protégés, et sa réponse est vérifiée avant d'arriver à l'humain. Le tableau montre qui fait quoi : Kerrian Gordon pour le harnais, moi pour les outils et les instructions, Emmanuel De Jesus pour la protection. Ma partie et celle d'Emmanuel sont construites. Le harnais de Kerrian est prévu. La prochaine étape : tout connecter avec une vraie boucle de modèle.</aside>
 </section>
 </div>
-<div class="notes">Voici comment les trois parties s'assemblent. Les données entrent, sont validées, réduites aux faits minimaux, puis passent au modèle. Le modèle ne peut appeler que des outils protégés, et sa réponse est vérifiée avant d'arriver à l'humain. Ma partie et celle d'Emmanuel sont construites. Le harnais de Kerrian est prévu. La prochaine étape : tout connecter avec une vraie boucle de modèle.</div>
+<div class="notes">Voici comment les trois parties s'assemblent. Les données entrent, sont validées, réduites aux faits minimaux, puis passent au modèle. Le modèle ne peut appeler que des outils protégés, et sa réponse est vérifiée avant d'arriver à l'humain. Le tableau montre qui fait quoi : Kerrian Gordon pour le harnais, moi pour les outils et les instructions, Emmanuel De Jesus pour la protection. Ma partie et celle d'Emmanuel sont construites. Le harnais de Kerrian est prévu. La prochaine étape : tout connecter avec une vraie boucle de modèle.</div>
 <div class="frame">
 <section id="tools" data-section="Agent Instructions and Tooling (Brahim)" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
 <div style="display:flex;flex-direction:column;gap:16px">
@@ -282,7 +282,10 @@
 <p style="font-size:26px;color:#C9D3E3;line-height:1.4">Connect the harness, run the Eval Card end to end, and use real data only after approval.</p>
 </div>
 </div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:32px">
 <p style="font-size:40px;font-weight:600;color:#14213D">Thank you · Questions?</p>
+<p style="font-size:28px;color:#4A5568">Kerrian Gordon · Emmanuel De Jesus · Brahim Maouloud</p>
+</div>
 <p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6A7385">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  10 / 10</p>
 <aside>Pour conclure, en trois points. Ce que nous avons construit : deux outils en lecture seule, un prompt système strict et cinq contrôles contre l'injection, tous testés sur des données synthétiques. Ce que nous avons appris : il faut tester les outils pour de vrai ; une panne ou une absence de résultat ne veut jamais dire "pas de pénurie" ; et les règles de sécurité doivent être dans le code, pas seulement dans le prompt. La suite : connecter le harnais, tester les trois cas de l'Eval Card de bout en bout, et n'utiliser de vraies données qu'après approbation. Merci ! Avez-vous des questions ?</aside>
 </section>
