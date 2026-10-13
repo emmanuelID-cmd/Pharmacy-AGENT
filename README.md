@@ -67,6 +67,7 @@ As approved behavior changes, update the affected PRD sections, policy, architec
 - `docs/planning/`: historical foundation plan/review and [setup plan](docs/planning/SETUP-PLAN.md).
 - `docs/planning/Phase/`: [phase index](docs/planning/Phase/README.md), Phase1 through Phase7, with sub-phase plans inside their parent.
 - `docs/architecture/`: original architecture images.
+- `docs/presentations/`: editable slides, slide drafts, team presentation, and future mockups.
 - `src/pharmacy_harness/`: deterministic validation, calculation, guarded run, and PRD report.
 - `src/pharmacy_tools/`: read-only inventory fixture reader and openFDA adapter.
 - `data/synthetic/`: labeled synthetic store 1618 snapshot.
