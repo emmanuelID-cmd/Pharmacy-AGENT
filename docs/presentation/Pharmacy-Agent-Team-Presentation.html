@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pharmacy Inventory Logistics Agent</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+  body { margin:0; background:#2B3245; font-family:'IBM Plex Sans', Arial, sans-serif; }
+  header { color:#F7F6F2; padding:16px 24px; display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; }
+  header h1 { font-size:20px; margin:0; font-weight:600; }
+  header button { font:inherit; font-size:15px; padding:8px 14px; border-radius:8px; border:1px solid #9AA5B8; background:#14213D; color:#F7F6F2; cursor:pointer; }
+  main { max-width:1280px; margin:0 auto; padding:0 16px 48px; display:flex; flex-direction:column; gap:24px; }
+  .frame { position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; border-radius:8px; box-shadow:0 6px 24px rgba(0,0,0,.35); }
+  .frame > section { position:absolute; top:0; left:0; width:1920px; height:1080px; box-sizing:border-box; transform-origin:top left; overflow:hidden; }
+  section h1, section h2, section h3, section p, section table { margin:0; }
+  section table { border-collapse:collapse; }
+  section th, section td { padding:0.35em 0.6em; border-bottom:1px solid #DCDFE5; text-align:left; vertical-align:top; }
+  section th { font-weight:600; border-bottom:2px solid currentColor; }
+  section aside { display:none; }
+  .notes { display:none; background:#F7F6F2; color:#14213D; border-radius:8px; padding:12px 16px; font-size:15px; line-height:1.5; margin-top:-12px; }
+  body.show-notes .notes { display:block; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Pharmacy Inventory Logistics Agent · team presentation (10 slides)</h1>
+  <button type="button" onclick="document.body.classList.toggle('show-notes')">Show / hide speaker notes (FR)</button>
+</header>
+<main>
+<div class="frame">
+<section id="cover" data-transition="fade" style="background:#14213D;color:#F7F6F2;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;justify-content:space-between">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;color:#F2A65A;letter-spacing:2px">PHARMACY-AGENT · PURSUIT L2</p>
+<div style="display:flex;flex-direction:column;gap:32px">
+<h1 style="font-size:112px;font-weight:700;line-height:1.05;color:#F7F6F2">Pharmacy Inventory<br>Logistics Agent</h1>
+<p style="font-size:40px;color:#C9D3E3;line-height:1.3">One store. Explained inventory review. Human operational decisions.</p>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-top:3px solid #F2A65A;padding:20px 0 0 0">
+<p style="font-size:30px;font-weight:600;color:#F7F6F2">Kerrian Gordon</p>
+<p style="font-size:26px;color:#C9D3E3">Harness</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-top:3px solid #F2A65A;padding:20px 0 0 0">
+<p style="font-size:30px;font-weight:600;color:#F7F6F2">Brahim Maouloud</p>
+<p style="font-size:26px;color:#C9D3E3">Agent Instructions and Tooling</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-top:3px solid #F2A65A;padding:20px 0 0 0">
+<p style="font-size:30px;font-weight:600;color:#F7F6F2">Emmanuel De Jesus</p>
+<p style="font-size:26px;color:#C9D3E3">Injection Risk Prevention</p>
+</div>
+</div>
+<aside>Bonjour à tous. Nous présentons le Pharmacy Inventory Logistics Agent. Nous sommes trois : Kerrian s'occupe du harnais, moi, Brahim, des instructions et des outils de l'agent, et Emmanuel de la protection contre l'injection. Le magasin CVS sert seulement de contexte : ce n'est pas un partenariat, et nous n'avons pas accès à son vrai inventaire. Toutes les données de test sont synthétiques.</aside>
+</section>
+</div>
+<div class="notes">Bonjour à tous. Nous présentons le Pharmacy Inventory Logistics Agent. Nous sommes trois : Kerrian s'occupe du harnais, moi, Brahim, des instructions et des outils de l'agent, et Emmanuel de la protection contre l'injection. Le magasin CVS sert seulement de contexte : ce n'est pas un partenariat, et nous n'avons pas accès à son vrai inventaire. Toutes les données de test sont synthétiques.</div>
+<div class="frame">
+<section id="does" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14;letter-spacing:2px">THE PRODUCT</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">What the agent does</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px">
+<div style="display:flex;flex-direction:column;gap:10px;background:#FFFFFF;padding:32px;border:1px solid #DCDFE5;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14">01</p>
+<p style="font-size:28px;line-height:1.35">Reads synthetic stock and usage for store 1618</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#FFFFFF;padding:32px;border:1px solid #DCDFE5;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14">02</p>
+<p style="font-size:28px;line-height:1.35">Estimates days of supply from 14 completed usage days</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#FFFFFF;padding:32px;border:1px solid #DCDFE5;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14">03</p>
+<p style="font-size:28px;line-height:1.35">Compares validated facts with approved item policy</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#FFFFFF;padding:32px;border:1px solid #DCDFE5;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14">04</p>
+<p style="font-size:28px;line-height:1.35">Keeps FDA national shortage context separate from local supply</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#FFFFFF;padding:32px;border:1px solid #DCDFE5;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14">05</p>
+<p style="font-size:28px;line-height:1.35">Shows calculation evidence and uncertainty for human review</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px;background:#14213D;padding:32px;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#F2A65A">06</p>
+<p style="font-size:28px;line-height:1.35;color:#F7F6F2">Authorized staff act outside the agent: it never orders or writes</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6A7385">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  2 / 10</p>
+<aside>Voici ce que fait l'agent, en six points. Il lit le stock synthétique du magasin 1618. Il estime les jours de stock à partir des 14 derniers jours de consommation. Il compare les faits vérifiés avec la politique du produit. Il garde le contexte national de la FDA séparé du stock local. Il montre les calculs et les incertitudes pour une revue humaine. Et surtout : il ne commande rien et ne modifie rien. C'est le personnel autorisé qui agit, en dehors de l'agent.</aside>
+</section>
+</div>
+<div class="notes">Voici ce que fait l'agent, en six points. Il lit le stock synthétique du magasin 1618. Il estime les jours de stock à partir des 14 derniers jours de consommation. Il compare les faits vérifiés avec la politique du produit. Il garde le contexte national de la FDA séparé du stock local. Il montre les calculs et les incertitudes pour une revue humaine. Et surtout : il ne commande rien et ne modifie rien. C'est le personnel autorisé qui agit, en dehors de l'agent.</div>
+<div class="frame">
+<section id="arch" data-transition="fade" style="background:#f7f6f2">
+  <p id="e1-1cu0udl" style="position:absolute; bottom:64px; left:128px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#6a7385">Pharmacy-AGENT · Synthetic tests; human operational decisions · 3 / 10</p>
+  <div id="pa5bb3ed3d706r0-e22bf261" style="position:absolute; top:128px; left:128px; width:1664px; height:120px; display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; letter-spacing:2px; color:#b44e14">ARCHITECTURE</p>
+    <h2 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#14213d">Three parts, every step guarded</h2>
+  </div>
+  <p id="pa5bb3ed3d706r1-e22bf261" style="position:absolute; top:288px; left:128px; width:1664px; padding:20px 28px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:26px; color:#14213d; background:#e8ebf1; border-radius:12px">Input → validation → minimal facts → model → guarded tools → output → human</p>
+  <table id="pa5bb3ed3d706r2-e22bf261" style="position:absolute; top:50%; left:112.37px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:26px; color:#14213d; transform:translateY(-50%)">
+    <tr><th style="width:24%">Component</th><th style="width:24%">Owner</th><th style="width:52%">Responsibility</th></tr>
+    <tr><td>Harness</td><td>Kerrian Gordon</td><td>Verify units, freshness, policy; calculate; run the loop</td></tr>
+    <tr><td>Tools + instructions</td><td>Brahim Maouloud</td><td>Inventory reader, FDA adapter, system prompt</td></tr>
+    <tr><td>Prevention</td><td>Emmanuel De Jesus</td><td>Isolate context; enforce action and output contracts</td></tr>
+  </table>
+  <p id="pa5bb3ed3d706r3-e22bf261" style="position:absolute; top:746px; left:128px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; line-height:1.4; color:#4a5568">Next milestone: connect the three parts end to end, with a real model loop.</p>
+  <aside>Voici comment les trois parties s'assemblent. Les données entrent, sont validées, réduites aux faits minimaux, puis passent au modèle. Le modèle ne peut appeler que des outils protégés, et sa réponse est vérifiée avant d'arriver à l'humain. Le tableau montre qui fait quoi : Kerrian Gordon pour le harnais, moi pour les outils et les instructions, Emmanuel De Jesus pour la protection. Ma partie et celle d'Emmanuel sont construites. Le harnais de Kerrian est prévu. La prochaine étape : tout connecter avec une vraie boucle de modèle.</aside>
+</section>
+</div>
+<div class="notes">Voici comment les trois parties s'assemblent. Les données entrent, sont validées, réduites aux faits minimaux, puis passent au modèle. Le modèle ne peut appeler que des outils protégés, et sa réponse est vérifiée avant d'arriver à l'humain. Le tableau montre qui fait quoi : Kerrian Gordon pour le harnais, moi pour les outils et les instructions, Emmanuel De Jesus pour la protection. Ma partie et celle d'Emmanuel sont construites. Le harnais de Kerrian est prévu. La prochaine étape : tout connecter avec une vraie boucle de modèle.</div>
+<div class="frame">
+<section id="tools" data-section="Agent Instructions and Tooling (Brahim)" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14;letter-spacing:2px">BRAHIM · THE TWO READ-ONLY TOOLS</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">Read, label, never decide</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:1px solid #DCDFE5;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#B44E14">read_store_inventory</p>
+<p style="font-size:28px;line-height:1.4">Store <b>1618 only</b>. Any other store is refused before reading.</p>
+<p style="font-size:28px;line-height:1.4">20 synthetic rows test every rule: 4 critical, 5 low, 7 above threshold, 1 unknown, 3 bad-data rows.</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">Broken or empty data gives a safe error, never an "all clear."</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;padding:40px;border:1px solid #DCDFE5;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#B44E14">get_fda_shortage_context</p>
+<p style="font-size:28px;line-height:1.4">Real public FDA API, exact package NDC, 10-second timeout, one retry.</p>
+<p style="font-size:28px;line-height:1.4">Every answer is labeled: <b>MATCH</b>, <b>NO_MATCH</b>, <b>PARTIAL</b> or <b>UNAVAILABLE</b>.</p>
+<p style="font-size:28px;line-height:1.4;color:#4A5568">NO_MATCH or a timeout never means "no shortage."</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6A7385">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  4 / 10</p>
+<aside>Ma partie, d'abord les deux outils, tous les deux en lecture seule. Le premier lit l'inventaire du magasin 1618, et seulement celui-là. Ses 20 lignes synthétiques testent chaque règle du PRD. Le deuxième interroge la vraie API de la FDA. Chaque réponse reçoit une étiquette claire. Une panne ou une absence de résultat ne veut jamais dire "pas de pénurie".</aside>
+</section>
+</div>
+<div class="notes">Ma partie, d'abord les deux outils, tous les deux en lecture seule. Le premier lit l'inventaire du magasin 1618, et seulement celui-là. Ses 20 lignes synthétiques testent chaque règle du PRD. Le deuxième interroge la vraie API de la FDA. Chaque réponse reçoit une étiquette claire. Une panne ou une absence de résultat ne veut jamais dire "pas de pénurie".</div>
+<div class="frame">
+<section id="finding" data-transition="fade" style="background:#14213D;color:#F7F6F2;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:44px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#F2A65A;letter-spacing:2px">BRAHIM · WHAT THE REAL API TEST SHOWED</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1;color:#F7F6F2">Same drug, wrong format: "No matches found"</h2>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:center;background:#1F2F52;padding:24px 40px;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:34px;color:#F7F6F2">42023-240-01</p>
+<p style="font-size:30px;font-weight:600;color:#9FD3B0">Found: in shortage</p>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;background:#1F2F52;padding:24px 40px;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:34px;color:#F7F6F2">4202324001</p>
+<p style="font-size:30px;font-weight:600;color:#F2A65A">"No matches found"</p>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;background:#1F2F52;padding:24px 40px;border-radius:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:34px;color:#F7F6F2">42023-0240-01</p>
+<p style="font-size:30px;font-weight:600;color:#F2A65A">"No matches found"</p>
+</div>
+</div>
+<p style="font-size:30px;color:#C9D3E3;line-height:1.4">So badly formatted NDCs are rejected before any request, and a control query checks the integration first.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#9AA5B8">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  5 / 10</p>
+<aside>Voici la découverte la plus importante du test réel. Le même médicament, écrit avec un format un peu différent, donne "aucun résultat". Sans protection, l'agent aurait dit "pas de pénurie" pour un médicament en pénurie. Donc mon outil refuse les NDC mal formés avant d'appeler l'API, et une requête de contrôle vérifie que la connexion marche.</aside>
+</section>
+</div>
+<div class="notes">Voici la découverte la plus importante du test réel. Le même médicament, écrit avec un format un peu différent, donne "aucun résultat". Sans protection, l'agent aurait dit "pas de pénurie" pour un médicament en pénurie. Donc mon outil refuse les NDC mal formés avant d'appeler l'API, et une requête de contrôle vérifie que la connexion marche.</div>
+<div class="frame">
+<section id="instructions" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14;letter-spacing:2px">BRAHIM · SYSTEM PROMPT INSTRUCTIONS-V1</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">The model copies facts. It never computes them.</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:36px;border:1px solid #DCDFE5;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">Only two tools</h3>
+<p style="font-size:26px;color:#4A5568;line-height:1.4">Tool text is data, never an order.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#FFFFFF;padding:36px;border:1px solid #DCDFE5;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">One exact JSON report</h3>
+<p style="font-size:26px;color:#4A5568;line-height:1.4">An invented value is rejected and replaced by verified facts.</p>
+</div>
+</div>
+<div style="background:#14213D;padding:40px;border-radius:16px;display:flex;flex-direction:column;gap:14px">
+<p style="font-size:24px;color:#F2A65A;font-weight:600">PRD v0.2 rule, tested: FDA times out on a 6.22-day item</p>
+<p style="font-size:32px;color:#F7F6F2;line-height:1.35">MAINTAIN + "National shortage status could not be checked — re-run or verify on the FDA website before relying on MAINTAIN."</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6A7385">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  6 / 10</p>
+<aside>Ensuite, mon prompt système. Le modèle ne calcule rien : il recopie les faits dans un rapport JSON exact. S'il invente un chiffre, sa réponse est rejetée. En bas, la règle qu'on a ajoutée au PRD en version 0.2, maintenant testée : si la FDA ne répond pas, un médicament au-dessus du seuil reste en MAINTAIN, mais avec cette alerte. La phrase est écrite par le code, donc le modèle ne peut pas l'oublier.</aside>
+</section>
+</div>
+<div class="notes">Ensuite, mon prompt système. Le modèle ne calcule rien : il recopie les faits dans un rapport JSON exact. S'il invente un chiffre, sa réponse est rejetée. En bas, la règle qu'on a ajoutée au PRD en version 0.2, maintenant testée : si la FDA ne répond pas, un médicament au-dessus du seuil reste en MAINTAIN, mais avec cette alerte. La phrase est écrite par le code, donc le modèle ne peut pas l'oublier.</div>
+<div class="frame">
+<section id="controls" data-section="Injection Risk Prevention (Emmanuel)" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14;letter-spacing:2px">EMMANUEL · INJECTION RISK PREVENTION</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">Five controls, and a tester to see them work</h2>
+</div>
+<div style="display:flex;gap:40px">
+<table style="flex:3;font-size:26px;color:#14213D">
+<tr><th style="width:26%">Layer</th><th style="width:74%">Control</th></tr>
+<tr><td>Intake</td><td>Bounded JSON, Unicode checks, 15 instruction signals</td></tr>
+<tr><td>Context</td><td>All external free text omitted, even accepted labels</td></tr>
+<tr><td>Evidence</td><td>Uncertain required facts trigger manual review</td></tr>
+<tr><td>Actions</td><td>Captured arguments authorized before fixed read calls</td></tr>
+<tr><td>Output</td><td>Altered facts, hidden warnings, false claims rejected</td></tr>
+</table>
+<div style="flex:2;display:flex;flex-direction:column;gap:14px;background:#FFFFFF;padding:36px;border:1px solid #DCDFE5;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">Local Tester</h3>
+<p style="font-size:26px;color:#4A5568;line-height:1.4">Try a forbidden order, SQL or shell call, set supply to 999, or hide a warning, and watch real Python controls respond.</p>
+<p style="font-size:24px;color:#6A7385;line-height:1.4">Loopback only; fixed synthetic facts; no live model or writes.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6A7385">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  7 / 10</p>
+<aside>Maintenant, la partie d'Emmanuel : la protection contre l'injection. Cinq contrôles, un à chaque étape : l'entrée, le contexte, les preuves, les actions et la sortie. Il a aussi construit un testeur local : on peut essayer une commande interdite, mettre le stock à 999 ou cacher un avertissement, et voir les vrais contrôles Python répondre. Attention : la détection peut manquer certaines formulations ; c'est pour ça que tout le texte externe est quand même exclu.</aside>
+</section>
+</div>
+<div class="notes">Maintenant, la partie d'Emmanuel : la protection contre l'injection. Cinq contrôles, un à chaque étape : l'entrée, le contexte, les preuves, les actions et la sortie. Il a aussi construit un testeur local : on peut essayer une commande interdite, mettre le stock à 999 ou cacher un avertissement, et voir les vrais contrôles Python répondre. Attention : la détection peut manquer certaines formulations ; c'est pour ça que tout le texte externe est quand même exclu.</div>
+<div class="frame">
+<section id="tests" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14;letter-spacing:2px">EMMANUEL · RISK TESTS</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">Attacks we tried, and what happened</h2>
+</div>
+<table style="font-size:26px;color:#14213D">
+<tr><th style="width:34%">Attempt</th><th style="width:66%">Expected result</th></tr>
+<tr><td>Hidden characters</td><td>Exception raised; code points shown; raw text excluded</td></tr>
+<tr><td>Role or instruction spoofing</td><td>Signals flagged; all external text still omitted</td></tr>
+<tr><td>Malformed or oversized JSON</td><td>Duplicate keys, bad numbers and size excess rejected</td></tr>
+<tr><td>Order, write, SQL or shell call</td><td>Denied; forbidden call never dispatched</td></tr>
+<tr><td>Wrong store or package NDC</td><td>Rejected before dispatch</td></tr>
+<tr><td>Supply set to 999, warning hidden</td><td>Proposal rejected; safe fallback shown</td></tr>
+</table>
+<p style="font-size:26px;color:#4A5568;line-height:1.4">A passing fixture is not proof that every future attack will be detected.</p>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6A7385">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  8 / 10</p>
+<aside>Voici les attaques testées par Emmanuel et ce qui s'est passé : caractères cachés, faux rôles, JSON cassé, commandes interdites, mauvais magasin, et un modèle qui change le stock à 999. À chaque fois, c'est refusé ou remplacé par un résultat sûr. Emmanuel reste honnête : réussir ces tests ne prouve pas que toutes les attaques futures seront détectées.</aside>
+</section>
+</div>
+<div class="notes">Voici les attaques testées par Emmanuel et ce qui s'est passé : caractères cachés, faux rôles, JSON cassé, commandes interdites, mauvais magasin, et un modèle qui change le stock à 999. À chaque fois, c'est refusé ou remplacé par un résultat sûr. Emmanuel reste honnête : réussir ces tests ne prouve pas que toutes les attaques futures seront détectées.</div>
+<div class="frame">
+<section id="evidence" data-transition="fade" style="background:#14213d">
+  <p id="e1-1hv0y78" style="position:absolute; bottom:64px; left:128px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#9aa5b8">Pharmacy-AGENT · Synthetic tests; human operational decisions · 9 / 10</p>
+  <div id="pacfcf9b300edr0-05c78dfa" style="position:absolute; top:128px; left:128px; width:1664px; height:120px; display:flex; flex-direction:column; gap:16px">
+    <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; letter-spacing:2px; color:#f2a65a">EVIDENCE AND NEXT STEPS</p>
+    <h2 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#f7f6f2">Tested parts, ready to connect</h2>
+  </div>
+  <div id="pacfcf9b300edr1-05c78dfa" style="position:absolute; top:292px; left:128px; width:1664px; height:148px; display:flex; flex-direction:row; gap:32px">
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:20px 0 0; border-top:3px solid #f2a65a">
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:80px; font-weight:700; line-height:1; color:#f7f6f2">94</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:26px; color:#c9d3e3">tests pass (Oct 12)</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:20px 0 0; border-top:3px solid #f2a65a">
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:80px; font-weight:700; line-height:1; color:#f7f6f2">85/85</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:26px; color:#c9d3e3">fixture outcomes matched</p>
+    </div>
+    <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:20px 0 0; border-top:3px solid #f2a65a">
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:80px; font-weight:700; line-height:1; color:#f7f6f2">55 / 30</p>
+      <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:26px; color:#c9d3e3">unsafe detected / benign accepted</p>
+    </div>
+  </div>
+  <div id="pacfcf9b300edr2-05c78dfa" style="position:absolute; top:483px; left:128px; width:1664px; height:154px; display:flex; flex-direction:column; gap:14px">
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"></p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"><span style="color:#f2a65a">01 </span>Connect harness facts, read tools and guards; test the model loop</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"><span style="color:#f2a65a">02 </span>Run the three Eval Card cases end to end</p>
+  </div>
+  <aside>Les preuves : 94 tests passent dans tout le projet. Sur les 85 cas de test d'Emmanuel, tous les résultats correspondent : 55 attaques détectées, 30 textes normaux acceptés, et aucune erreur. Ce sont des résultats sur les cas testés, pas une garantie contre toutes les attaques. Les prochaines étapes : connecter le harnais, les outils et les protections avec une vraie boucle de modèle, puis tester les trois cas de l'Eval Card de bout en bout.</aside>
+</section>
+</div>
+<div class="notes">Les preuves : 94 tests passent dans tout le projet. Sur les 85 cas de test d'Emmanuel, tous les résultats correspondent : 55 attaques détectées, 30 textes normaux acceptés, et aucune erreur. Ce sont des résultats sur les cas testés, pas une garantie contre toutes les attaques. Les prochaines étapes : connecter le harnais, les outils et les protections avec une vraie boucle de modèle, puis tester les trois cas de l'Eval Card de bout en bout.</div>
+<div class="frame">
+<section id="conclusion" data-section="Conclusion: what we built, learned and do next" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14;letter-spacing:2px">CONCLUSION</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">An agent that reads, explains, and leaves decisions to people</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FFFFFF;padding:36px;border:1px solid #DCDFE5;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">What we built</h3>
+<p style="font-size:26px;color:#4A5568;line-height:1.4">Two read-only tools, a strict system prompt and five injection controls, all tested on synthetic data.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FFFFFF;padding:36px;border:1px solid #DCDFE5;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600">What we learned</h3>
+<p style="font-size:26px;color:#4A5568;line-height:1.4">Test tools for real. A timeout or "no match" is never "no shortage." Safety rules belong in code, not only in the prompt.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#14213D;padding:36px;border-radius:16px">
+<h3 style="font-size:32px;font-weight:600;color:#F7F6F2">What comes next</h3>
+<p style="font-size:26px;color:#C9D3E3;line-height:1.4">Connect the harness, run the Eval Card end to end, and use real data only after approval.</p>
+</div>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:32px">
+<p style="font-size:40px;font-weight:600;color:#14213D">Thank you · Questions?</p>
+<p style="font-size:28px;color:#4A5568">Kerrian Gordon · Emmanuel De Jesus · Brahim Maouloud</p>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6A7385">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  10 / 10</p>
+<aside>Pour conclure, en trois points. Ce que nous avons construit : deux outils en lecture seule, un prompt système strict et cinq contrôles contre l'injection, tous testés sur des données synthétiques. Ce que nous avons appris : il faut tester les outils pour de vrai ; une panne ou une absence de résultat ne veut jamais dire "pas de pénurie" ; et les règles de sécurité doivent être dans le code, pas seulement dans le prompt. La suite : connecter le harnais, tester les trois cas de l'Eval Card de bout en bout, et n'utiliser de vraies données qu'après approbation. Merci ! Avez-vous des questions ?</aside>
+</section>
+</div>
+<div class="notes">Pour conclure, en trois points. Ce que nous avons construit : deux outils en lecture seule, un prompt système strict et cinq contrôles contre l'injection, tous testés sur des données synthétiques. Ce que nous avons appris : il faut tester les outils pour de vrai ; une panne ou une absence de résultat ne veut jamais dire "pas de pénurie" ; et les règles de sécurité doivent être dans le code, pas seulement dans le prompt. La suite : connecter le harnais, tester les trois cas de l'Eval Card de bout en bout, et n'utiliser de vraies données qu'après approbation. Merci ! Avez-vous des questions ?</div>
+</main>
+<script>
+  function fit() { document.querySelectorAll('.frame').forEach(f => {
+    f.firstElementChild.style.transform = 'scale(' + (f.clientWidth / 1920) + ')'; }); }
+  addEventListener('resize', fit); fit();
+</script>
+</body>
+</html>
