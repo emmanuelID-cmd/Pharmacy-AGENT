@@ -2,11 +2,11 @@
 
 ## Team and project
 
-- Kerrian Gordan
+- Kerrian Gordon
 - Emmanuel De Jesus
 - Brahim Maouloud
 
-Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy-AGENT. Target GitHub owner: emmanuelID-cmd. Intended repository: Pharmacy-AGENT. Approved ownership is shown in the latest Phase 6 handoff below; historical push records remain unchanged.
+Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy-AGENT. Target GitHub owner: emmanuelID-cmd. Intended repository: Pharmacy-AGENT. Approved ownership is shown in the latest Phase 7 handoff below; historical Phase 6 and push records remain unchanged.
 
 ## Current handoff
 
@@ -24,13 +24,31 @@ Foundation PR #1 was merged into main on October 8, 2026 (e57ee15). Review the d
 
 Documentation is grouped in docs/requirements, docs/templates, docs/planning, and docs/architecture. Ten moved files retain their original bytes. Root collaboration and configuration files remain accessible. SQL/database work and Team Alignment remain deferred.
 
-## Latest local handoff — Phase 6, October 8, 2026
+## Latest local handoff — Phase 7 harness
+
+Branch `feature/pharmacy-harness`. Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. No language-model loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
+
+| Member | Part | Verified contribution/status |
+|---|---|---|
+| Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
+| Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display merged on main (PRs #5–#8) |
+| Kerrian Gordon | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+
+| Part | Integration handoff | Status |
+|---|---|---|
+| Injection Risk Prevention | Import src/injection_prevention controls before context assembly/dispatch and after proposed output | Standalone implementation qualified locally; see Phase 6 evidence |
+| Agent Instructions and Tooling | Define authoritative instructions and real read-only inventory/FDA adapters; omit unsafe free text | Implemented on main; harness calls these adapters through the prevention guard |
+| Harness | Independently validate identity/units/policy/freshness, calculate deterministic facts, honor guards and enforce IO/loop limits | Implemented in Phase 7; see [plan](docs/planning/Phase/Phase7/PHASE-7-PLAN.md) and [handoff](docs/planning/Phase/Phase7/PHASE-7-HANDOFF.md) |
+
+Validation: full local unittest suite including harness Eval Card Cases 1–2, Case 3-shaped faults, fixture boundary rows, guarded dispatch and output-guard fallback. CLI: `python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00`. These results do not establish live model/database/CVS readiness.
+
+## Historical local handoff — Phase 6, October 8, 2026
 
 | Member | Part | Verified contribution/status |
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Assigned part; implementation status not established by this build |
-| Kerrian Gordan | Harness | Assigned part; implementation status not established by this build |
+| Kerrian Gordon | Harness | Assigned part; implementation status not established by this build |
 
 | Part | Integration handoff | Status |
 |---|---|---|
@@ -44,11 +62,32 @@ Validation: 66 behavior methods and85 selected fixtures;55 unsafe detected,30 be
 
 ## Phase folder organization
 
-The active phase records live under [docs/planning/Phase](docs/planning/Phase/README.md). Historical Phases 1-5 and sub-phases 6.1-6.6 have explicitly reconstructed plan records referencing their verified implementation commits. Parent Phase 6 approval and historical comparison content are preserved. Publication is separately authorized after the original local Phase 6 handoff; verified pushes are recorded below after remote confirmation.
+The active phase records live under [docs/planning/Phase](docs/planning/Phase/README.md). Historical Phases 1-5 and sub-phases 6.1-6.6 have explicitly reconstructed plan records referencing their verified implementation commits. Phase 7 is the harness implementation. Parent Phase 6 approval and historical comparison content are preserved. Publication is separately authorized after the original local Phase 6 handoff; verified pushes are recorded below after remote confirmation.
 
 # Date and Timestamp of Push
 
 Push records are ordered newest first.
+
+## 2026-10-13T11:18:04-04:00
+
+- Verified feature/pharmacy-harness push 9b4e73e149d917eae9f6fd6eb7d8ad3be417b0f8..e347c67e1d1eb96ee1748c5b1e79df991ecc1dca; reviewed endpoint 0468930ed361ffb61f27fa2bbfc48b10f63b56be.
+- Preserved Kerrian's Decimal harness and integrated the current main presentation files. Rejected/late FDA callback results now become UNAVAILABLE before budget/deadline stop; valid local facts remain intact.
+- Fixed the local Tester Windows rejection race using response flush/half-close and cleanup bounded to 65,537 bytes/one second. Oversized, stalled, invalid-content/origin/route and headerless parse cases are tested; rejected data never enters demo evaluation.
+- Added pinned Windows timezone data and reproducible virtual-environment commands. Full suite: 141 PASS; qualification: 85/85, 55 selected unsafe detected, 30 benign accepted, zero selected misses/false positives, all external text excluded. Nine Tester methods passed three repeated runs.
+- Two sequential security stages reproduced and then verified the approved fixes; main README overlap preserves both folder guides, and timestamps remain newest first. PR #11 targets main; owner authorized merge after checks. No model loop, database deployment or staff-write workflow was included; separate database work and its policy race remain deferred and preserved.
+
+## 2026-10-13T10:52:51-04:00
+
+- Verified push cb8c8a7..9c1b9bf on feature/pharmacy-harness.
+- Decimal days-of-supply math, source vs row isolation, same-run FDA freshness, invariant tests. No main merge.
+
+## 2026-10-13T10:42:14-04:00
+
+- Verified handoff-only push 477806563ca72508150492d2779dcff8c8769dc3..ef3b0bc87fc1f68bf5b944f1a8f54548d3b6a37d; reviewed endpoint be90a6c132f8cb45c08b851bbb7fbaa49f1d6198.
+- Published the verified presentation handoff and metadata-only review marker on chore/pharmacy-agent-foundation. No implementation or database changes were added by this push.
+- Subsequent integration: presentation PR #12 merged into main as 585a16df5979eb708f18d8e64f0392f0bfc72974 at 2026-10-13T10:43:42-04:00. Local main was fast-forwarded to that verified remote commit.
+- PR #11 remains a draft: 33 harness-specific tests pass, but a synthetic probe confirms that a late FDA callback is still used as MATCH after RUN_DEADLINE_EXCEEDED. The full 127-method PR suite also reproduces the existing Windows oversized-request connection-abort failure. Original database changes remain local pending the review decision.
+
 ## 2026-10-13T10:39:56-04:00
 
 - Verified documentation-branch push e1a1729858be0bcdd26ac159a61233ce4768a959..477806563ca72508150492d2779dcff8c8769dc3; reviewed endpoint e56bffe960c49aa7b6b3e8f7242d9e9db907930b.
@@ -56,6 +95,17 @@ Push records are ordered newest first.
 - Both new decks retain French notes on every slide and three editable tables. PowerPoint rendering checked all slides; PPTX fullscreen playback advanced through slides 1–10 and remained on the final slide until explicitly exited.
 - Presentation PR [#12](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/12) targets main. PR #11 remains a draft pending a confirmed late-FDA-result guard finding; its 33 harness-specific tests pass, but the complete 127-method suite has the existing Windows oversized-request connection-abort failure.
 - Database migrations and additional standalone tests remain local on feature/supabase-inventory-schema. No credentials, database deployment or harness implementation changes were included in this push. This handoff entry is published in a subsequent documentation commit.
+
+## 2026-10-13T10:11:59-04:00
+
+- Verified push f3a7f8a..9d31ac4 on feature/pharmacy-harness.
+- Corrected the team name spelling to Kerrian Gordon in live docs. Historical HTML comparison snapshots were not edited. No main merge.
+
+## 2026-10-13T10:06:30-04:00
+
+- Verified initial feature/pharmacy-harness push against origin: b0d466420fd2e87fb41fda2c958cbfbb16b33be0..b224f04814b90cc58138691b34a21ef786a18078. Remote had no previous harness branch.
+- Published the deterministic harness, Phase 7 plan/handoff, and 127-test suite including Eval Card Cases 1–2 and Case 3-shaped faults.
+- No main merge. Review: https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/new/feature/pharmacy-harness
 
 ## 2026-10-12T23:01:26-04:00
 

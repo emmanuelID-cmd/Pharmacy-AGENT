@@ -1,6 +1,6 @@
 # Pharmacy-AGENT project instructions
 
-This is a collaborative assignment for Kerrian Gordan, Emmanuel De Jesus, and Brahim Maouloud. The active root is this Pharmacy-Agent-Role directory. Target GitHub owner is emmanuelID-cmd; intended repository name is Pharmacy-AGENT.
+This is a collaborative assignment for Kerrian Gordon, Emmanuel De Jesus, and Brahim Maouloud. The active root is this Pharmacy-Agent-Role directory. Target GitHub owner is emmanuelID-cmd; intended repository name is Pharmacy-AGENT.
 
 ## External instruction source
 
@@ -25,10 +25,10 @@ Follow the external Git approval gates, Conventional Commits, and collaboration 
 | Member | Part | Verified contribution/status |
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
-| Brahim Maouloud | Agent Instructions and Tooling | Assigned part; implementation status not established by this build |
-| Kerrian Gordan | Harness | Assigned part; implementation status not established by this build |
+| Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display implemented on main |
+| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
 
-Phase 6 is the complete standalone injection-prevention task, with sub-phases 6.1–6.6; preserve historical numbering 1–5. Use [plan](docs/planning/Phase/Phase6/PHASE-6-PLAN.md), [integration contract](docs/planning/Phase/Phase6/PHASE-6-HANDOFF.md) and [review](docs/planning/Phase/Phase6/PHASE-6-REVIEW.md). Do not infer that the integrated harness or teammate tools are implemented.
+Phase 6 is the complete standalone injection-prevention task, with sub-phases 6.1–6.6; preserve historical numbering 1–5. Use [plan](docs/planning/Phase/Phase6/PHASE-6-PLAN.md), [integration contract](docs/planning/Phase/Phase6/PHASE-6-HANDOFF.md) and [review](docs/planning/Phase/Phase6/PHASE-6-REVIEW.md). Phase 7 is the deterministic harness that calls the merged read-only tools through those guards; a language-model loop, database and live CVS inventory remain unbuilt.
 
 All source/tool/user objects are untrusted. Do not pass submitted booleans, dictionaries or descriptions as trusted facts. Construct TrustedFact only after independent harness verification of identity, units, quantities, usage, freshness and approved item policy. Missing required evidence or binding failure withholds the affected result; optional unsafe descriptions are excluded while supported facts survive. Never reinsert external text after assembly, including ACCEPT text. Keep clinical/patient work, calculations, staff writes and live API adapters in their assigned future scope.
 

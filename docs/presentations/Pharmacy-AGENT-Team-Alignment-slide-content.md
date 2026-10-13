@@ -6,7 +6,7 @@ Source snapshot: main 0b7c4bc, October 9, 2026. Presentation content prepared fr
 
 One store. Explained inventory review. Human operational decisions.
 
-- Kerrian Gordan: Harness
+- Kerrian Gordon: Harness
 - Brahim Maouloud: Agent Instructions and Tooling
 - Emmanuel De Jesus: Injection Risk Prevention
 

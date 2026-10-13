@@ -7,12 +7,12 @@ Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD de
 | Member | Part | Verified contribution/status |
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
-| Brahim Maouloud | Agent Instructions and Tooling | Assigned part; implementation status not established by this build |
-| Kerrian Gordan | Harness | Assigned part; implementation status not established by this build |
+| Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display implemented on main |
+| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
 
 ## Current status
 
-The PRD remains a draft specification. A standalone injection-prevention package and local synthetic visual tester are implemented; the integrated pharmacy application and live CVS integration are not built. SQL, database implementation, per-item policy changes, and other proposed requirements remain deferred while the team discusses the specification. Team Alignment is excluded for now.
+The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. There is no language-model loop, FastAPI application, database, or live CVS inventory. SQL, per-item policy changes, and other proposed requirements remain deferred.
 
 ## Product foundation
 
@@ -40,13 +40,13 @@ Architecture images are design references, not evidence of implemented controls.
 
 Open `Pharmacy-AGENT.code-workspace` in VS Code. Its folder is this repository root, `Pharmacy-Agent-Role`.
 
-`.env.example` documents nonsecret configuration. `.env` is local and ignored; it initially contains only safe placeholders. Never commit populated environment files, credentials, or tokens. The standalone synthetic tester has the start command below; the integrated pharmacy application has no start command yet.
+`.env.example` documents nonsecret configuration. `.env` is local and ignored; it initially contains only safe placeholders. Never commit populated environment files, credentials, or tokens. The harness CLI and the standalone synthetic tester have the start commands below. There is no FastAPI application start command.
 
 ## Proposed technology stack
 
 Python with FastAPI and Pydantic for validated backend/tool contracts; pytest for deterministic calculations and fault cases; simple HTML/CSS/JavaScript for the initial interface. Versions and dependencies will be selected and locked during the approved application plan. No packages are installed by this setup.
 
-Python 3.13 is available through the Windows launcher. The prevention component uses only the standard library and does not adopt the proposed full-application framework.
+Python 3.13 is available through the Windows launcher. The prevention, tools, and harness logic uses the standard library and does not adopt the proposed full-application framework. Windows also needs the IANA timezone data pinned in `requirements-harness.txt` for `ZoneInfo("America/New_York")`.
 
 SQLite and other SQL/database work are deferred. No database engine is selected for implementation.
 
@@ -65,9 +65,12 @@ As approved behavior changes, update the affected PRD sections, policy, architec
 - `docs/requirements/`: draft PRD, current synthetic policy, and deferred proposals.
 - `docs/templates/`: unchanged original PRD template.
 - `docs/planning/`: historical foundation plan/review and [setup plan](docs/planning/SETUP-PLAN.md).
-- `docs/planning/Phase/`: [phase index](docs/planning/Phase/README.md), Phase1 through Phase6, with sub-phase plans inside their parent.
+- `docs/planning/Phase/`: [phase index](docs/planning/Phase/README.md), Phase1 through Phase7, with sub-phase plans inside their parent.
 - `docs/architecture/`: original architecture images.
 - `docs/presentations/`: editable slides, slide drafts, team presentation, and future mockups.
+- `src/pharmacy_harness/`: deterministic validation, calculation, guarded run, and PRD report.
+- `src/pharmacy_tools/`: read-only inventory fixture reader and openFDA adapter.
+- `data/synthetic/`: labeled synthetic store 1618 snapshot.
 
 README, AGENTS, Team Reference, workspace, and environment configuration remain at the root. Historical documents retain their original filenames and references; use this directory map to locate them.
 
@@ -93,7 +96,32 @@ py -3.13 -m src.injection_prevention.local_tester --port 8765
 
 Open http://127.0.0.1:8765 after starting the tester. No credentials or third-party packages are required. This page executes synthetic controls; it does not call a model, FDA/CVS, SQL, a shell or an ordering service.
 
-Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe detected,30 benign accepted), zero fixture misses/false positives; external text excluded 85/85. These count fixtures, not distinct attack techniques or a general detection rate. SECURITY Round1 found two MAJOR and five MINOR gaps; Round2 verified remediation. Live model/harness, real data provenance and database/deployment controls remain untested.
+Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe detected,30 benign accepted), zero fixture misses/false positives; external text excluded 85/85. These count fixtures, not distinct attack techniques or a general detection rate. SECURITY Round1 found two MAJOR and five MINOR gaps; Round2 verified remediation. A language-model loop, live data provenance and database/deployment controls remain untested.
+
+## Harness implementation
+
+Phase 7 is Kerrian's harness lane. It calls Brahim's read-only tools through Emmanuel's `execute_guarded` dispatcher, validates evidence independently, calculates days of supply under [POLICY.md](docs/requirements/POLICY.md), and prints a human report. It does not run a model.
+
+The checked-in snapshot is dated 2026-10-07. Freeze the clock for a fresh eval; omitting `--run-at` uses the current time and will mark that snapshot stale.
+
+```powershell
+python3 -m unittest discover -s tests -q
+python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+```
+
+On Windows, create the project virtual environment if it does not already exist, then install its timezone data and use its interpreter:
+
+```powershell
+py -3.13 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-harness.txt
+.\.venv\Scripts\python.exe -B -m unittest discover -s tests -q
+.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+```
+
+Unit tests stub FDA HTTP. The CLI performs real openFDA reads. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage.
+
+- [Phase 7 plan](docs/planning/Phase/Phase7/PHASE-7-PLAN.md)
+- [Phase 7 handoff](docs/planning/Phase/Phase7/PHASE-7-HANDOFF.md)
 
 - [Approved Phase 6 plan](docs/planning/Phase/Phase6/PHASE-6-PLAN.md)
 - [Integration contract, coverage matrix and pattern-building process](docs/planning/Phase/Phase6/PHASE-6-HANDOFF.md)

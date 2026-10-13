@@ -1,0 +1,2 @@
+# IANA timezone data for ZoneInfo on Windows and minimal systems.
+tzdata==2026.5
