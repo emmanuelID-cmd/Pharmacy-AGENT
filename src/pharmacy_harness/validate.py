@@ -1,6 +1,7 @@
 """Independent evidence checks. Tool JSON is never treated as already trusted."""
 from dataclasses import dataclass
 from datetime import datetime, timedelta, date
+from decimal import Decimal
 from zoneinfo import ZoneInfo
 import math
 import re
@@ -13,6 +14,17 @@ NDC_PATTERN = re.compile(r"(?:\d{4}-\d{4}-\d{2}|\d{5}-\d{3}-\d{2}|\d{5}-\d{4}-\d
 ITEM_ID_PATTERN = re.compile(r"[A-Za-z0-9_.:-]{1,64}")
 USAGE_DAYS = 14
 SNAPSHOT_MAX_HOURS = 24
+
+# Source-level: withhold every recommendation. Row-level: only the affected item.
+SOURCE_FAILURE_CODES = frozenset({
+    "WRONG_STORE", "NOT_LABELED_SYNTHETIC", "SOURCE_MALFORMED", "EMPTY_SOURCE",
+    "SNAPSHOT_MISSING_TIMEZONE", "FUTURE_SNAPSHOT", "STALE_SNAPSHOT", "UNSUPPORTED_POLICY",
+})
+ROW_FAILURE_CODES = frozenset({
+    "DUPLICATE_ITEM_ID", "INVALID_ITEM_REFERENCE", "INVALID_PACKAGE_NDC",
+    "INVALID_DISPENSING_UNIT", "MISSING_USABLE_STOCK", "INVALID_USABLE_STOCK",
+    "INCOMPLETE_USAGE", "INVALID_USAGE", "NO_CONSUMPTION_BASIS", "SOURCE_EVIDENCE_BLOCKED",
+})
 
 
 def parse_run_at(value=None):
@@ -37,10 +49,23 @@ def last_completed_day(run_at):
     return parse_run_at(run_at).date() - timedelta(days=1)
 
 
-def _finite_nonnegative(value):
-    if type(value) is bool or type(value) not in (int, float):
-        return False
-    return math.isfinite(value) and value >= 0
+def as_nonnegative_decimal(value):
+    """Accept JSON int/float as Decimal. Booleans are not quantities."""
+    if type(value) is bool:
+        return None
+    if type(value) is int:
+        number = Decimal(value)
+    elif type(value) is float:
+        if not math.isfinite(value):
+            return None
+        number = Decimal(str(value))
+    elif type(value) is Decimal:
+        number = value
+    else:
+        return None
+    if not number.is_finite() or number < 0:
+        return None
+    return number
 
 
 @dataclass(frozen=True)
@@ -61,8 +86,8 @@ class ItemEvidence:
     item_id: str | None
     package_ndc: str | None
     dispensing_unit: str | None
-    usable_quantity: float | None
-    usage_total: float | None
+    usable_quantity: Decimal | None
+    usage_total: Decimal | None
     usage_day_count: int
     window_end: date | None
     identity_ok: bool
@@ -132,13 +157,8 @@ def inspect_snapshot(payload, *, run_at):
 
 
 def inspect_item(row, *, run_at, snapshot, duplicate_ids):
-    """Check one inventory row. Missing days are unknown, never zero."""
+    """Check one inventory row. Source-level codes stay on the snapshot, not copied here."""
     reasons = []
-    if snapshot.reason_codes:
-        for code in snapshot.reason_codes:
-            if code not in ("DUPLICATE_ITEM_ID", "EMPTY_SOURCE"):
-                reasons.append(code)
-
     item_id = row.get("item_id") if type(row.get("item_id")) is str else None
     if item_id is None or ITEM_ID_PATTERN.fullmatch(item_id) is None:
         item_id = None
@@ -162,14 +182,16 @@ def inspect_item(row, *, run_at, snapshot, duplicate_ids):
     freshness_ok = (
         snapshot.store_ok and snapshot.synthetic_ok and snapshot.policy_ok and snapshot.snapshot_ok
     )
+    if not freshness_ok:
+        reasons.append("SOURCE_EVIDENCE_BLOCKED")
 
     usable_quantity = None
     if "usable_quantity" not in row:
         reasons.append("MISSING_USABLE_STOCK")
-    elif not _finite_nonnegative(row["usable_quantity"]):
-        reasons.append("INVALID_USABLE_STOCK")
     else:
-        usable_quantity = float(row["usable_quantity"])
+        usable_quantity = as_nonnegative_decimal(row["usable_quantity"])
+        if usable_quantity is None:
+            reasons.append("INVALID_USABLE_STOCK")
     quantity_ok = usable_quantity is not None
 
     usage_total = None
@@ -189,17 +211,17 @@ def inspect_item(row, *, run_at, snapshot, duplicate_ids):
                 window_end = None
         if type(units) is list:
             usage_day_count = len(units)
+        parsed_units = [as_nonnegative_decimal(value) for value in units] if type(units) is list else None
         if window_end is None or window_end != expected_end:
             reasons.append("INCOMPLETE_USAGE")
-        elif type(units) is not list or len(units) != USAGE_DAYS:
+        elif parsed_units is None or len(parsed_units) != USAGE_DAYS:
             reasons.append("INCOMPLETE_USAGE")
-        elif any(not _finite_nonnegative(value) for value in units):
+        elif any(value is None for value in parsed_units):
             reasons.append("INVALID_USAGE")
         else:
-            usage_total = float(sum(units))
+            usage_total = sum(parsed_units, Decimal(0))
     usage_ok = usage_total is not None
 
-    # Deduplicate while preserving order.
     unique = []
     for code in reasons:
         if code not in unique:

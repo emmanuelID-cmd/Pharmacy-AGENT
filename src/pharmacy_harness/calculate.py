@@ -1,9 +1,11 @@
 """POLICY.md days-of-supply arithmetic. The model never computes these values."""
 from dataclasses import dataclass
+from decimal import Decimal, ROUND_HALF_EVEN
 from .validate import USAGE_DAYS
 
-CRITICAL_DAYS = 2
-LOW_DAYS = 5
+CRITICAL_DAYS = Decimal("2")
+LOW_DAYS = Decimal("5")
+DISPLAY_CENTS = Decimal("0.01")
 
 
 @dataclass(frozen=True)
@@ -11,10 +13,10 @@ class ItemResult:
     item_id: str | None
     package_ndc: str | None
     dispensing_unit: str | None
-    usable_quantity: float | None
-    usage_total: float | None
-    average_daily_usage: float | None
-    days_of_supply: float | None
+    usable_quantity: Decimal | None
+    usage_total: Decimal | None
+    average_daily_usage: Decimal | None
+    days_of_supply: Decimal | None
     days_of_supply_display: str | None
     local_class: str
     local_action: str
@@ -32,11 +34,14 @@ class ItemResult:
 
 
 def _display(days):
-    return f"{round(days, 2):.2f}"
+    quantized = days.quantize(DISPLAY_CENTS, rounding=ROUND_HALF_EVEN)
+    return f"{quantized:.2f}"
 
 
 def classify_days(days):
-    """Classify unrounded days of supply against SYNTHETIC-v0 thresholds."""
+    """Classify the exact (unrounded) days-of-supply value against SYNTHETIC-v0 thresholds."""
+    if not isinstance(days, Decimal):
+        days = Decimal(str(days))
     if days <= CRITICAL_DAYS:
         return "CRITICAL", "REVIEW"
     if days <= LOW_DAYS:
@@ -45,7 +50,7 @@ def classify_days(days):
 
 
 def calculate_item(evidence, *, evidence_reference):
-    """Return a harness result. Withhold any number that required evidence cannot support."""
+    """Return a harness result. Days of supply = usable * 14 / total (exact Decimal)."""
     reasons = list(evidence.reason_codes)
     average = None
     days = None
@@ -62,18 +67,17 @@ def calculate_item(evidence, *, evidence_reference):
             display = "unavailable"
             reasons.append("NO_CONSUMPTION_BASIS")
             if zero_stock_fact:
-                # POLICY: critical stock fact; duration unknown; no replenishment inference.
                 local_class = "CRITICAL"
             else:
                 local_class = "UNKNOWN"
             local_action = "MANUAL_REVIEW"
         else:
-            days = evidence.usable_quantity / average
+            days = evidence.usable_quantity * USAGE_DAYS / evidence.usage_total
             display = _display(days)
             local_class, local_action = classify_days(days)
             if zero_stock_fact:
                 local_class, local_action = "CRITICAL", "REVIEW"
-                days = 0.0
+                days = Decimal("0")
                 display = "0.00"
     else:
         if zero_stock_fact:

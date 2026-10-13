@@ -33,4 +33,6 @@ TrustedFact cannot store CRITICAL with a missing duration. A verified zero-stock
 
 ## Validation
 
-Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, and output-guard fallback on a tampered `report-v1`. Run the full unittest suite before handoff. These tests do not prove live FDA provenance, a language-model loop, database grants, or operational pharmacy policy.
+Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, output-guard fallback on a tampered `report-v1`, Decimal exact-2/exact-5 boundaries, source vs row isolation, shared-NDC reuse, and the human/`report-v1` invariant. Run the full unittest suite before handoff.
+
+These evals test harness arithmetic and prevention guards. They do not test how a language model reacts to injected text. A future model whose report must match `expected_report` exactly adds no independent judgment. Live FDA provenance, database grants, and operational pharmacy policy remain untested.

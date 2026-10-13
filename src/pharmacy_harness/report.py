@@ -1,5 +1,6 @@
 """Deterministic human report. Warning sentences come from trusted display text, not a model."""
-from datetime import timedelta
+from datetime import date, timedelta
+from decimal import Decimal
 
 try:
     from ..injection_prevention.output_guard import expected_report
@@ -15,10 +16,27 @@ except ImportError:
 from .validate import POLICY_VERSION, STORE_ID, USAGE_DAYS, last_completed_day
 
 CLASS_ORDER = {"MANUAL_REVIEW": 0, "CRITICAL": 1, "LOW": 2, "ABOVE_THRESHOLD": 3, "UNKNOWN": 4}
+FDA_DATASET_STALE_DAYS = 2
+
+
+def json_number(value):
+    """JSON-safe number. Decimal is converted only at the report edge."""
+    if value is None:
+        return None
+    if isinstance(value, Decimal):
+        return float(value)
+    return value
 
 
 def assess_fda(payload, *, run_at):
-    """Label national context without changing local stock class."""
+    """Label national context without changing local stock class.
+
+    A fetch performed during this run is fresh: adapter retrieved_at uses wall-clock now()
+    and must not be compared to a frozen --run-at (that would look like a future timestamp).
+    Dataset calendar age is compared to run_at in America/New_York. A dataset date newer
+    than the run (negative age) is not stale. SYNTHETIC-v0 prototype: older than two
+    calendar days is STALE.
+    """
     empty = {"state": "UNAVAILABLE", "status": None, "availability": None, "update_date": None,
              "dataset_updated": None, "external_risk": False, "reason": "NOT_RETRIEVED"}
     if type(payload) is not dict or type(payload.get("meta")) is not dict:
@@ -32,13 +50,13 @@ def assess_fda(payload, *, run_at):
     update_date = row.get("update_date") if type(row.get("update_date")) is str else None
     dataset_updated = meta.get("dataset_updated") if type(meta.get("dataset_updated")) is str else None
     reason = meta.get("reason") if type(meta.get("reason")) is str else None
+    # Intentionally ignore meta.retrieved_at: same-run fetches are fresh.
     if state in {"MATCH", "PARTIAL"} and dataset_updated:
         try:
-            from datetime import date
             dataset_date = date.fromisoformat(dataset_updated[:10])
         except ValueError:
             dataset_date = None
-        if dataset_date is not None and (run_at.date() - dataset_date).days > 2:
+        if dataset_date is not None and (run_at.date() - dataset_date).days > FDA_DATASET_STALE_DAYS:
             state = "STALE"
             reason = "DATASET_OLDER_THAN_TWO_DAYS"
     external_risk = state in {"MATCH", "PARTIAL", "STALE"} and status == "Current" and availability == "Unavailable"
@@ -104,10 +122,10 @@ def build_item_row(result, *, input_index, fda, run_at):
         "input_index": input_index,
         "item_id": result.item_id,
         "package_ndc": result.package_ndc,
-        "usable_quantity": result.usable_quantity,
+        "usable_quantity": json_number(result.usable_quantity),
         "dispensing_unit": result.dispensing_unit,
-        "average_daily_usage": result.average_daily_usage,
-        "days_of_supply": result.days_of_supply,
+        "average_daily_usage": json_number(result.average_daily_usage),
+        "days_of_supply": json_number(result.days_of_supply),
         "days_of_supply_display": result.days_of_supply_display,
         "local_class": result.local_class,
         "local_action": result.local_action,
@@ -161,6 +179,7 @@ def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, i
         "run_state": run_state,
         "source_state": inventory_dispatch.state,
         "source_reason": inventory_dispatch.reason_code,
+        "source_reason_codes": list(snapshot.reason_codes),
         "items": ordered,
         "warning_codes": warning_codes,
         "warnings": render_warnings(warning_codes),
@@ -185,6 +204,7 @@ def failed_source_report(*, run_at, inventory_dispatch):
         "run_state": "MANUAL_REVIEW",
         "source_state": inventory_dispatch.state,
         "source_reason": inventory_dispatch.reason_code,
+        "source_reason_codes": [inventory_dispatch.reason_code],
         "items": [],
         "warning_codes": warning_codes,
         "warnings": render_warnings(warning_codes),

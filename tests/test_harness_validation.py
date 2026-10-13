@@ -2,7 +2,8 @@ import copy
 import unittest
 
 from src.pharmacy_harness.validate import (
-    duplicate_item_ids, inspect_item, inspect_snapshot, last_completed_day, parse_run_at,
+    SOURCE_FAILURE_CODES, duplicate_item_ids, inspect_item, inspect_snapshot,
+    last_completed_day, parse_run_at,
 )
 from src.pharmacy_tools.inventory import read_store_inventory
 
@@ -95,6 +96,18 @@ class HarnessValidationTests(unittest.TestCase):
                "usable_quantity": True, "daily_usage": {"window_end": "2026-10-06", "units": [0] * 14}}
         evidence = inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=frozenset())
         self.assertIn("INVALID_USABLE_STOCK", evidence.reason_codes)
+
+    def test_source_failures_are_not_copied_onto_row_codes(self):
+        later = parse_run_at("2026-10-13T10:00:00-04:00")
+        payload = fixture()
+        snapshot = inspect_snapshot(payload, run_at=later)
+        self.assertIn("STALE_SNAPSHOT", snapshot.reason_codes)
+        self.assertTrue(SOURCE_FAILURE_CODES.issuperset({"STALE_SNAPSHOT", "WRONG_STORE"}))
+        row = next(item for item in snapshot.items if item["item_id"] == "item-001")
+        evidence = inspect_item(row, run_at=later, snapshot=snapshot, duplicate_ids=frozenset())
+        self.assertNotIn("STALE_SNAPSHOT", evidence.reason_codes)
+        self.assertIn("SOURCE_EVIDENCE_BLOCKED", evidence.reason_codes)
+        self.assertFalse(evidence.freshness_ok)
 
 
 if __name__ == "__main__":
