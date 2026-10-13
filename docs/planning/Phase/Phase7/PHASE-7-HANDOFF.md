@@ -16,11 +16,11 @@ From the repository root. The dated fixture snapshot is `2026-10-07T09:00:00-04:
 
 ```powershell
 python3 -m unittest discover -s tests -q
-python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
-python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00 --json
+python3 -m src.pharmacy_harness --offline
+python3 -m src.pharmacy_harness --offline --json
 ```
 
-`--run-at` is required for a fresh eval against the checked-in fixture. Omitting it uses the current time. The CLI prints the PRD manager table by default and `harness-report-v1` JSON with `--json`. It calls the real openFDA shortages endpoint; unit tests inject `fda_http_get` and do not use the network.
+The CLI defaults to `2026-10-07T10:00:00-04:00` so the dated fixture is fresh. `--now` uses the current clock (the snapshot will be stale). `--offline` injects the recorded Case 1 FDA payload and does not call openFDA. Omit `--offline` for a live read-only openFDA request. `--json` prints `harness-report-v1`. Unit tests inject `fda_http_get` and do not use the network.
 
 ## Integration
 

@@ -191,7 +191,8 @@ def build_item_row(result, *, input_index, fda, run_at):
     }
 
 
-def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, inventory_dispatch):
+def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, inventory_dispatch,
+                 fda_source="LIVE"):
     rows = []
     for index, result in enumerate(item_results):
         ndc = result.package_ndc
@@ -237,11 +238,12 @@ def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, i
         "human_next_step": HUMAN_NEXT_STEP,
         "order_placed": False,
         "inventory_changed": False,
+        "fda_source": fda_source,
         "safety_report": safety,
     }
 
 
-def failed_source_report(*, run_at, inventory_dispatch):
+def failed_source_report(*, run_at, inventory_dispatch, fda_source="LIVE"):
     warning_codes = ["MANUAL_REVIEW_REQUIRED"]
     return {
         "schema_version": "harness-report-v1",
@@ -262,5 +264,6 @@ def failed_source_report(*, run_at, inventory_dispatch):
         "human_next_step": HUMAN_NEXT_STEP,
         "order_placed": False,
         "inventory_changed": False,
+        "fda_source": fda_source,
         "safety_report": None,
     }

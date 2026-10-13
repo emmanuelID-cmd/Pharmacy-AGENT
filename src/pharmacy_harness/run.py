@@ -18,10 +18,12 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
                fda_sleep=None, budget=None):
     """Execute one synthetic-store review. Tool JSON stays untrusted until this function verifies it.
 
-    Tests inject fda_http_get. The CLI omits it so get_fda_shortage_context performs a real read.
+    Tests and `--offline` inject fda_http_get. The CLI omits it so get_fda_shortage_context
+    performs a real read.
     """
     moment = parse_run_at(run_at)
     budget = budget if budget is not None else RunBudget()
+    fda_source = "OFFLINE" if fda_http_get is not None else "LIVE"
     captured = {}
 
     def inventory_reader(**arguments):
@@ -37,7 +39,9 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
         budget=budget,
     )
     if inventory_dispatch.state != "COMPLETE" or "inventory" not in captured:
-        return failed_source_report(run_at=moment, inventory_dispatch=inventory_dispatch)
+        return failed_source_report(
+            run_at=moment, inventory_dispatch=inventory_dispatch, fda_source=fda_source,
+        )
 
     payload = captured["inventory"]
     snapshot = inspect_snapshot(payload, run_at=moment)
@@ -102,4 +106,5 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
     return build_report(
         run_at=moment, snapshot=snapshot, item_results=item_results, payload=payload,
         facts=facts, fda_views=fda_views, inventory_dispatch=inventory_dispatch,
+        fda_source=fda_source,
     )

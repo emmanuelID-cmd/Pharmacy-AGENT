@@ -79,6 +79,10 @@ def format_manager_report(report):
         f"Run state {report.get('run_state')}    Source {report.get('source_state')}    "
         f"FDA {fda_header}"
     )
+    if report.get("fda_source") == "OFFLINE":
+        lines.append("FDA source: recorded offline payload (not a live openFDA call).")
+    elif report.get("fda_source") == "LIVE":
+        lines.append("FDA source: live openFDA.")
     if report.get("source_reason"):
         lines.append(f"Source reason {report['source_reason']}")
     lines.append("")

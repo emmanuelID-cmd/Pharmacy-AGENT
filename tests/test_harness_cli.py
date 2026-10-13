@@ -5,8 +5,10 @@ from unittest.mock import patch
 
 from src.pharmacy_harness.__main__ import main
 from src.pharmacy_harness.display import SYNTHETIC_LABEL, format_manager_report
+from src.pharmacy_harness.offline import EVAL_RUN_AT, OFFLINE_CASE1_NDC, offline_fda_http_get
+from src.pharmacy_harness.run import run_review
 
-EVAL_RUN = "2026-10-07T10:00:00-04:00"
+EVAL_RUN = EVAL_RUN_AT
 
 
 def sample_report():
@@ -50,6 +52,7 @@ def sample_report():
         "human_next_step": "Verify evidence and execute any operational action outside the agent.",
         "order_placed": False,
         "inventory_changed": False,
+        "fda_source": "OFFLINE",
     }
 
 
@@ -67,6 +70,7 @@ class HarnessDisplayTests(unittest.TestCase):
         self.assertIn("MAINTAIN+ext REVIEW", text)
         self.assertIn("MATCH Current/Unavailable", text)
         self.assertIn("NO_MATCH is not guaranteed supply.", text)
+        self.assertIn("recorded offline payload", text)
         self.assertIn("No order has been placed.", text)
         self.assertLess(text.index("Needs manual review"), text.index("Inventory review"))
         self.assertLess(text.index("item-002"), text.index("item-001"))
@@ -114,6 +118,42 @@ class HarnessCliTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn(SYNTHETIC_LABEL, text)
         self.assertNotIn('"schema_version"', text)
+
+    def test_default_clock_is_fixture_eval_and_live_fda(self):
+        with patch("src.pharmacy_harness.__main__.run_review", return_value=sample_report()) as mocked:
+            with patch("sys.stdout", io.StringIO()):
+                main([])
+        kwargs = mocked.call_args.kwargs
+        self.assertEqual(kwargs["run_at"], EVAL_RUN)
+        self.assertIsNone(kwargs["fda_http_get"])
+
+    def test_now_uses_wall_clock(self):
+        with patch("src.pharmacy_harness.__main__.run_review", return_value=sample_report()) as mocked:
+            with patch("sys.stdout", io.StringIO()):
+                main(["--now"])
+        self.assertIsNone(mocked.call_args.kwargs["run_at"])
+
+    def test_now_and_run_at_are_rejected(self):
+        with patch("sys.stderr", io.StringIO()):
+            with self.assertRaises(SystemExit) as raised:
+                main(["--now", "--run-at", EVAL_RUN])
+        self.assertEqual(raised.exception.code, 2)
+
+    def test_offline_injects_recorded_http(self):
+        with patch("src.pharmacy_harness.__main__.run_review", return_value=sample_report()) as mocked:
+            with patch("sys.stdout", io.StringIO()):
+                main(["--offline"])
+        self.assertIs(mocked.call_args.kwargs["fda_http_get"], offline_fda_http_get)
+
+    def test_offline_run_matches_case_1_without_network(self):
+        report = run_review(run_at=EVAL_RUN, fda_http_get=offline_fda_http_get)
+        row = next(item for item in report["items"] if item["item_id"] == "item-001")
+        self.assertEqual(report["fda_source"], "OFFLINE")
+        self.assertEqual(row["package_ndc"], OFFLINE_CASE1_NDC)
+        self.assertEqual(row["fda_state"], "MATCH")
+        self.assertEqual(row["fda_status"], "Current")
+        self.assertEqual(row["fda_availability"], "Unavailable")
+        self.assertEqual(row["local_class"], "ABOVE_THRESHOLD")
 
     def test_json_flag_prints_report_object(self):
         buf = io.StringIO()
