@@ -50,7 +50,7 @@ The harness lists every exact-match record. Adapter MATCH means at least one exa
 
 The CLI prints a manager table from that same report: SYNTHETIC INVENTORY TEST, store, run/snapshot time, usage window, manual-review rows first, then the inventory table with text statuses. `--json` is the machine copy. FDA related_info is not copied into the table as instructions. The default review clock is the Eval Card timestamp so the dated fixture is fresh; `--now` uses the wall clock. `--offline` is a recorded Case 1 payload, not a live FDA result.
 
-After trusted assembly, at most one model turn may run. The model receives the pinned system prompt and the trusted context object only. Its only accepted output is the exact `report-v1` object built independently by `expected_report`. Invented quantities, order claims, prose, or transport failures are rejected; the human report keeps harness facts and the safety copy falls back to `MANUAL_REVIEW`. This is not model training.
+After trusted assembly, at most one model turn may run. The model receives a harness wrapper that tools already ran, then the pinned system prompt, and the trusted context object only. Its only accepted output is the exact `report-v1` object built independently by `expected_report`. Invented quantities, order claims, prose, or transport failures are rejected; the human report keeps harness facts and the safety copy falls back to `MANUAL_REVIEW`. This is not model training.
 
 FDA availability/status may add a human external-risk review action but never change the local threshold class or establish clinical urgency. Valid local arithmetic can remain visible during an FDA failure with explicit qualification; recommendations dependent on unavailable external facts must be withheld.
 

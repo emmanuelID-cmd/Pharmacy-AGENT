@@ -11,7 +11,7 @@ After trusted tools, validation, and `TrustedFact` assembly, call a model once. 
 | Piece | Behavior |
 |---|---|
 | Turn | One `complete(system_prompt, context)` call. No tool loop, no retry |
-| Prompt | Brahim's `SYSTEM_PROMPT` plus the trusted `prevention-v1` context JSON. No raw tool payload |
+| Prompt | Harness wrapper (tools already ran; JSON only) plus Brahim's `SYSTEM_PROMPT` and the trusted `prevention-v1` context JSON. No raw tool payload |
 | Guard | Emmanuel's `validate_report`. Copy matches `expected_report`; anything else is `OUTPUT_EVIDENCE_MISMATCH` |
 | CLI | `--model-copy` proves the wire without an LLM; `--model` uses `PHARMACY_MODEL_URL` |
 | Human report | Local days of supply stay harness-computed even when the model is rejected |

@@ -16,7 +16,7 @@ One guarded model turn on top of the Phase 7 deterministic run. Read [plan](PHAS
 python3 -m src.pharmacy_harness --offline --model-copy
 ```
 
-`--model-copy` is not a language model. `--model` requires `PHARMACY_MODEL_URL` (optional `PHARMACY_MODEL_KEY` and `PHARMACY_MODEL_NAME`). Invented quantities never appear on `safety_report`.
+`--model-copy` is not a language model. `--model` requires `PHARMACY_MODEL_URL` (optional `PHARMACY_MODEL_KEY` and `PHARMACY_MODEL_NAME`). The harness prepends “tools already ran / JSON only” before Brahim's prompt; `pharmacy_tools` is not edited. Invented quantities never appear on `safety_report`.
 
 ## Validation
 

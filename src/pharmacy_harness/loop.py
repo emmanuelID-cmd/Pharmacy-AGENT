@@ -12,6 +12,14 @@ except ImportError:
     from pharmacy_tools.instructions import SYSTEM_PROMPT
 
 MODEL_TIMEOUT_SECONDS = 30
+# Harness-owned. Brahim's prompt still lists tools; those reads already ran.
+TURN_WRAPPER = (
+    "Tools already ran. Do not call tools. Reply with only the report-v1 JSON object.\n\n"
+)
+
+
+def wrapped_system_prompt():
+    return TURN_WRAPPER + SYSTEM_PROMPT
 
 
 def parse_proposal(raw):
@@ -39,7 +47,7 @@ def run_model_turn(context, complete):
     Exceptions, unreadable output, and invented fields all become OUTPUT_EVIDENCE_MISMATCH.
     """
     try:
-        raw = complete(SYSTEM_PROMPT, context)
+        raw = complete(wrapped_system_prompt(), context)
     except Exception:
         raw = None
     proposed = parse_proposal(raw)

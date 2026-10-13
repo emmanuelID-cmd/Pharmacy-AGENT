@@ -5,8 +5,10 @@ from unittest.mock import patch
 
 from src.injection_prevention.output_guard import expected_report
 from src.pharmacy_harness.__main__ import main
+from src.pharmacy_tools.instructions import SYSTEM_PROMPT
 from src.pharmacy_harness.loop import (
-    complete_from_env, copying_complete, http_complete, parse_proposal,
+    TURN_WRAPPER, complete_from_env, copying_complete, http_complete, parse_proposal,
+    wrapped_system_prompt,
 )
 from src.pharmacy_harness.offline import EVAL_RUN_AT, offline_fda_http_get
 from src.pharmacy_harness.run import run_review
@@ -67,6 +69,20 @@ class HarnessLoopTests(unittest.TestCase):
 
         report = run_review(run_at=EVAL_RUN_AT, fda_http_get=offline_fda_http_get, complete=boom)
         self.assertEqual(report["model_turn"]["state"], "REJECTED")
+
+    def test_model_prompt_wraps_brahim_instructions_without_editing_them(self):
+        seen = []
+
+        def capture(system_prompt, context):
+            seen.append(system_prompt)
+            return copying_complete(system_prompt, context)
+
+        run_review(run_at=EVAL_RUN_AT, fda_http_get=offline_fda_http_get, complete=capture)
+        self.assertEqual(len(seen), 1)
+        self.assertTrue(seen[0].startswith(TURN_WRAPPER))
+        self.assertIn("Do not call tools", seen[0])
+        self.assertTrue(seen[0].endswith(SYSTEM_PROMPT))
+        self.assertEqual(wrapped_system_prompt(), TURN_WRAPPER + SYSTEM_PROMPT)
 
     def test_parse_proposal_rejects_prose_and_arrays(self):
         self.assertIsNone(parse_proposal("not json"))
