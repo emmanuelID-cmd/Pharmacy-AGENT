@@ -68,6 +68,11 @@ The active phase records live under [docs/planning/Phase](docs/planning/Phase/RE
 
 Push records are ordered newest first.
 
+## 2026-10-13T10:52:51-04:00
+
+- Verified push cb8c8a7..9c1b9bf on feature/pharmacy-harness.
+- Decimal days-of-supply math, source vs row isolation, same-run FDA freshness, invariant tests. No main merge.
+
 ## 2026-10-13T10:11:59-04:00
 
 - Verified push f3a7f8a..9d31ac4 on feature/pharmacy-harness.
