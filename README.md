@@ -67,6 +67,7 @@ As approved behavior changes, update the affected PRD sections, policy, architec
 - `docs/planning/`: historical foundation plan/review and [setup plan](docs/planning/SETUP-PLAN.md).
 - `docs/planning/Phase/`: [phase index](docs/planning/Phase/README.md), Phase1 through Phase6, with sub-phase plans inside their parent.
 - `docs/architecture/`: original architecture images.
+- `docs/presentations/`: editable slides, slide drafts, team presentation, and future mockups.
 
 README, AGENTS, Team Reference, workspace, and environment configuration remain at the root. Historical documents retain their original filenames and references; use this directory map to locate them.
 
