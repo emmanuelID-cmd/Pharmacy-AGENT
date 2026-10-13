@@ -3,6 +3,7 @@ import argparse
 from collections import deque
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
+import socket
 from pathlib import Path
 import time
 from urllib.parse import urlsplit
@@ -39,6 +40,37 @@ class TesterHandler(BaseHTTPRequestHandler):
 
     def error_json(self,status,code):
         self.send_content(status,json.dumps({'state':'MANUAL_REVIEW','reason_code':code}).encode())
+        self.finish_rejected_body()
+
+    def finish_rejected_body(self):
+        """Finish an error response before a bounded drain of rejected input.
+
+        Closing with an unread request body can reset the connection on Windows
+        before the client receives the rejection. Half-close the response side
+        and drain at most max_bytes + 1 for at most one second.
+        """
+        self.close_connection = True
+        self.wfile.flush()
+        try:
+            self.connection.shutdown(socket.SHUT_WR)
+            headers = getattr(self, 'headers', None)
+            lengths = headers.get_all('Content-Length', []) if headers is not None else []
+            length = int(lengths[0]) if len(lengths) == 1 else 0
+            if length <= 0:
+                return
+            remaining = min(length, Limits().max_bytes + 1)
+            deadline = time.monotonic() + 1
+            while remaining:
+                wait = deadline - time.monotonic()
+                if wait <= 0:
+                    break
+                self.connection.settimeout(wait)
+                chunk = self.rfile.read1(min(8192, remaining))
+                if not chunk:
+                    break
+                remaining -= len(chunk)
+        except (OSError, ValueError):
+            pass  # Rejected input stays rejected if the peer closes or stalls.
 
     def send_error(self,code,message=None,explain=None):
         self.error_json(code,'HTTP_REQUEST_REJECTED')
