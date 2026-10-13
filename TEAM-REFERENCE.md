@@ -68,6 +68,14 @@ The active phase records live under [docs/planning/Phase](docs/planning/Phase/RE
 
 Push records are ordered newest first.
 
+## 2026-10-13T11:18:04-04:00
+
+- Verified feature/pharmacy-harness push 9b4e73e149d917eae9f6fd6eb7d8ad3be417b0f8..e347c67e1d1eb96ee1748c5b1e79df991ecc1dca; reviewed endpoint 0468930ed361ffb61f27fa2bbfc48b10f63b56be.
+- Preserved Kerrian's Decimal harness and integrated the current main presentation files. Rejected/late FDA callback results now become UNAVAILABLE before budget/deadline stop; valid local facts remain intact.
+- Fixed the local Tester Windows rejection race using response flush/half-close and cleanup bounded to 65,537 bytes/one second. Oversized, stalled, invalid-content/origin/route and headerless parse cases are tested; rejected data never enters demo evaluation.
+- Added pinned Windows timezone data and reproducible virtual-environment commands. Full suite: 141 PASS; qualification: 85/85, 55 selected unsafe detected, 30 benign accepted, zero selected misses/false positives, all external text excluded. Nine Tester methods passed three repeated runs.
+- Two sequential security stages reproduced and then verified the approved fixes; main README overlap preserves both folder guides, and timestamps remain newest first. PR #11 targets main; owner authorized merge after checks. No model loop, database deployment or staff-write workflow was included; separate database work and its policy race remain deferred and preserved.
+
 ## 2026-10-13T10:52:51-04:00
 
 - Verified push cb8c8a7..9c1b9bf on feature/pharmacy-harness.
