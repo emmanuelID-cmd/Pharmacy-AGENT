@@ -6,7 +6,7 @@
 - Emmanuel De Jesus
 - Brahim Maouloud
 
-Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy-AGENT. Target GitHub owner: emmanuelID-cmd. Intended repository: Pharmacy-AGENT. Approved ownership is shown in the latest Phase 6 handoff below; historical push records remain unchanged.
+Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy-AGENT. Target GitHub owner: emmanuelID-cmd. Intended repository: Pharmacy-AGENT. Approved ownership is shown in the latest Phase 7 handoff below; historical Phase 6 and push records remain unchanged.
 
 ## Current handoff
 
@@ -24,7 +24,25 @@ Foundation PR #1 was merged into main on October 8, 2026 (e57ee15). Review the d
 
 Documentation is grouped in docs/requirements, docs/templates, docs/planning, and docs/architecture. Ten moved files retain their original bytes. Root collaboration and configuration files remain accessible. SQL/database work and Team Alignment remain deferred.
 
-## Latest local handoff — Phase 6, October 8, 2026
+## Latest local handoff — Phase 7 harness
+
+Branch `feature/pharmacy-harness`. Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. No language-model loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
+
+| Member | Part | Verified contribution/status |
+|---|---|---|
+| Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
+| Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display merged on main (PRs #5–#8) |
+| Kerrian Gordan | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+
+| Part | Integration handoff | Status |
+|---|---|---|
+| Injection Risk Prevention | Import src/injection_prevention controls before context assembly/dispatch and after proposed output | Standalone implementation qualified locally; see Phase 6 evidence |
+| Agent Instructions and Tooling | Define authoritative instructions and real read-only inventory/FDA adapters; omit unsafe free text | Implemented on main; harness calls these adapters through the prevention guard |
+| Harness | Independently validate identity/units/policy/freshness, calculate deterministic facts, honor guards and enforce IO/loop limits | Implemented in Phase 7; see [plan](docs/planning/Phase/Phase7/PHASE-7-PLAN.md) and [handoff](docs/planning/Phase/Phase7/PHASE-7-HANDOFF.md) |
+
+Validation: full local unittest suite including harness Eval Card Cases 1–2, Case 3-shaped faults, fixture boundary rows, guarded dispatch and output-guard fallback. CLI: `python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00`. These results do not establish live model/database/CVS readiness.
+
+## Historical local handoff — Phase 6, October 8, 2026
 
 | Member | Part | Verified contribution/status |
 |---|---|---|
@@ -44,7 +62,7 @@ Validation: 66 behavior methods and85 selected fixtures;55 unsafe detected,30 be
 
 ## Phase folder organization
 
-The active phase records live under [docs/planning/Phase](docs/planning/Phase/README.md). Historical Phases 1-5 and sub-phases 6.1-6.6 have explicitly reconstructed plan records referencing their verified implementation commits. Parent Phase 6 approval and historical comparison content are preserved. Publication is separately authorized after the original local Phase 6 handoff; verified pushes are recorded below after remote confirmation.
+The active phase records live under [docs/planning/Phase](docs/planning/Phase/README.md). Historical Phases 1-5 and sub-phases 6.1-6.6 have explicitly reconstructed plan records referencing their verified implementation commits. Phase 7 is the harness implementation. Parent Phase 6 approval and historical comparison content are preserved. Publication is separately authorized after the original local Phase 6 handoff; verified pushes are recorded below after remote confirmation.
 
 # Date and Timestamp of Push
 

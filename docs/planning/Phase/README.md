@@ -12,8 +12,9 @@ One common parent contains each complete phase: `docs/planning/Phase/Phase<n>/`.
 | 4 | [Synthetic evaluation](Phase4/PLAN.md) | Reconstructed historical record |
 | 5 | [Handoff and security review](Phase5/PLAN.md) | Reconstructed historical record |
 | 6 | [Approved parent plan](Phase6/PHASE-6-PLAN.md) | Completed standalone prevention build |
+| 7 | [Deterministic pharmacy harness](Phase7/PHASE-7-PLAN.md) | Completed guarded inventory/FDA run and POLICY.md calculations |
 
-Missing older plans are explicitly reconstructed from verified commits. They do not replace the approved parent plan or invent historical authorization.
+Missing older plans are explicitly reconstructed from verified commits. They do not replace the approved parent plan or invent historical authorization. Phase 7 is new harness work; it does not rewrite Phases 1–6.
 
 ## Phase 6 sub-phases
 
@@ -43,7 +44,7 @@ The two historical HTML comparisons retain their original bytes. Literal snapsho
 
 ## Scope
 
-Keep foundation [plan](../PLAN.md), [review](../REVIEW.md) and [setup plan](../SETUP-PLAN.md) at their existing locations. The original draft, policy, executable package and tests are unchanged by this folder action. External AGENTS is a separate repository/task and is never Phase 7.
+Keep foundation [plan](../PLAN.md), [review](../REVIEW.md) and [setup plan](../SETUP-PLAN.md) at their existing locations. The original draft and POLICY.md remain the calculation source for Phase 7. External AGENTS is a separate repository/task and is never a Pharmacy phase.
 
 ## Verification
 
