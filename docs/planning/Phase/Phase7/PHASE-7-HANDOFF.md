@@ -27,13 +27,13 @@ python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
 2. Harness validates identity, units, freshness and the 14-day window, then calculates days of supply.
 3. `TrustedFact` objects are constructed in harness code and passed to `assemble_context`.
 4. `execute_guarded` FDA for each accepted package NDC on the same `RunBudget`.
-5. Human report lists every input row. `report-v1` is the prevention safety copy. `order_placed` and `inventory_changed` stay false.
+5. Human report lists every input row and every exact-match FDA record. Conflicting FDA records are `NEEDS_REVIEW`; they never change local class. `report-v1` is the prevention safety copy. `order_placed` and `inventory_changed` stay false.
 
 TrustedFact cannot store CRITICAL with a missing duration. A verified zero-stock fact with no usage basis stays CRITICAL on the human report and maps to UNKNOWN in prevention context.
 
 ## Validation
 
-Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, output-guard fallback on a tampered `report-v1`, Decimal exact-2/exact-5 boundaries, source vs row isolation, shared-NDC reuse, and the human/`report-v1` invariant. Run the full unittest suite before handoff.
+Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, output-guard fallback on a tampered `report-v1`, Decimal exact-2/exact-5 boundaries, source vs row isolation, shared-NDC reuse, the human/`report-v1` invariant, and multi-record FDA agreement versus conflict/`NEEDS_REVIEW`. Run the full unittest suite before handoff.
 
 These evals test harness arithmetic and prevention guards. They do not test how a language model reacts to injected text. A future model whose report must match `expected_report` exactly adds no independent judgment. Live FDA provenance, database grants, and operational pharmacy policy remain untested.
 

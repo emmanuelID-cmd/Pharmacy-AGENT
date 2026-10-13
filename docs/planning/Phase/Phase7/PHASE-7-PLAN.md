@@ -14,7 +14,7 @@ Build the trusted run that actually calls `read_store_inventory` and `get_fda_sh
 | Calculation | Average = 14-day total / 14; days of supply = usable / positive average; unrounded class; two-decimal display |
 | Facts | `ItemResult` holds POLICY.md branches including CRITICAL stock with unknown duration; `TrustedFact` maps that case to UNKNOWN |
 | Run | One `RunBudget`; inventory first with callback capture; FDA only for accepted NDCs; tests stub HTTP; CLI uses the live adapter |
-| Report | Every source row accounted for; critical then low then above-threshold after manual-review rows; FDA cannot change local class |
+| Report | Every source row accounted for; critical then low then above-threshold after manual-review rows; FDA cannot change local class; every exact-match FDA record is listed; conflicting records are NEEDS_REVIEW |
 
 ## Acceptance
 

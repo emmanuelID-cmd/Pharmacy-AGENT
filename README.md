@@ -118,7 +118,7 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -B -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
 ```
 
-Unit tests stub FDA HTTP. The CLI performs real openFDA reads. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage.
+Unit tests stub FDA HTTP. The CLI performs real openFDA reads. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
 
 - [Phase 7 plan](docs/planning/Phase/Phase7/PHASE-7-PLAN.md)
 - [Phase 7 handoff](docs/planning/Phase/Phase7/PHASE-7-HANDOFF.md)

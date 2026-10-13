@@ -45,6 +45,8 @@ class EvalCardTests(unittest.TestCase):
         self.assertEqual(row["fda_state"], "MATCH")
         self.assertEqual(row["fda_status"], "Current")
         self.assertEqual(row["fda_availability"], "Unavailable")
+        self.assertEqual(len(row["fda_records"]), 1)
+        self.assertEqual(row["fda_records"][0]["status"], "Current")
         self.assertEqual(row["external_action"], "REVIEW")
         self.assertIn("80 unit / (180/14)", row["explanation"])
         self.assertIn("external-risk REVIEW", row["explanation"])

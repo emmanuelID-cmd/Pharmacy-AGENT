@@ -46,6 +46,8 @@ States: MATCHED, NO_MATCH, UNAVAILABLE, PARTIAL, STALE, or NEEDS_REVIEW for ambi
 
 SYNTHETIC-v0 prototype defaults (not PRD-approved operational pharmacy rules): a dataset update date older than 2 calendar days relative to the run is flagged as stale. A retrieval made during the current run is treated as fresh even if the adapter's wall-clock retrieved_at is after a frozen eval timestamp. Missing metadata prevents a freshness assurance. Display each record update_date without inventing an expiry rule: an old record can describe an ongoing shortage, so age alone never resolves it. Missing or conflicting record dates require external-context review.
 
+The harness lists every exact-match record. Adapter MATCH means at least one exact package_ndc hit; the harness further labels NEEDS_REVIEW when those records disagree on identity, status, availability, or update_date. Summary status/availability/update_date are shown only when the listed records agree; they never pick a winner from a conflict. A Current/Unavailable row still adds a separate external-risk REVIEW without changing the local class.
+
 FDA availability/status may add a human external-risk review action but never change the local threshold class or establish clinical urgency. Valid local arithmetic can remain visible during an FDA failure with explicit qualification; recommendations dependent on unavailable external facts must be withheld.
 
 ## Review, changes, and recovery
