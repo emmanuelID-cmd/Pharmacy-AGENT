@@ -85,3 +85,10 @@ The active phase records live under [docs/planning/Phase](docs/planning/Phase/RE
 - Shared content: docs/presentations/Pharmacy-AGENT-Team-Alignment-slide-content.md, eight slides with dated source and test evidence. No PPTX/PDF exists.
 - Whitespace checks and metadata-only review-summary tree verification passed.
 - PR #9 targets main: https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/9. Tooling PRs #5–#7 remain separate; no main merge performed.
+
+## 2026-10-12T23:01:26-04:00
+
+- Verified editable-deck push c95ad55..de0988d on the presentation branch.
+- Added docs/presentations/Pharmacy-AGENT-Team-Alignment.odp: eight editable slides with tables and speaker notes.
+- ODP package validation and PowerPoint open/render succeeded; all eight PNG renders visually inspected.
+- PR #9 now includes the actual editable deck. Generic styling adapts template colors; original PowerPoint masters are not cloned. No main merge.
