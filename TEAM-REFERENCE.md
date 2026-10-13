@@ -68,6 +68,11 @@ The active phase records live under [docs/planning/Phase](docs/planning/Phase/RE
 
 Push records are ordered newest first.
 
+## 2026-10-13T15:54:46-04:00
+
+- Verified feature/pharmacy-harness push 0bdb0168d3c8e86f192f8c1b4ef9ca95e8efd1fc..06cd1061e95736c67f4e4842aae3e5bc2b1f0185.
+- Model turn prepends a harness wrapper that tools already ran; Brahim's SYSTEM_PROMPT is unchanged. No main merge. Draft PR #13 remains the review.
+
 ## 2026-10-13T15:06:17-04:00
 
 - Verified feature/pharmacy-harness push fed64285454849e4b3b8f973f4b4349f79b69b8a..176b80f65e7fbcee1b36a525afc71360e9e1846d.
