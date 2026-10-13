@@ -16,4 +16,4 @@ Reject unsafe descriptions and withhold affected results when required evidence 
 
 ## Ownership and boundaries
 
-Emmanuel De Jesus: Injection Risk Prevention. Brahim Maouloud: Agent Instructions and Tooling. Kerrian Gordan: Harness. This record does not establish teammate implementation progress. Synthetic standalone work only; no live pharmacy, clinical, patient, ordering or inventory-write authority.
+Emmanuel De Jesus: Injection Risk Prevention. Brahim Maouloud: Agent Instructions and Tooling. Kerrian Gordon: Harness. This record does not establish teammate implementation progress. Synthetic standalone work only; no live pharmacy, clinical, patient, ordering or inventory-write authority.

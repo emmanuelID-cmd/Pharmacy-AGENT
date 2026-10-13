@@ -40,7 +40,7 @@ Known demonstrated instruction cases must not ACCEPT. Distinguish detection miss
 |---|---|
 | Emmanuel De Jesus | Injection Risk Prevention |
 | Brahim Maouloud | Agent Instructions and Tooling |
-| Kerrian Gordan | Harness |
+| Kerrian Gordon | Harness |
 
 Do not infer teammate implementation progress. Accepted assumptions: strict versioned synthetic contracts and labelled synthetic catalog while live catalog/final harness schemas are unavailable. No clinical reasoning, patient data, inventory calculations, database/staff-write implementation or live API integration. Security-facing reusable guards are included; actual harness integration remains a later test boundary.
 

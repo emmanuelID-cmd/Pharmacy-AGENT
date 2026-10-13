@@ -1,6 +1,6 @@
 # Phase 7 - Deterministic pharmacy harness
 
-Authorized as Kerrian Gordan's harness lane after teammate tools and prevention controls were already on `main`. Phases 1–6 are not renumbered. External AGENTS remains a separate repository and is not this phase.
+Authorized as Kerrian Gordon's harness lane after teammate tools and prevention controls were already on `main`. Phases 1–6 are not renumbered. External AGENTS remains a separate repository and is not this phase.
 
 ## Objective
 

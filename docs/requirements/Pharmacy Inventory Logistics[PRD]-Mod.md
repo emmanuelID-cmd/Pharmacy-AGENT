@@ -4,7 +4,7 @@
 
 **Agent name:** Pharmacy Inventory Logistics Agent (descriptive working name)
 
-**Owner(s):** Kerrian Gordan, Emmanuel De Jesus, and Brahim Maouloud; operational policy approval belongs to authorized pharmacy staff.
+**Owner(s):** Kerrian Gordon, Emmanuel De Jesus, and Brahim Maouloud; operational policy approval belongs to authorized pharmacy staff.
 
 **Date:** October 8, 2026
 
@@ -308,4 +308,4 @@ This standalone intake uses 64 KiB JSON, depth 6,2048 nodes,20 rows,1000 charact
 
 Evidence:66 passing behavior-test methods;85 selected label fixtures,55 unsafe detected,30 benign accepted,0 fixture misses/false positives,85 external-text exclusions. Seven Round1 security findings were remediated and checked in sequential Round2. This is not a count of unique attack types or universal detection. Live model/harness, evidence provenance, FDA/CVS connectivity, database grants, staff authorization, deployment and blocking-IO cancellation remain untested.
 
-Ownership: Emmanuel De Jesus—Injection Risk Prevention; Brahim Maouloud—Agent Instructions and Tooling; Kerrian Gordan—Harness. Teammate implementation status is not inferred. Ordering/reordering and inventory changes remain outside agent authority; humans execute operational actions outside the agent. No clinical/patient data or policy changes are introduced. Original draft and POLICY.md remain preserved.
+Ownership: Emmanuel De Jesus—Injection Risk Prevention; Brahim Maouloud—Agent Instructions and Tooling; Kerrian Gordon—Harness. Teammate implementation status is not inferred. Ordering/reordering and inventory changes remain outside agent authority; humans execute operational actions outside the agent. No clinical/patient data or policy changes are introduced. Original draft and POLICY.md remain preserved.

@@ -8,7 +8,7 @@ Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD de
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display implemented on main |
-| Kerrian Gordan | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
 
 ## Current status
 

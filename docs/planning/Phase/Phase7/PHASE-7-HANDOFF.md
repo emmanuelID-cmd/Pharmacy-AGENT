@@ -8,7 +8,7 @@ Deterministic harness for one synthetic store. Read [plan](PHASE-7-PLAN.md). Ori
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display merged on main (PRs #5–#8) |
-| Kerrian Gordan | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+| Kerrian Gordon | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
 
 ## How to run
 

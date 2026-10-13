@@ -2,7 +2,7 @@
 
 ## Team and project
 
-- Kerrian Gordan
+- Kerrian Gordon
 - Emmanuel De Jesus
 - Brahim Maouloud
 
@@ -32,7 +32,7 @@ Branch `feature/pharmacy-harness`. Deterministic harness calls `read_store_inven
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display merged on main (PRs #5–#8) |
-| Kerrian Gordan | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+| Kerrian Gordon | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
 
 | Part | Integration handoff | Status |
 |---|---|---|
@@ -48,7 +48,7 @@ Validation: full local unittest suite including harness Eval Card Cases 1–2, C
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Assigned part; implementation status not established by this build |
-| Kerrian Gordan | Harness | Assigned part; implementation status not established by this build |
+| Kerrian Gordon | Harness | Assigned part; implementation status not established by this build |
 
 | Part | Integration handoff | Status |
 |---|---|---|
