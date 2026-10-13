@@ -10,6 +10,18 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 13, 2026: user approved the web interface and guarded Claude connection on
+`feature/pharmacy-agent-web-interface`, selecting the newest Haiku. Authenticated
+Models API verified active `claude-haiku-5-5`. New code lives in `src/pharmacy_agent`,
+`src/pharmacy_web`, `web/templates`, and `web/assets`; existing contributor modules,
+CLI, local tester and presentations are preserved. This is local implementation,
+not a push record. No commit, PR merge or deployment is claimed.
+
+`feature/supabase-inventory-schema` contains the separate approved reader/schema;
+it is not merged into this web branch. Open teammate PR #13 targets main for FDA
+match-row/conflict reporting and remains separate. Main was verified current at
+the web build baseline `d08a6b444ef1f71bca8c4e524410ccd4dce2cd3c`.
+
 October 8, 2026, America/New_York: workspace/documentation setup authorized. The nine existing foundation files are preserved. PRD remains a draft. SQL/database implementation and proposed changes remain deferred. Team Alignment was subsequently authorized; the editable ODP is published in PR #9.
 
 No application runtime, database, live inventory integration, deployment, or dependency installation is included in this setup. Proposed future stack: Python, FastAPI, Pydantic, pytest, and simple HTML/CSS/JavaScript.

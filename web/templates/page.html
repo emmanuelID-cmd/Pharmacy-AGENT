@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}{{ navigation|selectattr('key', 'equalto', active_view)|map(attribute='label')|first|default('Home') }} · Pharmacy-AGENT{% endblock %}
+{% block content %}
+  <div class="page-topline">
+    <button class="back-link" type="button" data-back aria-label="Go back to the previous page or Home">← <span>Back</span></button>
+    <div class="live-clock" aria-label="Current local time"><span class="status-dot" aria-hidden="true"></span><span>Current time</span><time id="current-clock"></time></div>
+  </div>
+
+  {% if active_view == 'home' %}
+  <section class="view" aria-labelledby="page-title">
+    <div class="split-layout home-layout">
+      <div class="intro-column">
+        <p class="eyebrow">A pharmacy workspace, built for review</p>
+        <h1 id="page-title" tabindex="-1">A clearer view of<br class="desktop-break"> your inventory.</h1>
+        <p class="lead">Review days of supply, see national shortage context, and bring the right questions to your team.</p>
+        <div class="action-row">
+          <a class="button" href="/agent" data-route="/agent">Open Agent <span aria-hidden="true">→</span></a>
+          <a class="button button-secondary" href="/demo" data-route="/demo">Explore demo</a>
+        </div>
+        <div class="notice notice-warn"><strong>Human review stays in control.</strong><br>Recommendations never place orders or change inventory.</div>
+      </div>
+      <aside class="panel home-summary">
+        <h2>One review. Clear evidence.</h2>
+        <ol class="check-list">
+          <li>Read the store inventory and 14-day usage.</li>
+          <li>Validate identity, units, and freshness.</li>
+          <li>Calculate supply and check FDA context.</li>
+          <li>Return evidence or a safe failure.</li>
+        </ol>
+        <div class="detail-row"><span>Existing fixture</span><strong>20 inventory rows</strong></div>
+        <div class="detail-row"><span>Source mode</span><strong>{{ source_mode|default('fixture')|title }}</strong></div>
+      </aside>
+    </div>
+  </section>
+
+  {% elif active_view == 'agent' %}
+  <section class="view" aria-labelledby="page-title">
+    <p class="eyebrow">Agent · Guided inventory review</p>
+    <h1 class="page-heading" id="page-title" tabindex="-1">What would you like to review?</h1>
+    <p class="lead">Use the guarded review for store 1618. Your request cannot change the store, permissions, or inventory.</p>
+    <div class="split-layout">
+      <div class="panel">
+        <form id="review-form" novalidate>
+          <div id="review-errors" class="error-summary" role="alert" tabindex="-1" hidden>
+            <strong>Check your request</strong><ul><li><a href="#review-request" id="review-error-link"></a></li></ul>
+          </div>
+          <label for="review-request">Inventory review request <span class="required-mark">Required</span></label>
+          <textarea id="review-request" name="request" rows="5" aria-describedby="request-help request-counter request-error" aria-invalid="false" placeholder="Review inventory for store 1618 and flag items that need attention."></textarea>
+          <div class="field-help" id="request-help">Inventory review only. Enter 1–1,000 Unicode characters; whitespace-only requests are not accepted. Example: “Review current inventory for items needing human attention.”</div>
+          <div class="field-meta"><span id="request-error" class="field-error" hidden></span><span id="request-counter" class="counter">0 / 1,000</span></div>
+          <div class="action-row">
+            <button class="button" type="submit" id="run-review">Run inventory review</button>
+            <button class="button button-secondary" type="button" id="stop-review" disabled>Stop waiting</button>
+            <button class="button button-text" type="button" id="retry-review" hidden>Retry review</button>
+          </div>
+          <p class="small muted form-footnote">Stopping ends this browser’s wait. The server may finish within its own bounded time.</p>
+        </form>
+        <div id="review-status" class="status-message" role="status" aria-live="polite" hidden></div>
+        <div id="review-result" class="result-area" aria-live="polite" hidden></div>
+      </div>
+      <aside class="panel side-panel">
+        <h2>How a review is protected</h2>
+        <ol class="check-list">
+          <li>Store 1618 is fixed for this review.</li>
+          <li>Only authorized read tools can run.</li>
+          <li>External text stays outside trusted facts.</li>
+          <li>Calculations and the final report are checked.</li>
+        </ol>
+        <div class="notice notice-info">The live review uses the current clock. A stale snapshot requires manual review.</div>
+        <div class="detail-row"><span>Model</span><strong>{{ model|default('Configured server model') }}</strong></div>
+        <div class="detail-row"><span>Provider setup</span><strong class="provider-status">{% if provider_configured %}Configured{% else %}Unavailable{% endif %}</strong></div>
+      </aside>
+    </div>
+  </section>
+
+  {% elif active_view == 'tools' %}
+  <section class="view" aria-labelledby="page-title">
+    <p class="eyebrow">Tools · Read access</p><h1 class="page-heading" id="page-title" tabindex="-1">Two tools. Defined boundaries.</h1>
+    <p class="lead">Inspect what each tool supplies and what the harness validates.</p>
+    <div class="split-layout">
+      <article class="panel"><h2>Store inventory</h2><code class="code-chip">read_store_inventory(store_id=1618)</code><p>Stock, units, item identity, snapshot, and aggregate 14-day usage.</p><span class="badge badge-soft">Synthetic fixture reader</span><div class="notice notice-warn">The current local fixture is dated October 7, 2026. Freshness is checked at run time.</div></article>
+      <article class="panel"><h2>National shortage context</h2><code class="code-chip">get_fda_shortage_context(package_ndc)</code><p>FDA context for validated inventory NDCs. It does not establish local stock.</p><span class="badge badge-soft">FDA adapter</span><div class="notice notice-warn">Unavailable or incomplete results stay explicitly unavailable.</div></article>
+    </div>
+  </section>
+
+  {% elif active_view == 'harness' %}
+  <section class="view" aria-labelledby="page-title">
+    <p class="eyebrow">Harness · Controlled execution</p><h1 class="page-heading" id="page-title" tabindex="-1">The path from request to report.</h1>
+    <p class="lead">The deterministic Python harness calls existing read-only tools, applies policy calculations, and validates structured output.</p>
+    <div class="split-layout">
+      <div class="panel step-list">
+        <div class="step"><span class="step-number">1</span><div><h2>Authorize each read</h2><p>Allowlist, fixed store, and per-run budget.</p></div></div>
+        <div class="step"><span class="step-number">2</span><div><h2>Validate and calculate</h2><p>Shape, identity, freshness, units, and deterministic supply.</p></div></div>
+        <div class="step"><span class="step-number">3</span><div><h2>Build trusted context</h2><p>Raw labels and external instructions are excluded.</p></div></div>
+        <div class="step"><span class="step-number">4</span><div><h2>Validate output and stop</h2><p>Changed facts become a deterministic manual-review result.</p></div></div>
+      </div>
+      <aside class="panel"><h2>Execution status</h2><div class="detail-row"><span>Harness + tools</span><span class="badge badge-soft">Existing</span></div><div class="detail-row"><span>Claude provider setup</span><span class="badge badge-soft">{{ 'Configured' if provider_configured else 'Unavailable' }}</span></div><div class="detail-row"><span>Web review endpoints</span><span class="badge badge-soft">Available</span></div><div class="action-row"><a class="button" href="/demo" data-route="/demo">Run fixed demo</a></div></aside>
+    </div>
+  </section>
+
+  {% elif active_view == 'injection' %}
+  <section class="view" aria-labelledby="page-title">
+    <p class="eyebrow">Injection Risk Test · Synthetic scenarios</p><h1 class="page-heading" id="page-title" tabindex="-1">See how a risky input is contained.</h1>
+    <p class="lead">Run the existing Python tester against a fixed synthetic sample. Submitted text is only an example input; it never supplies trusted facts.</p>
+    <div class="split-layout">
+      <div class="panel">
+        <form id="tester-form" novalidate>
+          <label for="test-sample">Synthetic test sample</label>
+          <select id="test-sample" name="sample_id" aria-describedby="sample-help"><option value="">Loading available samples…</option></select>
+          <p class="field-help" id="sample-help">Samples come from the server-owned synthetic test set.</p>
+          <label for="test-request">Optional request text</label>
+          <textarea id="test-request" rows="3" aria-describedby="test-request-help test-request-meta" placeholder="Optional text to include in the synthetic test request."></textarea>
+          <p class="field-help" id="test-request-help">Optional · Up to 1,000 Unicode characters. Text is sent to the test endpoint and is not shown as trusted source data.</p>
+          <div class="field-meta" id="test-request-meta"><span class="field-error" id="test-request-error" role="alert" hidden></span><span class="counter" id="test-request-counter">0 / 1,000</span></div>
+          <label for="output-change">Output guard case</label>
+          <select id="output-change"><option value="none">No change</option><option value="alter_days">Alter days of supply</option><option value="hide_warnings">Hide warnings</option><option value="claim_order">Claim an order was placed</option></select>
+          <div class="action-row"><button class="button" type="submit">Run synthetic test</button></div>
+        </form>
+        <div id="tester-status" class="status-message" role="status" aria-live="polite" hidden></div>
+        <div id="tester-result" class="result-area" hidden></div>
+      </div>
+      <aside class="panel"><h2>Evidence has limits</h2><p>Existing automated cases cover selected payloads and boundaries. They do not prove universal injection prevention.</p><p class="small muted">Detection, permission checks, context isolation, and output verification work at separate boundaries. This route runs fixed synthetic fixtures only.</p></aside>
+    </div>
+  </section>
+
+  {% elif active_view == 'failure' %}
+  <section class="view" aria-labelledby="page-title">
+    <p class="eyebrow">Failure State · Recovery</p><h1 class="page-heading" id="page-title" tabindex="-1">Failures should be visible and recoverable.</h1>
+    <p class="lead">Keep the draft. Explain the affected boundary. Avoid presenting incomplete data as a completed review.</p>
+    <div class="split-layout">
+      <div class="panel"><label for="failure-scenario">Preview a failure scenario</label><select id="failure-scenario"><option value="timeout">Agent or tool timeout</option><option value="key">Missing server API key</option><option value="malformed">Malformed tool result</option><option value="store">Wrong store result</option><option value="empty">No inventory rows</option><option value="fda">FDA unavailable</option><option value="offline">Browser offline</option></select><button class="button button-secondary scenario-button" id="preview-failure" type="button">Show recovery guidance</button><div id="failure-result" class="notice notice-info" role="status" aria-live="polite" hidden></div><div class="action-row"><a class="button button-secondary" href="/agent" data-route="/agent">Return to Agent</a></div></div>
+      <aside class="panel"><h2>Safe completion</h2><p>Timeouts, invalid inventory, and unauthorized calls stop safely or return manual review.</p><p>FDA unavailability stays visible alongside otherwise valid supply evidence.</p><p class="small muted">“No Internet Access” is shown only when the browser reports that it is offline.</p></aside>
+    </div>
+  </section>
+
+  {% elif active_view == 'demo' %}
+  <section class="view" aria-labelledby="page-title">
+    <p class="eyebrow">Demo · Fixed example</p><h1 class="page-heading" id="page-title" tabindex="-1">A review you can explore together.</h1>
+    <p class="lead">Synthetic inventory, a declared October 7, 2026 example clock, and simulated FDA context. Claude and live FDA calls are off.</p>
+    <div class="split-layout">
+      <div class="panel"><h2>Store {{ store_id|default(1618) }} · Example snapshot</h2><div class="detail-row"><span>Inventory source</span><strong>Synthetic · 20 rows</strong></div><div class="detail-row"><span>Usage window</span><strong>14 days</strong></div><button class="button" id="run-demo" type="button">Run fixed demo</button><div id="demo-status" class="status-message" role="status" aria-live="polite" hidden></div><div id="demo-result" class="result-area" hidden></div></div>
+      <aside class="panel"><h2>Bring the team along</h2><p>Start with the review, inspect the tools, then explore an injection boundary and a failure.</p><div class="action-row"><a class="button button-secondary" href="/architecture" data-route="/architecture">See steps to connect</a></div><div class="notice notice-warn">A frozen demo does not establish that a current snapshot is fresh.</div></aside>
+    </div>
+  </section>
+
+  {% elif active_view == 'architecture' %}
+  <section class="view" aria-labelledby="page-title">
+    <p class="eyebrow">Architecture · Steps to connect</p><h1 class="page-heading" id="page-title" tabindex="-1">Request → guarded tools → verified report.</h1>
+    <p class="lead">The assembled path keeps each trust boundary visible. Existing components and interface connections are labelled separately.</p>
+    <div class="architecture-flow">
+      <article class="panel"><span class="badge badge-soft">1 · Interface</span><h2>Observe</h2><p class="small">A staff member asks for an inventory review.</p></article>
+      <article class="panel"><span class="badge badge-soft">2 · Instructions</span><h2>Constrain</h2><p class="small">Review only. Fixed store. Untrusted text is data.</p></article>
+      <article class="panel"><span class="badge badge-soft">3 · Guarded loop</span><h2>Authorize</h2><p class="small">Guard each Claude tool proposal and enforce budgets.</p></article>
+      <article class="panel"><span class="badge badge-soft">4 · Reader</span><h2>Read inventory</h2><p class="small">Validate stock and usage; calculate supply in Python.</p></article>
+      <article class="panel"><span class="badge badge-soft">5 · FDA adapter</span><h2>Check context</h2><p class="small">Use validated NDCs. Mark unavailable results.</p></article>
+      <article class="panel"><span class="badge badge-soft">6 · Output guard</span><h2>Report and stop</h2><p class="small">Verify exact facts; display the report or safe fallback.</p></article>
+    </div>
+    <figure class="architecture-image"><img src="/assets/architecture.png" alt="Pharmacy agent architecture diagram" loading="lazy"><figcaption>Architecture overview</figcaption></figure>
+    <div class="notice notice-warn"><strong>Human decision remains outside the agent.</strong> The interface returns evidence for review and cannot place orders or change inventory.</div>
+  </section>
+  {% endif %}
+{% endblock %}
