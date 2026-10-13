@@ -68,6 +68,12 @@ The active phase records live under [docs/planning/Phase](docs/planning/Phase/RE
 
 Push records are ordered newest first.
 
+## 2026-10-13T12:01:35-04:00
+
+- Verified feature/pharmacy-harness push 8ef41d2889afb812b080e555b5544c2cecb59b6d..7dbf6d8f13951fa0e31369e607b72fb1bb3ddbeb.
+- CLI defaults to the Eval Card clock; `--now` uses the wall clock; `--offline` uses a recorded Case 1 FDA payload. No main merge. Draft PR #13 remains the review.
+- Harness tests: 61 OK.
+
 ## 2026-10-13T11:53:33-04:00
 
 - Verified feature/pharmacy-harness push d61414aa9044b824e947e19517e681eecaca28d1..dd181cad9ffacbfc77ea52fae53d6b629efe1b4a.
