@@ -89,6 +89,12 @@ def format_manager_report(report):
     elif turn.get("state") == "REJECTED":
         reason = turn.get("reason_code") or "OUTPUT_EVIDENCE_MISMATCH"
         lines.append(f"Model turn: REJECTED ({reason}). Using verified facts only.")
+    elif turn.get("state") == "MODEL_UNAVAILABLE":
+        reason = turn.get("reason_code") or "MODEL_TRANSPORT_FAILED"
+        lines.append(
+            f"Model turn: MODEL_UNAVAILABLE ({reason}). "
+            "No live model answer; using verified facts only."
+        )
     elif turn.get("state") == "SKIPPED":
         lines.append("Model turn: skipped (deterministic report only).")
     if report.get("source_reason"):

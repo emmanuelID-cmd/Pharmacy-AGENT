@@ -214,10 +214,10 @@ def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, i
             outcome = run_model_turn(context, complete)
             safety = outcome.report
             model_turn = {
-                "state": "ACCEPTED" if outcome.accepted else "REJECTED",
+                "state": outcome.state,
                 "reason_code": outcome.reason_code,
             }
-            if not outcome.accepted:
+            if outcome.state != "ACCEPTED":
                 run_state = "MANUAL_REVIEW"
         warning_codes = list(safety["warning_codes"])
     except Exception:
