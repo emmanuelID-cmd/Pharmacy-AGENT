@@ -11,7 +11,10 @@ except ImportError:
 from .calculate import calculate_item
 from .facts import to_trusted_fact
 from .report import assess_fda, build_report, failed_source_report
-from .validate import STORE_ID, duplicate_item_ids, inspect_item, inspect_snapshot, parse_run_at
+from .validate import (
+    STORE_ID, duplicate_item_ids, inspect_item, inspect_snapshot,
+    locate_identity_source_faults, parse_run_at,
+)
 
 
 def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_get=None,
@@ -39,8 +42,13 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
         budget=budget,
     )
     if inventory_dispatch.state != "COMPLETE" or "inventory" not in captured:
+        payload = captured.get("inventory")
+        faults = ()
+        if type(payload) is dict:
+            faults = locate_identity_source_faults(payload.get("items"))
         return failed_source_report(
             run_at=moment, inventory_dispatch=inventory_dispatch, fda_source=fda_source,
+            source_faults=faults,
         )
 
     payload = captured["inventory"]

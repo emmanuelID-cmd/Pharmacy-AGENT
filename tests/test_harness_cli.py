@@ -87,9 +87,11 @@ class HarnessDisplayTests(unittest.TestCase):
         report["items"] = []
         report["source_state"] = "DENIED"
         report["source_reason"] = "INVALID_STORE"
+        report["source_faults"] = [{"row": 2, "field": "item_id", "reason": "MISSING_ITEM_ID"}]
         text = format_manager_report(report)
         self.assertIn("Entire source", text)
         self.assertIn("No stock condition is claimed.", text)
+        self.assertIn("row 2, item_id (MISSING_ITEM_ID)", text)
 
     def test_conflicting_records_are_listed_without_narrative(self):
         report = sample_report()

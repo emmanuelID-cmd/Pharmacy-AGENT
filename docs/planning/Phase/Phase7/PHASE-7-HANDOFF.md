@@ -29,7 +29,7 @@ The CLI defaults to `2026-10-07T10:00:00-04:00` so the dated fixture is fresh. `
 2. Harness validates identity, units, freshness and the 14-day window, then calculates days of supply.
 3. `TrustedFact` objects are constructed in harness code and passed to `assemble_context`.
 4. `execute_guarded` FDA for each accepted package NDC on the same `RunBudget`.
-5. Human report lists every input row and every exact-match FDA record. Conflicting FDA records are `NEEDS_REVIEW`; they never change local class. `report-v1` is the prevention safety copy. `order_placed` and `inventory_changed` stay false.
+5. Human report lists every input row and every exact-match FDA record when inventory intake completes. A missing, non-opaque, or duplicate `item_id` rejects the source (`INVALID_TOOL_RESULT`); the failed-source report cites row position and field only and does not call FDA. Invalid NDC, unit, quantity, usage, and an unsafe label stay row-level. Conflicting FDA records are `NEEDS_REVIEW`; they never change local class. `report-v1` is the prevention safety copy. `order_placed` and `inventory_changed` stay false.
 
 TrustedFact cannot store CRITICAL with a missing duration. A verified zero-stock fact with no usage basis stays CRITICAL on the human report and maps to UNKNOWN in prevention context.
 

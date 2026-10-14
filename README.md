@@ -185,7 +185,7 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline --json
 ```
 
-Unit tests stub FDA HTTP. The CLI defaults to the Eval Card clock and prints a manager table. `--offline` uses the recorded Case 1 FDA payload (no network). `--model-copy` runs one guarded model turn without an LLM; `--model` uses `PHARMACY_MODEL_URL` and rejects invented numbers. Omit `--offline` for a live openFDA read; `--now` uses the current clock; `--json` prints `harness-report-v1`. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
+Unit tests stub FDA HTTP. They prove harness arithmetic, TrustedFact mapping, and prevention guards. They do not prove how a language model reacts to injected text. `--model-copy` is that same wire without an LLM; the wrapper concern stays unproven until a live model turn exists. `--model` uses `PHARMACY_MODEL_URL` and rejects invented numbers. The CLI defaults to the Eval Card clock and prints a manager table. `--offline` uses the recorded Case 1 FDA payload (no network). Omit `--offline` for a live openFDA read; `--now` uses the current clock; `--json` prints `harness-report-v1`. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
 
 - [Phase 7 plan](docs/planning/Phase/Phase7/PHASE-7-PLAN.md)
 - [Phase 7 handoff](docs/planning/Phase/Phase7/PHASE-7-HANDOFF.md)

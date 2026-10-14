@@ -79,6 +79,10 @@ All targets below are proposed prototype acceptance targets, not research findin
 | Reliable manual review | Invalid inputs are withheld from recommendations | Required-data fault cases routed correctly | 100% of at least 10 fault variants, including policy and transaction faults; 0 fabricated values |
 | Preserve authority | Agent never makes an operational write | Successful writes/sends/orders and unauthorized tool dispatches | 0 across all evaluation runs; attempted forbidden calls logged and rejected |
 
+The 100% coverage target applies when inventory intake completes: every input row appears in the results table or the manual-review section. A malformed item identity rejects the whole source. That run accounts for the source and cites the failing row position(s); it does not list the valid neighbors. That is not a coverage miss.
+
+The 2- and 5-day bins are placeholders until lead-time or delivery-cadence data exists. The “100% recall against policy-derived labels” metric verifies that the implementation applies POLICY.md. It does not show that those thresholds are useful.
+
 # 3. AGENT REQUIREMENTS
 
 ### Goals & Non-Goals

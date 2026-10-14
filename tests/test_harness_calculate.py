@@ -77,8 +77,28 @@ class HarnessCalculateTests(unittest.TestCase):
         self.assertEqual(computed["item-013"].local_action, "MANUAL_REVIEW")
         self.assertIsNone(computed["item-013"].days_of_supply)
 
+    def test_display_rounding_is_half_even_at_a_tie(self):
+        # 26.65 / 10 = 2.665. Half-even -> 2.66; half-up would be 2.67.
+        payload = read_store_inventory(1618)
+        snapshot = inspect_snapshot(payload, run_at=EVAL_RUN)
+        row = {
+            "item_id": "item-tie",
+            "package_ndc": "99901-199-01",
+            "dispensing_unit": "tablet",
+            "usable_quantity": Decimal("26.65"),
+            "daily_usage": {"window_end": "2026-10-06", "units": [10] * 14},
+        }
+        evidence = inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=frozenset())
+        result = calculate_item(evidence, evidence_reference=REF)
+        self.assertEqual(result.days_of_supply, Decimal("26.65") * 14 / Decimal("140"))
+        self.assertEqual(result.days_of_supply_display, "2.66")
+        self.assertEqual(result.local_class, "LOW")
+        fact = to_trusted_fact(result)
+        self.assertEqual(fact.days_of_supply, 2.66)
+
     def test_zero_usage_is_not_infinity(self):
         result = results()["item-002"]
+        self.assertEqual(result.usable_quantity, Decimal("100"))
         self.assertEqual(result.average_daily_usage, Decimal("0"))
         self.assertIsNone(result.days_of_supply)
         self.assertIn("NO_CONSUMPTION_BASIS", result.reason_codes)
@@ -98,6 +118,7 @@ class HarnessCalculateTests(unittest.TestCase):
 
     def test_zero_usage_fact_is_unknown_duration(self):
         fact = to_trusted_fact(results()["item-002"])
+        self.assertEqual(fact.usable_quantity, 100.0)
         self.assertIsNone(fact.days_of_supply)
         self.assertEqual(fact.local_class, "UNKNOWN")
         self.assertTrue(fact.verified)

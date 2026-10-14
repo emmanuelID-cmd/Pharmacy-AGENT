@@ -3,7 +3,7 @@ import unittest
 
 from src.pharmacy_harness.validate import (
     SOURCE_FAILURE_CODES, duplicate_item_ids, inspect_item, inspect_snapshot,
-    last_completed_day, parse_run_at,
+    last_completed_day, locate_identity_source_faults, parse_run_at,
 )
 from src.pharmacy_tools.inventory import LEGACY_FIXTURE_PATH, read_store_inventory
 
@@ -78,6 +78,40 @@ class HarnessValidationTests(unittest.TestCase):
         row = next(item for item in snapshot.items if item["item_id"] == "item-012")
         evidence = inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=frozenset())
         self.assertIn("INVALID_USABLE_STOCK", evidence.reason_codes)
+
+    def test_inspect_item_still_flags_a_missing_item_id(self):
+        snapshot = inspect_snapshot(fixture(), run_at=EVAL_RUN)
+        row = {"package_ndc": "99901-101-01", "dispensing_unit": "tablet",
+               "usable_quantity": 1, "daily_usage": {"window_end": "2026-10-06", "units": [0] * 14}}
+        evidence = inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=frozenset())
+        self.assertIn("INVALID_ITEM_REFERENCE", evidence.reason_codes)
+        self.assertIsNone(evidence.item_id)
+
+    def test_identity_source_faults_cite_row_and_field_only(self):
+        faults = locate_identity_source_faults([
+            {"item_id": "item-001"},
+            {"package_ndc": "42023-240-01"},
+            {"item_id": "item 001"},
+            {"item_id": "item-001"},
+        ])
+        self.assertEqual(faults, (
+            {"row": 1, "field": "item_id", "reason": "DUPLICATE_ITEM_ID"},
+            {"row": 2, "field": "item_id", "reason": "MISSING_ITEM_ID"},
+            {"row": 3, "field": "item_id", "reason": "INVALID_ITEM_REFERENCE"},
+            {"row": 4, "field": "item_id", "reason": "DUPLICATE_ITEM_ID"},
+        ))
+        self.assertTrue(all("item 001" not in str(fault) for fault in faults))
+
+    def test_identity_source_faults_name_every_duplicate_row(self):
+        faults = locate_identity_source_faults([
+            {"item_id": "item-001"},
+            {"item_id": "item-002"},
+            {"item_id": "item-001"},
+        ])
+        self.assertEqual(faults, (
+            {"row": 1, "field": "item_id", "reason": "DUPLICATE_ITEM_ID"},
+            {"row": 3, "field": "item_id", "reason": "DUPLICATE_ITEM_ID"},
+        ))
 
     def test_duplicate_item_ids_fail_identity(self):
         payload = copy.deepcopy(fixture())

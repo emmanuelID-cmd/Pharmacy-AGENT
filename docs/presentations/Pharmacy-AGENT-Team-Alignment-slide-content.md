@@ -89,6 +89,8 @@ Speaker notes: test_action_output_guards.py, test_security_boundaries.py and tes
 
 ## 8. Tested evidence and next integration work
 
+These evals test harness arithmetic and prevention guards. They do not test how a language model reacts to injected text. `--model-copy` is not an LLM; the wrapper concern stays unproven until a live model turn exists.
+
 Fresh qualification run, October 9, 2026:
 
 - 85 selected fixtures matched their predefined outcomes.

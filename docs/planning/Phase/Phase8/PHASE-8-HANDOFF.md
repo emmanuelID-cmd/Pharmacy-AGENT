@@ -20,4 +20,4 @@ python3 -m src.pharmacy_harness --offline --model-copy
 
 ## Validation
 
-Copying complete is ACCEPTED. A completer that sets `usable_quantity=999` or `order_placed=true` is REJECTED; human Case 1 remains 80 units / 6.22 days. Prose is REJECTED. No live model is required for these tests.
+Copying complete is ACCEPTED. A completer that sets `usable_quantity=999` or `order_placed=true` is REJECTED; human Case 1 remains 80 units / 6.22 days. Prose is REJECTED. No live model is required for these tests. They prove the harness wire and `validate_report` guard, not how a language model reacts to injected text. The wrapper concern stays unproven until a live model turn exists.

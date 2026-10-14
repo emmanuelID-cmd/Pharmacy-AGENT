@@ -101,6 +101,16 @@ def format_manager_report(report):
     if not items and report.get("run_state") == "MANUAL_REVIEW":
         reason = report.get("source_reason") or "source unavailable"
         lines.append(f"  Entire source. {reason}. No stock condition is claimed.")
+        for fault in report.get("source_faults") or ():
+            if type(fault) is not dict:
+                continue
+            row = fault.get("row")
+            field = fault.get("field")
+            code = fault.get("reason")
+            if type(row) is not int or type(field) is not str:
+                continue
+            extra = f" ({code})" if type(code) is str else ""
+            lines.append(f"  row {row}, {field}{extra}")
     elif not review_rows:
         lines.append("  None.")
     else:
