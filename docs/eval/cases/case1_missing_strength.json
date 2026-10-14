@@ -1,0 +1,566 @@
+{
+ "store_id": 1618,
+ "synthetic": true,
+ "snapshot_reference": "synthetic-snapshot-2026-10-07",
+ "snapshot_timestamp": "2026-10-07T09:00:00-04:00",
+ "policy_version": "SYNTHETIC-v0",
+ "items": [
+  {
+   "item_id": "item-001",
+   "package_ndc": "42023-240-01",
+   "product_label": "Methylprednisolone Acetate Injection",
+   "dosage_form": "Injection",
+   "dispensing_unit": "unit",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     10,
+     14,
+     7,
+     18,
+     10,
+     14,
+     10,
+     7,
+     14,
+     18,
+     10,
+     14,
+     10,
+     24
+    ]
+   },
+   "usable_quantity": 80
+  },
+  {
+   "item_id": "item-002",
+   "package_ndc": "0009-0280-02",
+   "product_label": "Methylprednisolone Acetate Injection",
+   "dosage_form": "Injection",
+   "dispensing_unit": "unit",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ]
+   },
+   "usable_quantity": 100,
+   "strength": "40 mg/mL"
+  },
+  {
+   "item_id": "item-003",
+   "package_ndc": "99901-101-01",
+   "product_label": "Synthetic Medication C",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     2,
+     7,
+     4,
+     5,
+     4,
+     2,
+     5,
+     7,
+     4,
+     5,
+     4,
+     12
+    ]
+   },
+   "usable_quantity": 10,
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-004",
+   "package_ndc": "99901-102-01",
+   "product_label": "Synthetic Medication D",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     11,
+     5,
+     14,
+     8,
+     11,
+     8,
+     5,
+     11,
+     14,
+     8,
+     11,
+     8,
+     18
+    ]
+   },
+   "usable_quantity": 50,
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-005",
+   "package_ndc": "99901-103-01",
+   "product_label": "Synthetic Medication E",
+   "dosage_form": "Capsule",
+   "dispensing_unit": "capsule",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     8,
+     4,
+     11,
+     6,
+     8,
+     6,
+     4,
+     8,
+     11,
+     6,
+     8,
+     6,
+     20
+    ]
+   },
+   "usable_quantity": 30,
+   "strength": "20 mg"
+  },
+  {
+   "item_id": "item-006",
+   "package_ndc": "99901-104-01",
+   "product_label": "Synthetic Medication F",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     1,
+     4,
+     2,
+     3,
+     2,
+     1,
+     3,
+     4,
+     2,
+     3,
+     2,
+     10
+    ]
+   },
+   "usable_quantity": 0,
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-007",
+   "package_ndc": "99901-105-01",
+   "product_label": "Synthetic Medication G",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     16,
+     22,
+     11,
+     28,
+     16,
+     22,
+     16,
+     11,
+     22,
+     28,
+     16,
+     22,
+     16,
+     34
+    ]
+   },
+   "usable_quantity": 500,
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-008",
+   "package_ndc": "99901-106-01",
+   "product_label": "Synthetic Medication H",
+   "dosage_form": "Capsule",
+   "dispensing_unit": "capsule",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     11,
+     5,
+     14,
+     8,
+     11,
+     8,
+     5,
+     11,
+     14,
+     8,
+     11,
+     16
+    ]
+   },
+   "usable_quantity": 60,
+   "strength": "20 mg"
+  },
+  {
+   "item_id": "item-009",
+   "package_ndc": "99901-107-01",
+   "product_label": "Synthetic Medication I",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     11,
+     5,
+     14,
+     8,
+     11,
+     8,
+     5,
+     11,
+     14,
+     8,
+     11,
+     8,
+     18
+    ]
+   },
+   "usable_quantity": 51,
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-010",
+   "package_ndc": "99901-108-01",
+   "product_label": "Synthetic Medication J",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     11,
+     5,
+     14,
+     8,
+     11,
+     8,
+     5,
+     11,
+     14,
+     8,
+     11,
+     8,
+     18
+    ]
+   },
+   "usable_quantity": 21,
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-011",
+   "package_ndc": "99901-109-01",
+   "product_label": "Synthetic Medication K",
+   "dosage_form": "Oral Solution",
+   "dispensing_unit": "mL",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     100,
+     134,
+     67,
+     168,
+     100,
+     134,
+     100,
+     67,
+     134,
+     168,
+     100,
+     134,
+     100,
+     174
+    ]
+   },
+   "usable_quantity": 1200,
+   "strength": "5 mg/mL"
+  },
+  {
+   "item_id": "item-012",
+   "package_ndc": "99901-110-01",
+   "product_label": "Synthetic Medication L",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     2,
+     7,
+     4,
+     5,
+     4,
+     2,
+     5,
+     7,
+     4,
+     5,
+     4,
+     12
+    ]
+   },
+   "usable_quantity": -5,
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-013",
+   "package_ndc": "99901-111-01",
+   "product_label": "Synthetic Medication M",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     2,
+     7,
+     4,
+     5,
+     4,
+     2,
+     5,
+     7,
+     4,
+     5,
+     4,
+     12
+    ]
+   },
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-014",
+   "package_ndc": "99901-112-01",
+   "product_label": "Synthetic Medication N",
+   "dosage_form": "Inhaler",
+   "dispensing_unit": "unit",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     2,
+     5,
+     3,
+     4,
+     3,
+     2,
+     4,
+     5,
+     3,
+     4,
+     3,
+     11
+    ]
+   },
+   "usable_quantity": 12,
+   "strength": "90 mcg/actuation"
+  },
+  {
+   "item_id": "item-015",
+   "package_ndc": "99901-113-01",
+   "product_label": "Synthetic Medication O",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     12,
+     16,
+     8,
+     21,
+     12,
+     16,
+     12,
+     8,
+     16,
+     21,
+     12,
+     16,
+     12,
+     28
+    ]
+   },
+   "usable_quantity": 15,
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-016",
+   "package_ndc": "99901-114-01",
+   "product_label": "Synthetic Medication P",
+   "dosage_form": "Capsule",
+   "dispensing_unit": "capsule",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     25,
+     33,
+     16,
+     42,
+     25,
+     33,
+     25,
+     16,
+     33,
+     42,
+     25,
+     33,
+     25,
+     47
+    ]
+   },
+   "usable_quantity": 240,
+   "strength": "20 mg"
+  },
+  {
+   "item_id": "item-017",
+   "package_ndc": "99901-115-01",
+   "product_label": "Synthetic Medication Q",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     11,
+     15,
+     7,
+     19,
+     11,
+     15,
+     11,
+     7,
+     15,
+     19,
+     11,
+     15,
+     11,
+     29
+    ]
+   },
+   "usable_quantity": 90,
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-018",
+   "package_ndc": "99901-116-01",
+   "product_label": "Synthetic Medication R",
+   "dosage_form": "Injection",
+   "dispensing_unit": "unit",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     1,
+     4,
+     2,
+     3,
+     2,
+     1,
+     3,
+     4,
+     2,
+     3,
+     2,
+     10
+    ]
+   },
+   "usable_quantity": 4,
+   "strength": "40 mg/mL"
+  },
+  {
+   "item_id": "item-019",
+   "package_ndc": "99901-117-01",
+   "product_label": "Synthetic Medication S",
+   "dosage_form": "Tablet",
+   "dispensing_unit": "tablet",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     13,
+     17,
+     8,
+     22,
+     13,
+     17,
+     13,
+     8,
+     17,
+     22,
+     13,
+     17,
+     13,
+     31
+    ]
+   },
+   "usable_quantity": 64,
+   "strength": "10 mg"
+  },
+  {
+   "item_id": "item-020",
+   "package_ndc": "99901-118-01",
+   "product_label": "Synthetic Medication T",
+   "dosage_form": "Cream",
+   "dispensing_unit": "unit",
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     11,
+     5,
+     14,
+     8,
+     11,
+     8,
+     5,
+     11,
+     14,
+     8,
+     11,
+     8,
+     18
+    ]
+   },
+   "usable_quantity": 300,
+   "strength": "1%"
+  }
+ ]
+}

@@ -77,6 +77,7 @@ class OpenRouterProvider:
     def __init__(self, key, model, log):
         self.key, self.model, self.log = key, model, log
         self.ids = {}
+        self.trace = []
 
     def _safe_id(self, raw):
         # run_agent only accepts [A-Za-z0-9_-]{1,128}; keep a stable mapping per run
@@ -108,7 +109,10 @@ class OpenRouterProvider:
                              for t in tools]
             body["tool_choice"] = to_openai_choice(choice)
         offered = [t["name"] for t in tools] or ["(none: write the final report)"]
+        turn = {"turn": len(self.trace) + 1, "model_input": body}
+        self.trace.append(turn)
         data = await asyncio.to_thread(self._post, body, timeout)
+        turn["model_output_raw"] = data
         if not isinstance(data, dict) or not data.get("choices"):
             raise ProviderUnavailable()
         message = data["choices"][0].get("message") or {}
@@ -135,6 +139,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--model", default=DEFAULT_MODEL, help="OpenRouter model id with tool calling")
     parser.add_argument("--catalog", action="store_true", help="use the 150-item catalog instead of the 20-row fixture")
+    parser.add_argument("--fixture", help="inventory JSON to use instead of the 20-row fixture (eval cases)")
+    parser.add_argument("--trace", help="write the full trace (model inputs, raw tool results, model outputs, final report) to this JSON file")
     parser.add_argument("--run-at", default="2026-10-07T10:00:00-04:00",
                         help="review time; defaults to the fixture's snapshot day so data is fresh ('now' = real clock)")
     args = parser.parse_args()
@@ -144,7 +150,8 @@ def main():
 
     log = []
     provider = OpenRouterProvider(key, args.model, log)
-    reader = None if args.catalog else partial(read_store_inventory, path=LEGACY_FIXTURE_PATH)
+    path = args.fixture or LEGACY_FIXTURE_PATH
+    reader = None if args.catalog and not args.fixture else partial(read_store_inventory, path=path)
     settings = Settings(api_key="openrouter-adapter")  # run limits: 6 turns, 120 s, 90 s per model call
     result = asyncio.run(run_agent("Run the inventory review for store 1618.", settings=settings,
                                    provider=provider, inventory_reader=reader,
@@ -156,6 +163,12 @@ def main():
     agent = dict(result["agent"], model=args.model)
     print("\nFINAL:", json.dumps({"state": result["state"], "reason_code": result["reason_code"], "agent": agent}))
     report = result.get("report")
+    if args.trace:
+        trace = {"model": args.model, "fixture": str(path), "run_at": args.run_at, "turns": provider.trace,
+                 "final": {"state": result["state"], "reason_code": result["reason_code"],
+                           "agent": dict(result["agent"], model=args.model), "report": report}}
+        Path(args.trace).write_text(json.dumps(trace, indent=1, ensure_ascii=False))
+        print("trace saved:", args.trace)
     if report:
         print("run_state:", report.get("run_state"), "| warnings:", report.get("warning_codes"))
         classes = {}
