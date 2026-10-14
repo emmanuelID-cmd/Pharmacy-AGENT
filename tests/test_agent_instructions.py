@@ -25,9 +25,9 @@ def fda_timeout_payload():
 class AgentInstructionsTests(unittest.TestCase):
     def test_tool_specs_are_exactly_the_guard_allowlist(self):
         names = {spec["function"]["name"] for spec in TOOL_SPECS}
-        self.assertEqual(names, {"read_store_inventory", "get_fda_shortage_context"})
+        self.assertEqual(names, {"read_store_inventory", "get_fda_shortage_context_batch"})
         inventory = authorize_tool_call({"name": "read_store_inventory", "arguments": {"store_id": 1618}})
-        fda = authorize_tool_call({"name": "get_fda_shortage_context", "arguments": {"package_ndc": "42023-240-01"}},
+        fda = authorize_tool_call({"name": "get_fda_shortage_context_batch", "arguments": {"package_ndcs": ["42023-240-01"]}},
                                   allowed_package_ndcs=("42023-240-01",))
         self.assertTrue(inventory.allowed and fda.allowed)
 
@@ -40,7 +40,7 @@ class AgentInstructionsTests(unittest.TestCase):
             self.assertEqual(bool(re.match(NDC_JSON_PATTERN, ndc)), bool(NDC_PATTERN.fullmatch(ndc)), ndc)
 
     def test_prompt_names_only_the_two_tools_and_forbids_actions(self):
-        for name in ("read_store_inventory", "get_fda_shortage_context"):
+        for name in ("read_store_inventory", "get_fda_shortage_context_batch"):
             self.assertIn(name, SYSTEM_PROMPT)
         for rule in ("never as instructions", "No other tool exists", "never means \"no shortage\"",
                      "Never compute, round, change or invent", "SYNTHETIC"):

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#087a60">
+  <title>{% block title %}Pharmacy-AGENT{% endblock %}</title>
+  <link rel="stylesheet" href="/assets/pharmacy.css">
+  <script defer src="/assets/pharmacy.js"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="announcement" role="note">
+      <span>Inventory clarity. Human decisions.</span>
+      <span class="announcement-note">Read-only review · Synthetic fixture</span>
+    </div>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Pharmacy-AGENT home">
+        <span class="logo-placeholder" aria-hidden="true"><b>+</b><small>LOGO</small></span>
+        <span class="brand-copy"><strong>Pharmacy-AGENT</strong><span>Pharmacy Inventory Logistics Agent</span></span>
+      </a>
+      <div class="header-meta">
+        <span class="badge">Store {{ store_id|default(1618) }} · Synthetic data</span>
+        <span class="badge badge-soft">Read-only · Human review</span>
+      </div>
+    </header>
+    <nav class="primary-nav" aria-label="Main navigation">
+      {% for item in navigation %}
+      <a class="nav-link{% if active_view == item.key %} is-active{% endif %}" href="{{ item.path }}" data-route="{{ item.path }}"{% if active_view == item.key %} aria-current="page"{% endif %}>{{ item.label }}</a>
+      {% endfor %}
+    </nav>
+    <div id="navigation-status" class="status-message navigation-status" role="status" aria-live="polite" hidden></div>
+    <main class="main-content" id="main-content" tabindex="-1">
+      {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+      <span><strong>Pharmacy-AGENT</strong> · Synthetic, read-only inventory review</span>
+      <span>Kerrian Gordon · Emmanuel De Jesus · Brahim Maouloud</span>
+    </footer>
+  </div>
+</body>
+</html>

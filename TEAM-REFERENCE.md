@@ -10,6 +10,20 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 13, 2026 integration: catalog/database, harness and historical web preview are reconciled locally. The CLI defaults to the 150-row public-identity/synthetic-stock fixture; web Agent/Demo explicitly retain the original 20-row fixture. Optional FDA narrative is omitted from outgoing JSON. No hosted catalog migration or web deployment has occurred. Full suite: 233 passing tests. SQL migration/seed execution remains outstanding without Docker. Earlier handoffs below describe their historical branch state.
+
+October 13, 2026: user approved the web interface and guarded Claude connection on
+`feature/pharmacy-agent-web-interface`, selecting the newest Haiku. Authenticated
+Models API verified active `claude-haiku-5-5`. New code lives in `src/pharmacy_agent`,
+`src/pharmacy_web`, `web/templates`, and `web/assets`; existing contributor modules,
+CLI, local tester and presentations are preserved. This is local implementation,
+not a push record. No commit, PR merge or deployment is claimed.
+
+`feature/supabase-inventory-schema` contains the separate approved reader/schema;
+it is not merged into this web branch. Open teammate PR #13 targets main for FDA
+match-row/conflict reporting and remains separate. Main was verified current at
+the web build baseline `d08a6b444ef1f71bca8c4e524410ccd4dce2cd3c`.
+
 October 8, 2026, America/New_York: workspace/documentation setup authorized. The nine existing foundation files are preserved. PRD remains a draft. SQL/database implementation and proposed changes remain deferred. Team Alignment was subsequently authorized; the editable ODP is published in PR #9.
 
 No application runtime, database, live inventory integration, deployment, or dependency installation is included in this setup. Proposed future stack: Python, FastAPI, Pydantic, pytest, and simple HTML/CSS/JavaScript.
@@ -26,13 +40,13 @@ Documentation is grouped in docs/requirements, docs/templates, docs/planning, an
 
 ## Latest local handoff — Phase 7 harness
 
-Branch `feature/pharmacy-harness`. Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. No language-model loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
+Branch `feature/pharmacy-harness`. Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW`. The CLI prints a manager table by default (`--json` for the machine copy), freezes the Eval Card clock unless `--now` is passed, and uses `--offline` for a recorded FDA payload. Phase 8 adds one guarded model turn (`--model-copy` or `--model`); invented numbers are rejected. No language-model loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
 
 | Member | Part | Verified contribution/status |
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display merged on main (PRs #5–#8) |
-| Kerrian Gordon | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+| Kerrian Gordon | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction, PRD report, and one guarded model turn implemented in Phases 7–8 |
 
 | Part | Integration handoff | Status |
 |---|---|---|
@@ -64,9 +78,53 @@ Validation: 66 behavior methods and85 selected fixtures;55 unsafe detected,30 be
 
 The active phase records live under [docs/planning/Phase](docs/planning/Phase/README.md). Historical Phases 1-5 and sub-phases 6.1-6.6 have explicitly reconstructed plan records referencing their verified implementation commits. Phase 7 is the harness implementation. Parent Phase 6 approval and historical comparison content are preserved. Publication is separately authorized after the original local Phase 6 handoff; verified pushes are recorded below after remote confirmation.
 
+## Supabase schema handoff — October 13, 2026
+
+Approved initial schema and seed deployed to xrptinavijhwvydoqdni using CLI management access. Nine pharmacy tables have RLS; no anon/authenticated grants or reader account memberships were added. Source imports are private; the scoped reader has SELECT only on six approved tables.
+
+Two migrations recorded: 20261013040620 and 20261013040621. Seed: 20 items, 20 snapshots, 266 dated usage rows, 20 review exceptions, two unknown stock values, zero fabricated policies/events/audit records. Historical source dates and original JSON remain unchanged. All records still need independent harness verification.
+
+Two rollback-only database/security rounds passed; 94 application tests and 85 qualification fixtures passed. The repository .env has a CLI parsing error; secret values were not inspected. Deployment used byte-verified temporary config/migration/seed copies. Existing presentation cleanup remains separate. No Git commit or push for this schema work yet. This is a deployment handoff, not a Git push record.
+
+## Read-only backend handoff — October 13, 2026
+
+Approved dedicated backend login and database reader implemented independently of the full harness. Migration 20261013042410 deployed; pharmacy_agent_backend inherits the restricted reader and defaults to read-only transactions. Generated password is only in ignored .env.database; no credential values were shown or committed.
+
+New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
+
 # Date and Timestamp of Push
 
 Push records are ordered newest first.
+
+## 2026-10-13T15:54:46-04:00
+
+- Verified feature/pharmacy-harness push 0bdb0168d3c8e86f192f8c1b4ef9ca95e8efd1fc..06cd1061e95736c67f4e4842aae3e5bc2b1f0185.
+- Model turn prepends a harness wrapper that tools already ran; Brahim's SYSTEM_PROMPT is unchanged. No main merge. Draft PR #13 remains the review.
+
+## 2026-10-13T15:06:17-04:00
+
+- Verified feature/pharmacy-harness push fed64285454849e4b3b8f973f4b4349f79b69b8a..176b80f65e7fbcee1b36a525afc71360e9e1846d.
+- One guarded model turn: copy report-v1 or reject invented numbers. `--model-copy` is a wire check, not an LLM. No main merge. Draft PR #13 remains the review.
+- Harness tests: 71 OK.
+
+## 2026-10-13T12:01:35-04:00
+
+- Verified feature/pharmacy-harness push 8ef41d2889afb812b080e555b5544c2cecb59b6d..7dbf6d8f13951fa0e31369e607b72fb1bb3ddbeb.
+- CLI defaults to the Eval Card clock; `--now` uses the wall clock; `--offline` uses a recorded Case 1 FDA payload. No main merge. Draft PR #13 remains the review.
+- Harness tests: 61 OK.
+
+## 2026-10-13T11:53:33-04:00
+
+- Verified feature/pharmacy-harness push d61414aa9044b824e947e19517e681eecaca28d1..dd181cad9ffacbfc77ea52fae53d6b629efe1b4a.
+- Default CLI is the PRD manager table; `--json` prints harness-report-v1. PARTIAL, malformed FDA, package-mismatch, and Case 2 same-NDC overlay tests added. No main merge. Draft PR #13 remains the review.
+- Harness tests: 56 OK.
+
+## 2026-10-13T11:26:17-04:00
+
+- Verified feature/pharmacy-harness push 4b5817225ede54224793d308fa84c782fe065cd6..a7201b9fc87aedb338e9226ede0d3949108a0e48.
+- Listed every exact-match FDA record; conflicting identity, status, availability, or update_date become NEEDS_REVIEW without changing local class.
+- Rebased onto origin/feature/pharmacy-harness and kept the Windows virtual-environment README commands. No main merge. Draft PR #11 remains the review.
+- Harness tests: 47 OK. Full discover on this machine ran 146 methods; one pre-existing `local_tester` headerless-parse error is outside this change.
 
 ## 2026-10-13T11:18:04-04:00
 

@@ -10,7 +10,7 @@ User instructions take precedence. Use the prescribed PLANNER, ARCHIVIST, BUILDE
 
 ## Requirements and documentation
 
-The PRD is a draft. SQL/database work and the proposed-change document remain deferred. Do not silently apply proposed requirements or infer live pharmacy access. Preserve the original template and historical documentation.
+The PRD is a draft. Initial Supabase schema/seed work was approved and deployed October 13, 2026. Database-reader integration, staff writes, and unrelated proposed changes remain separately scoped. Do not silently apply proposed requirements or infer live pharmacy access. Preserve the original template and historical documentation.
 
 Update relevant PRD, policy, README, and architecture documentation alongside approved behavior changes. Keep synthetic data labels, read-only agent authority, and human review explicit. Do not use Team Alignment until the user authorizes it.
 
@@ -26,9 +26,9 @@ Follow the external Git approval gates, Conventional Commits, and collaboration 
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display implemented on main |
-| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction, PRD report, and one guarded model turn implemented in Phases 7–8 |
 
-Phase 6 is the complete standalone injection-prevention task, with sub-phases 6.1–6.6; preserve historical numbering 1–5. Use [plan](docs/planning/Phase/Phase6/PHASE-6-PLAN.md), [integration contract](docs/planning/Phase/Phase6/PHASE-6-HANDOFF.md) and [review](docs/planning/Phase/Phase6/PHASE-6-REVIEW.md). Phase 7 is the deterministic harness that calls the merged read-only tools through those guards; a language-model loop, database and live CVS inventory remain unbuilt.
+Phase 6 is the complete standalone injection-prevention task, with sub-phases 6.1–6.6; preserve historical numbering 1–5. Use [plan](docs/planning/Phase/Phase6/PHASE-6-PLAN.md), [integration contract](docs/planning/Phase/Phase6/PHASE-6-HANDOFF.md) and [review](docs/planning/Phase/Phase6/PHASE-6-REVIEW.md). Phase 7 is the deterministic harness that calls the merged read-only tools through those guards. Phase 8 is one guarded model turn that must copy `report-v1`; invented numbers are rejected. The private database schema and separate read-only adapter are implemented; database-to-harness integration and live CVS inventory remain unbuilt. The web preview uses the original 20-row synthetic fixture; catalog review uses the 150-row CLI fixture. Do not train a model.
 
 All source/tool/user objects are untrusted. Do not pass submitted booleans, dictionaries or descriptions as trusted facts. Construct TrustedFact only after independent harness verification of identity, units, quantities, usage, freshness and approved item policy. Missing required evidence or binding failure withholds the affected result; optional unsafe descriptions are excluded while supported facts survive. Never reinsert external text after assembly, including ACCEPT text. Keep clinical/patient work, calculations, staff writes and live API adapters in their assigned future scope.
 
@@ -41,3 +41,7 @@ Keep Pharmacy commits, staging and push history entirely separate from C:/Users/
 ## Phase documentation layout
 
 Use `docs/planning/Phase/Phase<n>/` for each numbered phase and `Phase<n>.<m>/` beneath its parent for sub-phases. Keep the approved parent plan authoritative. Label reconstructed records explicitly; do not invent past approvals or renumber Phases 1-6. Use [phase index](docs/planning/Phase/README.md) for current locations. External AGENTS work is a separate repository/task, never a Pharmacy phase.
+
+## Supabase migration boundary
+
+Target project: xrptinavijhwvydoqdni. Use CLI authenticated management access for migrations; the connector targets another account. Keep pharmacy data private, use versioned migrations, and do not grant anonymous access or Agent writes. Dedicated backend login pharmacy_agent_backend and read-only adapter were approved October 13, 2026. Public API exposure and staff write access remain unapproved. See docs/database/SCHEMA.md. Preserve the original fixture and its unknown/invalid test cases.

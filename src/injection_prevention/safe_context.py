@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 import math
 import re
-from .boundary_contracts import ContractError, Limits, Source, opaque_reference, validate_tree
+from .boundary_contracts import ContractError, InventoryLimits, Limits, Source, opaque_reference, validate_tree
 from .contracts import Decision
 from .label_detector import detect_label
 from .text_detector import inspect_text
@@ -65,7 +65,7 @@ class Assessment:
                 "findings":list(self.findings),"inspected_text_fields":self.inspected_text_fields}
 
 
-_INVENTORY_TOP={'store_id','synthetic','snapshot_reference','snapshot_timestamp','policy_version','items'}
+_INVENTORY_TOP={'store_id','synthetic','snapshot_reference','snapshot_timestamp','policy_version','catalog_source','items'}
 _ITEM_KEYS={'item_id','package_ndc','product_label','strength','dosage_form','package_quantity',
             'package_unit','dispensing_unit','usable_quantity','daily_usage','item_policy',
             'reconciliation_state','exceptions','notes'}
@@ -112,9 +112,11 @@ def _source_shape(payload, source, limits):
                     raise ContractError('UNSUPPORTED_FIELD_TYPE')
 
 
-def inspect_payload(payload: object, *, source: Source, limits: Limits = Limits(), previous_payloads: tuple = ()) -> Assessment:
+def inspect_payload(payload: object, *, source: Source, limits=None, previous_payloads: tuple = ()) -> Assessment:
     """Raw records are data only. Results contain no original/decoded text."""
-    if type(source) is not Source or type(limits) is not Limits or type(previous_payloads) is not tuple:
+    if limits is None:
+        limits = InventoryLimits() if source == Source.INVENTORY else Limits()
+    if type(source) is not Source or type(limits) not in (Limits, InventoryLimits) or type(previous_payloads) is not tuple:
         raise ContractError('INVALID_INTAKE_CONFIGURATION')
     strings=[]
     labels=[]
@@ -150,12 +152,14 @@ def inspect_payload(payload: object, *, source: Source, limits: Limits = Limits(
     combined=' '.join(strings)
     if combined:
         from .patterns import matched_patterns
-        if len(combined)>4096:
-            return Assessment(Decision.REJECT,source,False,({'reason_code':'COMBINED_TEXT_LIMIT','correction':'Reduce the source batch; manual review required.'},),len(strings))
-        patterns=matched_patterns(combined)
+        # The detector itself accepts 4096 characters. Fixed overlapping windows
+        # keep all inventory labels checked without increasing that global bound.
+        patterns=[]
+        for start in range(0,len(combined),3968):
+            patterns.extend(matched_patterns(combined[start:start+4096]))
         if patterns:
             decisions.append(Decision.FLAG)
-            findings.append({'reason_code':'COMBINED_TEXT_SIGNAL','pattern_ids':[p.pattern_id for p in patterns],
+            findings.append({'reason_code':'COMBINED_TEXT_SIGNAL','pattern_ids':sorted({p.pattern_id for p in patterns}),
                              'correction':'Review combined external records; no text is forwarded.'})
     if Decision.REJECT in decisions:
         decision=Decision.REJECT
@@ -168,7 +172,7 @@ def inspect_payload(payload: object, *, source: Source, limits: Limits = Limits(
 
 def assemble_context(payload: object, *, source: Source, facts: tuple[TrustedFact,...], previous_payloads: tuple = ()) -> dict:
     """Public import boundary. No tool-provided result, fact or flag is trusted."""
-    if type(facts) is not tuple or len(facts)>20 or any(type(f) is not TrustedFact for f in facts):
+    if type(facts) is not tuple or len(facts)>150 or any(type(f) is not TrustedFact for f in facts):
         raise ContractError('TRUSTED_FACTS_REQUIRED')
     if len({f.item_reference for f in facts})!=len(facts):
         raise ContractError('DUPLICATE_TRUSTED_ITEM')

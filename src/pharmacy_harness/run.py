@@ -1,11 +1,11 @@
 """One guarded review: read inventory, validate, calculate, then read FDA for accepted NDCs."""
 try:
     from ..injection_prevention.action_guard import RunBudget, execute_guarded
-    from ..pharmacy_tools.fda import get_fda_shortage_context
+    from ..pharmacy_tools.fda import get_fda_shortage_context_batch
     from ..pharmacy_tools.inventory import read_store_inventory
 except ImportError:
     from injection_prevention.action_guard import RunBudget, execute_guarded
-    from pharmacy_tools.fda import get_fda_shortage_context
+    from pharmacy_tools.fda import get_fda_shortage_context_batch
     from pharmacy_tools.inventory import read_store_inventory
 
 from .calculate import calculate_item
@@ -15,13 +15,15 @@ from .validate import STORE_ID, duplicate_item_ids, inspect_item, inspect_snapsh
 
 
 def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_get=None,
-               fda_sleep=None, budget=None):
+               fda_sleep=None, budget=None, complete=None):
     """Execute one synthetic-store review. Tool JSON stays untrusted until this function verifies it.
 
-    Tests inject fda_http_get. The CLI omits it so get_fda_shortage_context performs a real read.
+    Tests and `--offline` inject fda_http_get. The CLI omits it so get_fda_shortage_context
+    performs a real read. `complete` is one optional model turn; invented numbers are rejected.
     """
     moment = parse_run_at(run_at)
     budget = budget if budget is not None else RunBudget()
+    fda_source = "OFFLINE" if fda_http_get is not None else "LIVE"
     captured = {}
 
     def inventory_reader(**arguments):
@@ -37,7 +39,9 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
         budget=budget,
     )
     if inventory_dispatch.state != "COMPLETE" or "inventory" not in captured:
-        return failed_source_report(run_at=moment, inventory_dispatch=inventory_dispatch)
+        return failed_source_report(
+            run_at=moment, inventory_dispatch=inventory_dispatch, fda_source=fda_source,
+        )
 
     payload = captured["inventory"]
     snapshot = inspect_snapshot(payload, run_at=moment)
@@ -52,9 +56,6 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
     accepted_ndcs = tuple(dict.fromkeys(
         result.package_ndc for result in item_results if result.package_ndc is not None
     ))
-    if len(accepted_ndcs) > 20:
-        accepted_ndcs = accepted_ndcs[:20]
-
     fda_payloads = {}
     if fda_sleep is not None:
         sleep = fda_sleep
@@ -69,27 +70,30 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
             kwargs["http_get"] = fda_http_get
         if sleep is not None:
             kwargs["sleep"] = sleep
-        payload_fda = get_fda_shortage_context(**kwargs)
-        fda_payloads[arguments["package_ndc"]] = payload_fda
+        payload_fda = get_fda_shortage_context_batch(**kwargs)
+        fda_payloads[tuple(arguments["package_ndcs"])] = payload_fda
         return payload_fda
 
     if accepted_ndcs:
-        executors = {"get_fda_shortage_context": fda_reader}
-        for ndc in accepted_ndcs:
+        executors = {"get_fda_shortage_context_batch": fda_reader}
+        for offset in range(0,len(accepted_ndcs),10):
+            ndcs = accepted_ndcs[offset:offset+10]
             dispatch = execute_guarded(
-                {"name": "get_fda_shortage_context", "arguments": {"package_ndc": ndc}},
+                {"name": "get_fda_shortage_context_batch", "arguments": {"package_ndcs": list(ndcs)}},
                 executors=executors,
                 budget=budget,
                 allowed_package_ndcs=accepted_ndcs,
             )
-            # Capturing a callback result does not authorize its use. A failed
-            # inspection or deadline must replace even an already captured result.
-            if dispatch.state != "COMPLETE" or ndc not in fda_payloads:
-                fda_payloads[ndc] = {
-                    "results": [],
-                    "meta": {"state": "UNAVAILABLE", "package_ndc": ndc,
-                             "reason": dispatch.reason_code, "source": "openFDA drug shortages"},
-                }
+            # A captured callback is never usable after a failed inspection/deadline.
+            batch = fda_payloads.pop(ndcs, None) if dispatch.state == "COMPLETE" else None
+            if batch is None:
+                batch = {"results": [], "meta": {"state": "UNAVAILABLE",
+                         "reason": dispatch.reason_code, "source": "openFDA drug shortages"}}
+            meta = batch["meta"]
+            for ndc in ndcs:
+                exact = [row for row in batch["results"] if row.get("package_ndc") == ndc]
+                state = meta["state"] if meta["state"] in {"PARTIAL","UNAVAILABLE"} else "MATCH" if exact else "NO_MATCH"
+                fda_payloads[ndc] = {"results": exact, "meta": {**meta, "state": state, "package_ndc": ndc}}
             if dispatch.reason_code in {"RUN_BUDGET_EXHAUSTED", "RUN_DEADLINE_EXCEEDED"}:
                 break
 
@@ -102,4 +106,5 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
     return build_report(
         run_at=moment, snapshot=snapshot, item_results=item_results, payload=payload,
         facts=facts, fda_views=fda_views, inventory_dispatch=inventory_dispatch,
+        fda_source=fda_source, complete=complete,
     )

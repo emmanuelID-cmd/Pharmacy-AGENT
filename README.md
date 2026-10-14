@@ -8,11 +8,13 @@ Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD de
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display implemented on main |
-| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction, PRD report, and one guarded model turn implemented in Phases 7–8 |
 
 ## Current status
 
-The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. There is no language-model loop, FastAPI application, database, or live CVS inventory. SQL, per-item policy changes, and other proposed requirements remain deferred.
+The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. The initial private Supabase schema, synthetic seed, and restricted database reader are also implemented. The default tool fixture now has 150 distinct public FDA-listed human-prescription product/package identities linked to synthetic stock and usage. FDA listings are not approval claims; no live CVS inventory is present. One optional guarded model turn is implemented; a private FastAPI web preview is also implemented. Do not train a model. The new catalog migration is local and has not been applied to hosted Supabase.
+
+The web Agent and Demo preserve the original 20-row synthetic evaluation fixture explicitly. The harness CLI defaults to the 150-row public-identity/synthetic-stock fixture. Neither path uses live CVS inventory or the database adapter. Hosted catalog migration and web deployment remain pending.
 
 ## Product foundation
 
@@ -40,19 +42,66 @@ Architecture images are design references, not evidence of implemented controls.
 
 Open `Pharmacy-AGENT.code-workspace` in VS Code. Its folder is this repository root, `Pharmacy-Agent-Role`.
 
-`.env.example` documents nonsecret configuration. `.env` is local and ignored; it initially contains only safe placeholders. Never commit populated environment files, credentials, or tokens. The harness CLI and the standalone synthetic tester have the start commands below. There is no FastAPI application start command.
+`.env.example` documents nonsecret configuration. Local `.env`, optional `.env.local`, and ignored `.env.web` supply server configuration; operating-system variables take precedence. Never commit populated environment files, credentials, or tokens. The web start command is below; the existing harness CLI and standalone tester remain available.
 
-## Proposed technology stack
+## Technology stack
 
-Python with FastAPI and Pydantic for validated backend/tool contracts; pytest for deterministic calculations and fault cases; simple HTML/CSS/JavaScript for the initial interface. Versions and dependencies will be selected and locked during the approved application plan. No packages are installed by this setup.
+Python 3.13 with FastAPI/Pydantic, the Anthropic Python SDK, Jinja2, and HTML/CSS/JavaScript. `requirements-web.txt` pins the resolved web dependency set; the hosting `requirements.txt` includes it. Automated checks use the existing unittest conventions. Dependencies are installed inside project `.venv`, not globally.
 
 Python 3.13 is available through the Windows launcher. The prevention, tools, and harness logic uses the standard library and does not adopt the proposed full-application framework. Windows also needs the IANA timezone data pinned in `requirements-harness.txt` for `ZoneInfo("America/New_York")`.
 
-SQLite and other SQL/database work are deferred. No database engine is selected for implementation.
+Database: Supabase PostgreSQL 17.11, project `xrptinavijhwvydoqdni`. See [schema and migration guide](docs/database/SCHEMA.md). `read_store_inventory` defaults to the 150-row public-identity fixture; the original 20-row fault/evaluation fixture remains available with `--legacy-fixture`. The dedicated database reader remains a separate tool path; the harness still uses the file fixture by default.
+
+Medication identity: the checked-in catalog comes from the public [openFDA NDC directory](https://open.fda.gov/apis/drug/ndc/) and NLM RxNorm/RxClass ATC lookups. One package NDC represents each of 150 distinct product NDCs. NLM mapping gaps remain explicit. Every quantity and usage value is synthetic and linked to its catalog package by exact package NDC; no pharmacy stock feed is connected.
+
+The web application keeps the separate Supabase database adapter unconnected; it uses the explicitly selected historical fixture.
 
 References: [FastAPI features](https://fastapi.tiangolo.com/features/) and [FDA shortages endpoint](https://open.fda.gov/apis/drug/drugshortages/how-to-use-the-endpoint/).
 
 ## Collaboration and updates
+
+### Run the pharmacy web application
+
+From this repository root in PowerShell:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-web.txt
+.\.venv\Scripts\python.exe -B -m uvicorn app:app --host 127.0.0.1 --port 8770 --no-access-log
+```
+
+Open http://127.0.0.1:8770. Home defines the shared design across all eight URLs.
+Agent runs the real guarded model/tool loop; Demo and Injection Risk Test run
+existing deterministic Python behavior without calling a model. Failure State
+explicitly illustrates recovery scenarios; it does not inject live failures.
+
+Server-only provider configuration: `ANTHROPIC_API_KEY` (also accepts the existing
+`ANTHOPIC_API_KEY` spelling) and `ANTHROPIC_MODEL=claude-haiku-5-5`. The authenticated
+Models API verified this active Haiku release on October 13. No key is sent to the
+browser, tool arguments, model context or diagnostic output. `.env.local` is
+optional; copying a key into multiple files is unnecessary.
+
+Hosted mode requires `PHARMACY_REVIEWER_USERNAME`, `PHARMACY_REVIEWER_PASSWORD`,
+and trusted `PHARMACY_ALLOWED_HOSTS`, supplied through hosting environment settings.
+Without both reviewer credentials, hosted access fails closed. Local unauthenticated
+development requires loopback client/listener and rejects forwarded headers.
+Configured remote access requires HTTPS, including in development. Failed Basic
+login attempts are throttled per requester after five failures for 60 seconds per
+process; one requester's failures do not lock out every reviewer on that worker.
+Basic reviewer access is a team prototype
+gate, not pharmacy staff role administration; use HTTPS on a host.
+
+Runs have a 50-second application deadline, six model turns, at most 24 attempted
+tool calls, explicit provider timeouts and no automatic provider retries. Each
+FDA request/retry rechecks remaining time. The browser's Stop waiting aborts the
+wait; an already-started read may finish within its independent timeouts. Each
+process permits one active review and a ten-second interval; these limits are
+not a distributed rate limiter for multiple workers. A timed-out blocking read
+continues to occupy the active-read limit until its worker actually finishes.
+
+See [web handoff and contract](docs/planning/WEB-INTERFACE-CONTRACT.md),
+[runtime architecture](docs/architecture/Pharmacy-Web-Agent-Architecture.md), and
+[hosting preparation](docs/planning/WEB-HOSTING.md). Existing diagrams and decks
+remain unchanged. Publishing and Git changes require review of the working preview.
 
 GitHub repository: [emmanuelID-cmd/Pharmacy-AGENT](https://github.com/emmanuelID-cmd/Pharmacy-AGENT), verified private on October 8, 2026. Authentication is verified. The foundation is committed and pushed on `chore/pharmacy-agent-foundation`; review through a pull request before merging into `main`.
 
@@ -70,7 +119,8 @@ As approved behavior changes, update the affected PRD sections, policy, architec
 - `docs/presentations/`: editable slides, slide drafts, team presentation, and future mockups.
 - `src/pharmacy_harness/`: deterministic validation, calculation, guarded run, and PRD report.
 - `src/pharmacy_tools/`: read-only inventory fixture reader and openFDA adapter.
-- `data/synthetic/`: labeled synthetic store 1618 snapshot.
+- `data/catalog/`: public FDA/NLM product, package and classification snapshot with source metadata.
+- `data/synthetic/`: labeled 150-row synthetic store 1618 snapshot and retained 20-row evaluation fixture.
 
 README, AGENTS, Team Reference, workspace, and environment configuration remain at the root. Historical documents retain their original filenames and references; use this directory map to locate them.
 
@@ -96,17 +146,19 @@ py -3.13 -m src.injection_prevention.local_tester --port 8765
 
 Open http://127.0.0.1:8765 after starting the tester. No credentials or third-party packages are required. This page executes synthetic controls; it does not call a model, FDA/CVS, SQL, a shell or an ordering service.
 
-Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe detected,30 benign accepted), zero fixture misses/false positives; external text excluded 85/85. These count fixtures, not distinct attack techniques or a general detection rate. SECURITY Round1 found two MAJOR and five MINOR gaps; Round2 verified remediation. A language-model loop, live data provenance and database/deployment controls remain untested.
+Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe detected,30 benign accepted), zero fixture misses/false positives; external text excluded 85/85. These count fixtures, not distinct attack techniques or a general detection rate. SECURITY Round1 found two MAJOR and five MINOR gaps; Round2 verified remediation. Historical Phase 6 qualification does not exercise live models; real pharmacy stock provenance and hosted deployment are outside this fixture.
 
 ## Harness implementation
 
 Phase 7 is Kerrian's harness lane. It calls Brahim's read-only tools through Emmanuel's `execute_guarded` dispatcher, validates evidence independently, calculates days of supply under [POLICY.md](docs/requirements/POLICY.md), and prints a human report. It does not run a model.
 
-The checked-in snapshot is dated 2026-10-07. Freeze the clock for a fresh eval; omitting `--run-at` uses the current time and will mark that snapshot stale.
+The default 150-product synthetic snapshot is dated 2026-10-07. The CLI defaults to that evaluation clock; `--now` uses the current time and marks it stale. Add `--legacy-fixture` to replay the original 20-row fault/evaluation cases.
 
 ```powershell
 python3 -m unittest discover -s tests -q
-python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+python3 -m src.pharmacy_harness --offline
+python3 -m src.pharmacy_harness --offline --model-copy
+python3 -m src.pharmacy_harness --offline --json
 ```
 
 On Windows, create the project virtual environment if it does not already exist, then install its timezone data and use its interpreter:
@@ -115,10 +167,12 @@ On Windows, create the project virtual environment if it does not already exist,
 py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-harness.txt
 .\.venv\Scripts\python.exe -B -m unittest discover -s tests -q
-.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline
+.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline --model-copy
+.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline --json
 ```
 
-Unit tests stub FDA HTTP. The CLI performs real openFDA reads. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage.
+Unit tests stub FDA HTTP. The CLI defaults to the Eval Card clock and prints a manager table. `--offline` uses the recorded Case 1 FDA payload (no network). `--model-copy` runs one guarded model turn without an LLM; `--model` uses `PHARMACY_MODEL_URL` and rejects invented numbers. Omit `--offline` for a live openFDA read; `--now` uses the current clock; `--json` prints `harness-report-v1`. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
 
 - [Phase 7 plan](docs/planning/Phase/Phase7/PHASE-7-PLAN.md)
 - [Phase 7 handoff](docs/planning/Phase/Phase7/PHASE-7-HANDOFF.md)
@@ -130,3 +184,7 @@ Unit tests stub FDA HTTP. The CLI performs real openFDA reads. Empty, unreadable
 - [Green additions/red deletions for updated documents](docs/planning/Phase/Phase6/PHASE-6-CHANGES.html)
 
 Historical five-phase handoff/review/comparison files describe their earlier baseline; Phase 6 supersedes their accepted-label forwarding and no-dispatch statements. Original draft and POLICY.md are preserved. Phase 6 was completed with local commits. The later authorized publication publishes this standalone work through a PR to main; merging requires separate approval.
+
+## Local read-only database check
+
+Install the optional database requirements in the project virtual environment, then run `.venv/Scripts/python.exe -B scripts/check_database_reader.py`. It loads only the ignored generated `.env.database` credential file and prints safe counts. This read-only tool returns untrusted source evidence; it does not validate pharmacy truth, calculate supply, or approve operational actions. See [backend reader guide](docs/database/BACKEND-READER.md).

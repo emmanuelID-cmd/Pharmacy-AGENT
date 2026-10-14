@@ -8,11 +8,15 @@ from pathlib import Path
 
 try:  # imported as src.pharmacy_tools (tests run from the repo root)
     from ..injection_prevention import ContractError, strict_json_loads
+    from ..injection_prevention.boundary_contracts import InventoryLimits
 except ImportError:  # imported as pharmacy_tools with src on PYTHONPATH
     from injection_prevention import ContractError, strict_json_loads
+    from injection_prevention.boundary_contracts import InventoryLimits
 
 CONFIGURED_STORE_ID = 1618
-FIXTURE_PATH = Path(__file__).resolve().parents[2] / "data" / "synthetic" / "store_1618_inventory.json"
+FIXTURE_PATH = Path(__file__).resolve().parents[2] / "data" / "synthetic" / "store_1618_inventory_150.json"
+CATALOG_FIXTURE_PATH = FIXTURE_PATH
+LEGACY_FIXTURE_PATH = Path(__file__).resolve().parents[2] / "data" / "synthetic" / "store_1618_inventory.json"
 
 
 class InventoryUnavailable(Exception):
@@ -37,7 +41,7 @@ def read_store_inventory(store_id, *, path=FIXTURE_PATH):
     except OSError:
         raise InventoryUnavailable("SOURCE_UNREADABLE") from None
     try:
-        payload = strict_json_loads(raw)  # size cap, no duplicate keys, no NaN/Infinity
+        payload = strict_json_loads(raw, InventoryLimits())  # fixed synthetic-inventory budget
     except (ContractError, ValueError, UnicodeDecodeError):
         raise InventoryUnavailable("SOURCE_MALFORMED") from None
 

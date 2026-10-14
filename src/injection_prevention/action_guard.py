@@ -4,7 +4,7 @@ import math
 import re
 import threading
 import time
-from .boundary_contracts import ContractError, validate_tree
+from .boundary_contracts import ContractError, InventoryLimits, validate_tree
 from .safe_context import inspect_payload
 from .boundary_contracts import Source
 from .contracts import Decision
@@ -18,7 +18,7 @@ class CallDecision:
 
 
 def authorize_tool_call(call: object, *, allowed_package_ndcs: tuple[str,...] = ()) -> CallDecision:
-    if type(allowed_package_ndcs) is not tuple or len(allowed_package_ndcs)>20 or any(type(v) is not str or not re.fullmatch(r'(?:\d{4}-\d{4}-\d{2}|\d{5}-\d{3}-\d{2}|\d{5}-\d{4}-\d{1})',v,flags=re.ASCII) for v in allowed_package_ndcs):
+    if type(allowed_package_ndcs) is not tuple or len(allowed_package_ndcs)>150 or any(type(v) is not str or not re.fullmatch(r'(?:\d{4}-\d{4}-\d{2}|\d{5}-\d{3}-\d{2}|\d{5}-\d{4}-\d{1})',v,flags=re.ASCII) for v in allowed_package_ndcs):
         raise ContractError('INVALID_TOOL_POLICY')
     deny=lambda code,tool='unknown_tool':CallDecision(False,code,tool)
     try: validate_tree(call)
@@ -32,6 +32,13 @@ def authorize_tool_call(call: object, *, allowed_package_ndcs: tuple[str,...] = 
         return deny('INVALID_STORE_ARGUMENTS',name)
     if name=='get_fda_shortage_context':
         if set(args)=={'package_ndc'} and type(args['package_ndc']) is str and args['package_ndc'] in allowed_package_ndcs:
+            return CallDecision(True,'SCOPED_READ',name)
+        return deny('INVALID_PACKAGE_ARGUMENTS',name)
+    if name=='get_fda_shortage_context_batch':
+        ndcs=args.get('package_ndcs')
+        if set(args)=={'package_ndcs'} and type(ndcs) is list and 1<=len(ndcs)<=10 and all(
+            type(ndc) is str and ndc in allowed_package_ndcs for ndc in ndcs
+        ) and len(set(ndcs))==len(ndcs):
             return CallDecision(True,'SCOPED_READ',name)
         return deny('INVALID_PACKAGE_ARGUMENTS',name)
     return deny('TOOL_NOT_ALLOWED')
@@ -82,7 +89,10 @@ def execute_guarded(call, *, executors: dict, budget: RunBudget, allowed_package
         if type(call) is dict and set(call)=={'name','arguments'}:
             name=call['name'];arguments=call['arguments']
             if type(arguments) is dict:
-                snapshot={'name':name,'arguments':dict(arguments)}
+                snapshot={'name':name,'arguments':{
+                    key:list(value) if type(value) is list else value
+                    for key,value in arguments.items()
+                }}
     except (KeyError,RuntimeError):
         pass
     decision=authorize_tool_call(snapshot,allowed_package_ndcs=allowed_package_ndcs)
@@ -101,7 +111,9 @@ def execute_guarded(call, *, executors: dict, budget: RunBudget, allowed_package
         budget.dispatched+=1
     try:
         raw=executor(**dict(snapshot['arguments']))
-        assessment=inspect_payload(raw,source=Source.INVENTORY if decision.tool_reference=='read_store_inventory' else Source.FDA)
+        source=Source.INVENTORY if decision.tool_reference=='read_store_inventory' else Source.FDA
+        assessment=inspect_payload(raw,source=source,
+                                   limits=InventoryLimits() if decision.tool_reference=='get_fda_shortage_context_batch' else None)
     except Exception:
         return DispatchResult('MANUAL_REVIEW','READ_FAILED_OR_UNAVAILABLE',decision.tool_reference,budget.counts())
     with budget.lock:

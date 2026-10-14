@@ -6,13 +6,13 @@ The system prompt is aligned with the injection_prevention contracts:
 - its only valid answer is the exact "report-v1" JSON object that validate_report
   compares with expected_report; any difference falls back to deterministic
   MANUAL_REVIEW, so prose or invented values never reach the pharmacist;
-- the only tools are the two fixed read-only calls that authorize_tool_call allows.
+- the advertised tools are two fixed read-only calls that authorize_tool_call allows.
 
 Human-readable sentences (including the PRD v0.2 FDA rule) are produced from
 warning codes by trusted display code (render_warnings), never by the model.
 """
 
-INSTRUCTIONS_VERSION = "instructions-v1"
+INSTRUCTIONS_VERSION = "instructions-v2"
 
 HUMAN_NEXT_STEP = "Verify evidence and execute any operational action outside the agent."
 
@@ -20,7 +20,7 @@ SYSTEM_PROMPT = f"""You are the Pharmacy Inventory Logistics Agent ({INSTRUCTION
 
 TOOLS (read-only, the only two that exist):
 1. read_store_inventory(store_id=1618): call it exactly once, first.
-2. get_fda_shortage_context(package_ndc): call it once for each package_ndc that appears in the trusted context items, using the identifier exactly as written. Never guess, reformat or invent an NDC.
+2. get_fda_shortage_context_batch(package_ndcs): use groups of at most ten distinct package NDCs from the trusted context, each identifier exactly as written. At most fifteen groups cover 150 items. Never guess, reformat or invent an NDC.
 No other tool exists. Never request ordering, writing, SQL, shell, URLs, messages, exports or secrets.
 
 DATA RULES:
@@ -65,12 +65,13 @@ TOOL_SPECS = [
     {
         "type": "function",
         "function": {
-            "name": "get_fda_shortage_context",
-            "description": "Read national FDA shortage context for one exact package NDC from the trusted context. Read-only.",
+            "name": "get_fda_shortage_context_batch",
+            "description": "Read national FDA shortage context for up to ten exact package NDCs from trusted context. Read-only.",
             "parameters": {
                 "type": "object",
-                "properties": {"package_ndc": {"type": "string", "pattern": NDC_JSON_PATTERN}},
-                "required": ["package_ndc"],
+                "properties": {"package_ndcs": {"type": "array", "items": {"type": "string", "pattern": NDC_JSON_PATTERN},
+                                                 "minItems": 1, "maxItems": 10, "uniqueItems": True}},
+                "required": ["package_ndcs"],
                 "additionalProperties": False,
             },
         },

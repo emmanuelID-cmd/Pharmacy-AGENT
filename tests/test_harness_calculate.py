@@ -4,7 +4,7 @@ from decimal import Decimal
 from src.pharmacy_harness.calculate import calculate_item, classify_days
 from src.pharmacy_harness.facts import to_trusted_fact
 from src.pharmacy_harness.validate import inspect_item, inspect_snapshot, parse_run_at
-from src.pharmacy_tools.inventory import read_store_inventory
+from src.pharmacy_tools.inventory import LEGACY_FIXTURE_PATH, read_store_inventory
 
 EVAL_RUN = parse_run_at("2026-10-07T10:00:00-04:00")
 REF = "synthetic-snapshot-2026-10-07"
@@ -39,7 +39,7 @@ EXPECTED = {
 
 
 def results():
-    payload = read_store_inventory(1618)
+    payload = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
     snapshot = inspect_snapshot(payload, run_at=EVAL_RUN)
     out = {}
     for row in snapshot.items:
@@ -109,7 +109,7 @@ class HarnessCalculateTests(unittest.TestCase):
         self.assertIsNone(to_trusted_fact(results()["item-012"]))
 
     def test_critical_stock_without_usage_maps_unknown_in_prevention_context(self):
-        payload = read_store_inventory(1618)
+        payload = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
         snapshot = inspect_snapshot(payload, run_at=EVAL_RUN)
         row = {
             "item_id": "item-zero",

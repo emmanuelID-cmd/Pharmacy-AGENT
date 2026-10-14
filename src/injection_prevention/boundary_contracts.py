@@ -33,6 +33,18 @@ class Limits:
             raise ContractError("INVALID_LIMITS")
 
 
+@dataclass(frozen=True)
+class InventoryLimits:
+    """Fixed budget for the configured synthetic inventory and derived context."""
+
+    max_bytes: int = 262144
+    max_depth: int = 6
+    max_nodes: int = 12000
+    max_rows: int = 150
+    max_field_text: int = 1000
+    max_total_text: int = 50000
+
+
 def opaque_reference(value: object) -> bool:
     return type(value) is str and re.fullmatch(r"[A-Za-z0-9_.:-]{1,64}", value) is not None
 

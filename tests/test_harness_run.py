@@ -6,7 +6,7 @@ from pathlib import Path
 
 from src.injection_prevention.action_guard import RunBudget
 from src.pharmacy_harness.run import run_review
-from src.pharmacy_tools.inventory import FIXTURE_PATH
+from src.pharmacy_tools.inventory import CATALOG_FIXTURE_PATH, FIXTURE_PATH, LEGACY_FIXTURE_PATH
 from tests.test_fda_shortage_adapter import NOT_FOUND, RECORD, NDC, ok
 
 EVAL_RUN = "2026-10-07T10:00:00-04:00"
@@ -25,10 +25,19 @@ def stub_http(match_ndc=NDC, match_record=RECORD, timeout_ndc=None):
 def run(**kwargs):
     kwargs.setdefault("run_at", EVAL_RUN)
     kwargs.setdefault("fda_http_get", stub_http())
+    kwargs.setdefault("inventory_path", LEGACY_FIXTURE_PATH)
     return run_review(**kwargs)
 
 
 class HarnessRunTests(unittest.TestCase):
+    def test_optional_fda_narrative_is_absent_from_outgoing_json(self):
+        record = dict(RECORD, related_info="A supplier update for human source review.")
+        report = run(fda_http_get=stub_http(match_record=record))
+        encoded = json.dumps(report)
+        self.assertNotIn('"related_info"', encoded)
+        self.assertNotIn(record["related_info"], encoded)
+        self.assertEqual(report["source_state"], "COMPLETE")
+
     def test_guarded_inventory_read_uses_store_1618_fixture(self):
         report = run()
         self.assertEqual(report["source_state"], "COMPLETE")
@@ -37,6 +46,20 @@ class HarnessRunTests(unittest.TestCase):
         self.assertEqual(len(report["items"]), 20)
         self.assertIs(report["order_placed"], False)
         self.assertIs(report["inventory_changed"], False)
+
+    def test_150_catalog_rows_are_all_reviewed_in_fifteen_bounded_batches(self):
+        calls = []
+        def no_matches(url, timeout):
+            calls.append(url)
+            return NOT_FOUND
+        report = run_review(run_at=EVAL_RUN, inventory_path=CATALOG_FIXTURE_PATH,
+                            fda_http_get=no_matches, fda_sleep=lambda _seconds: None)
+        self.assertEqual(report["source_state"], "COMPLETE")
+        self.assertEqual(len(report["items"]), 150)
+        self.assertEqual(len({row["package_ndc"] for row in report["items"]}), 150)
+        self.assertEqual(len(calls), 15)
+        self.assertTrue(all("OR" in url for url in calls))
+        self.assertTrue(all(row["fda_state"] == "NO_MATCH" for row in report["items"]))
 
     def test_wrong_store_never_means_healthy_stock(self):
         report = run(store_id=1619)
@@ -62,7 +85,7 @@ class HarnessRunTests(unittest.TestCase):
 
         report = run(fda_http_get=http_get)
         ndcs = {row["package_ndc"] for row in report["items"] if row["package_ndc"]}
-        self.assertEqual(len(calls), len(ndcs))
+        self.assertEqual(len(calls), (len(ndcs) + 9) // 10)
         self.assertIn(NDC, ndcs)
         case1 = next(row for row in report["items"] if row["item_id"] == "item-001")
         self.assertEqual(case1["fda_state"], "MATCH")
@@ -101,7 +124,7 @@ class HarnessRunTests(unittest.TestCase):
 
     def test_invalid_captured_fda_result_cannot_bypass_dispatch_rejection(self):
         invalid = {"results": "invalid source rows", "meta": {"state": "MATCH"}}
-        with patch("src.pharmacy_harness.run.get_fda_shortage_context", return_value=invalid):
+        with patch("src.pharmacy_harness.run.get_fda_shortage_context_batch", return_value=invalid):
             report = run()
         self.assertEqual({item["fda_state"] for item in report["items"]}, {"UNAVAILABLE"})
         self.assertTrue(all(item["fda_status"] is None for item in report["items"]))
@@ -124,6 +147,47 @@ class HarnessRunTests(unittest.TestCase):
         self.assertEqual(report["run_state"], "MANUAL_REVIEW")
         self.assertTrue(all(row["local_action"] == "MANUAL_REVIEW" for row in report["items"]))
         self.assertTrue(all(row["days_of_supply"] is None for row in report["items"]))
+
+    def test_partial_fda_pagination_survives_run_review(self):
+        def http_get(url, timeout):
+            if NDC in url:
+                return ok([RECORD], total=2)
+            return NOT_FOUND
+
+        report = run(fda_http_get=http_get)
+        row = next(item for item in report["items"] if item["item_id"] == "item-001")
+        self.assertEqual(row["fda_state"], "PARTIAL")
+        self.assertEqual(row["local_class"], "ABOVE_THRESHOLD")
+        self.assertEqual(row["days_of_supply_display"], "6.22")
+        self.assertIn("not a complete national result", row["explanation"])
+
+    def test_malformed_fda_body_is_unavailable_not_no_shortage(self):
+        def http_get(url, timeout):
+            if NDC in url:
+                return 200, b"<html>not json"
+            return NOT_FOUND
+
+        report = run(fda_http_get=http_get)
+        row = next(item for item in report["items"] if item["item_id"] == "item-001")
+        self.assertEqual(row["fda_state"], "UNAVAILABLE")
+        self.assertEqual(row["local_class"], "ABOVE_THRESHOLD")
+        self.assertIn("not no shortage", row["explanation"])
+
+    def test_fda_package_mismatch_is_no_match_and_keeps_local_class(self):
+        other = dict(RECORD, package_ndc="42023-240-02")
+
+        def http_get(url, timeout):
+            if NDC in url:
+                return ok([other])
+            return NOT_FOUND
+
+        report = run(fda_http_get=http_get)
+        row = next(item for item in report["items"] if item["item_id"] == "item-001")
+        self.assertEqual(row["package_ndc"], NDC)
+        self.assertEqual(row["fda_state"], "NO_MATCH")
+        self.assertEqual(row["local_class"], "ABOVE_THRESHOLD")
+        self.assertIsNone(row["external_action"])
+        self.assertIn("not guaranteed supply", row["explanation"])
 
 
 if __name__ == "__main__":

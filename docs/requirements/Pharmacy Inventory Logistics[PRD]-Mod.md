@@ -8,7 +8,7 @@
 
 **Date:** October 8, 2026
 
-**Status:** Consolidated Mod review copy; no application, database or CVS integration is implemented. Original PRD and POLICY.md remain unchanged; this copy is not silently made canonical.
+**Status:** Consolidated Mod review copy; no production application or CVS integration is implemented. The initial private Supabase schema and read-only database reader are implemented as project infrastructure. Original PRD and POLICY.md remain unchanged; this copy is not silently made canonical.
 
 **Industry + function:** Pharmaceuticals + Inventory Logistics.
 
@@ -308,4 +308,62 @@ This standalone intake uses 64 KiB JSON, depth 6,2048 nodes,20 rows,1000 charact
 
 Evidence:66 passing behavior-test methods;85 selected label fixtures,55 unsafe detected,30 benign accepted,0 fixture misses/false positives,85 external-text exclusions. Seven Round1 security findings were remediated and checked in sequential Round2. This is not a count of unique attack types or universal detection. Live model/harness, evidence provenance, FDA/CVS connectivity, database grants, staff authorization, deployment and blocking-IO cancellation remain untested.
 
-Ownership: Emmanuel De Jesus—Injection Risk Prevention; Brahim Maouloud—Agent Instructions and Tooling; Kerrian Gordon—Harness. Teammate implementation status is not inferred. Ordering/reordering and inventory changes remain outside agent authority; humans execute operational actions outside the agent. No clinical/patient data or policy changes are introduced. Original draft and POLICY.md remain preserved.
+Ownership: Emmanuel De Jesus?Injection Risk Prevention; Brahim Maouloud?Agent Instructions and Tooling; Kerrian Gordon?Harness. Teammate implementation status is not inferred. Ordering/reordering and inventory changes remain outside agent authority; humans execute operational actions outside the agent. No clinical/patient data or policy changes are introduced. Original draft and POLICY.md remain preserved.
+
+### Supabase storage implementation ? October 13, 2026
+
+Approved initial private schema and synthetic seed deployed to project xrptinavijhwvydoqdni. See [schema guide](../database/SCHEMA.md). Nine tables have RLS. Source fixture, original PRD and POLICY.md remain unchanged. No account memberships or public inventory access were granted.
+
+20 source items and snapshots are retained; 266 usage rows come only from complete documented windows. Negative/missing stock is unknown with exceptions, not zero. No policies/events/audit actors were fabricated. Imported item identities and source evidence remain unverified, so this storage does not approve operational classifications. At this stage, read_store_inventory remained file-backed; subsequent read-only backend integration is documented below. Harness, access identity and database-reader integration need separate work.
+
+### Read-only backend integration ? October 13, 2026
+
+Approved dedicated login and database-backed inventory reader are implemented. [Backend reader guide](../database/BACKEND-READER.md) records credential isolation, fixed queries, limits and actual permission tests. The reader returns untrusted source data and preserves manual-review evidence; it does not perform harness verification or calculations. Full harness integration remains separate. Original file reader, source fixture and POLICY.md are preserved.
+
+### Web Agent implementation — October 13, 2026
+
+This dated appendix supplements the historical implementation notes above. It does
+not make the proposed SYNTHETIC-v1 policy canonical or edit original POLICY.md.
+User approved the shared web build and selected the most up-to-date Haiku.
+Authenticated Models API confirmed active `claude-haiku-5-5` on the approval date.
+
+- [P0] User can navigate Home, Agent, Tools, Harness, Injection Risk Test, Failure
+  State, Demo, and Architecture through one consistent pharmacy shell, with keyboard
+  navigation, visible status, shared header/footer and a logo placeholder.
+- [P0] User can submit a nonblank 1–1000 Unicode-character review request, see
+  field/summary errors, preserve drafts during internal navigation, and stop waiting
+  without a claim that a blocking server read was forcibly cancelled.
+- [P0] User can inspect a deterministic report with evidence dates, usage window,
+  local classification/action, exceptions and separate FDA national context. Current
+  reviews use the current clock; a stale October 7 fixture stays stale.
+- [P0] User can run server-owned synthetic injection/output-tamper cases through
+  the existing Python tester. Tester and recovery previews do not call the live model.
+- [P0] User can run the fixed demo with an explicitly labelled October 7 clock and
+  synthetic FDA responses. No demo claim establishes current source freshness.
+- [P0] Hosted prototype access fails closed without reviewer credentials; provider
+  secrets stay server-side. This team gate is not operational staff role management.
+
+The new server coordinator authorizes every model call through the existing guard,
+enforces inventory-first/exactly-once and once-per-context-NDC reads, validates
+evidence through existing harness calculations, and sends minimal structured facts
+to Claude. Submitted request text and external free text are excluded even when
+accepted by a detector. Model output is checked against the exact deterministic
+report; malformed, fabricated or unauthorized output becomes manual review.
+No ordering, write, secret, arbitrary URL, SQL, shell or messaging tool is added.
+
+Bounded defaults: 50-second overall run, six model turns, 24 attempted tool calls,
+8192 output tokens, zero automatic provider retries, input/body/result limits and
+independent remaining-time checks for FDA IO. One active review and a ten-second
+interval apply per server process, not as a distributed abuse-prevention guarantee.
+Cloud hosting, wider-access controls and source freshness remain to be verified on
+the actual deployment. Staff services and replacement per-item policy remain separate.
+
+Supabase schema/reader code exists separately on `feature/supabase-inventory-schema`;
+this web branch does not merge it or change grants. Existing source, CLI, independent
+tester, original draft/policy, architecture PNGs and presentations are preserved.
+See [web contract](../planning/WEB-INTERFACE-CONTRACT.md),
+[runtime architecture](../architecture/Pharmacy-Web-Agent-Architecture.md), and
+[hosting preparation](../planning/WEB-HOSTING.md). Verified build/review evidence is
+recorded separately; this appendix does not assert universal injection prevention.
+
+Integration boundary: web Agent/Demo explicitly retain the historical 20-row fixture and single-NDC read workflow. The CLI catalog review defaults to 150 products with ten-NDC batches. Public catalog identity is not FDA approval; all stock/usage remains synthetic. The catalog migration is undeployed and database-to-harness integration remains separate.

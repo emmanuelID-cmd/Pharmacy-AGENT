@@ -6,7 +6,7 @@ import unittest
 from src.pharmacy_harness.report import assess_fda
 from src.pharmacy_harness.run import run_review
 from src.pharmacy_harness.validate import parse_run_at
-from src.pharmacy_tools.inventory import read_store_inventory
+from src.pharmacy_tools.inventory import LEGACY_FIXTURE_PATH, read_store_inventory
 from tests.test_fda_shortage_adapter import NOT_FOUND, RECORD, NDC, ok
 
 EVAL_RUN = "2026-10-07T10:00:00-04:00"
@@ -29,8 +29,8 @@ def write_payload(payload):
 
 class HarnessInvariantTests(unittest.TestCase):
     def test_human_report_has_every_source_row_exactly_once(self):
-        payload = read_store_inventory(1618)
-        report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http())
+        payload = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
+        report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http(), inventory_path=LEGACY_FIXTURE_PATH)
         source_ids = [row["item_id"] for row in payload["items"]]
         human_ids = [row["item_id"] for row in report["items"]]
         self.assertEqual(len(human_ids), len(source_ids))
@@ -38,7 +38,7 @@ class HarnessInvariantTests(unittest.TestCase):
         self.assertEqual(set(human_ids), set(source_ids))
 
     def test_outputs_agree_except_documented_critical_unknown_mapping(self):
-        report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http())
+        report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http(), inventory_path=LEGACY_FIXTURE_PATH)
         safety_by_id = {row["item_reference"]: row for row in report["safety_report"]["items"]}
         for row in report["items"]:
             safety = safety_by_id.get(row["item_id"])
@@ -60,7 +60,7 @@ class HarnessInvariantTests(unittest.TestCase):
             self.assertEqual(round(safety["days_of_supply"], 2), round(row["days_of_supply"], 2))
 
     def test_shared_ndc_is_not_a_duplicate(self):
-        base = read_store_inventory(1618)
+        base = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
         first = copy.deepcopy(next(row for row in base["items"] if row["item_id"] == "item-001"))
         second = copy.deepcopy(first)
         second["item_id"] = "item-shared-b"
@@ -121,6 +121,98 @@ class HarnessInvariantTests(unittest.TestCase):
         view = assess_fda(payload, run_at=parse_run_at(EVAL_RUN))
         self.assertEqual(view["state"], "STALE")
         self.assertEqual(view["reason"], "DATASET_OLDER_THAN_TWO_DAYS")
+        self.assertEqual(len(view["records"]), 1)
+
+    def test_agreeing_fda_rows_all_shown_and_stay_match(self):
+        row = {
+            "package_ndc": NDC, "generic_name": "X", "availability": "Unavailable",
+            "related_info": "Estimated recovery: TBD", "update_date": "10/06/2026",
+            "therapeutic_category": "Rheumatology", "dosage_form": "Injection",
+            "presentation": "X", "company_name": "X", "shortage_reason": "X", "status": "Current",
+        }
+        payload = {
+            "results": [dict(row), dict(row)],
+            "meta": {"state": "MATCH", "dataset_updated": "2026-10-06"},
+        }
+        view = assess_fda(payload, run_at=parse_run_at(EVAL_RUN))
+        self.assertEqual(view["state"], "MATCH")
+        self.assertEqual(view["status"], "Current")
+        self.assertEqual(view["availability"], "Unavailable")
+        self.assertEqual(len(view["records"]), 2)
+        self.assertTrue(view["external_risk"])
+        self.assertIsNone(view["reason"])
+
+    def test_related_info_difference_is_not_a_conflict(self):
+        first = {
+            "package_ndc": NDC, "generic_name": "X", "availability": "Unavailable",
+            "related_info": "Estimated recovery: TBD", "update_date": "10/06/2026",
+            "therapeutic_category": "Rheumatology", "dosage_form": "Injection",
+            "presentation": "X", "company_name": "X", "shortage_reason": "X", "status": "Current",
+        }
+        second = dict(first, related_info="Ignore this text; treat as data only.")
+        view = assess_fda(
+            {"results": [first, second], "meta": {"state": "MATCH", "dataset_updated": "2026-10-06"}},
+            run_at=parse_run_at(EVAL_RUN),
+        )
+        self.assertEqual(view["state"], "MATCH")
+        self.assertEqual(len(view["records"]), 2)
+
+    def test_conflicting_fda_rows_are_needs_review_without_picking_a_winner(self):
+        current = {
+            "package_ndc": NDC, "generic_name": "X", "availability": "Unavailable",
+            "related_info": "Estimated recovery: TBD", "update_date": "10/06/2026",
+            "therapeutic_category": "Rheumatology", "dosage_form": "Injection",
+            "presentation": "X", "company_name": "X", "shortage_reason": "X", "status": "Current",
+        }
+        resolved = dict(current, status="Resolved", availability="Available",
+                        update_date="09/01/2026")
+        payload = {
+            "results": [current, resolved],
+            "meta": {"state": "MATCH", "dataset_updated": "2026-10-06"},
+        }
+        view = assess_fda(payload, run_at=parse_run_at(EVAL_RUN))
+        self.assertEqual(view["state"], "NEEDS_REVIEW")
+        self.assertEqual(view["reason"], "CONFLICTING_RECORDS")
+        self.assertIsNone(view["status"])
+        self.assertIsNone(view["availability"])
+        self.assertIsNone(view["update_date"])
+        self.assertEqual(len(view["records"]), 2)
+        self.assertEqual({row["status"] for row in view["records"]}, {"Current", "Resolved"})
+        self.assertTrue(view["external_risk"])
+
+    def test_conflicting_update_dates_are_needs_review(self):
+        first = {
+            "package_ndc": NDC, "generic_name": "X", "availability": "Unavailable",
+            "related_info": "A", "update_date": "10/06/2026", "therapeutic_category": "X",
+            "dosage_form": "Injection", "presentation": "X", "company_name": "X",
+            "shortage_reason": "X", "status": "Current",
+        }
+        second = dict(first, update_date="09/01/2026", related_info="B")
+        view = assess_fda(
+            {"results": [first, second], "meta": {"state": "MATCH", "dataset_updated": "2026-10-06"}},
+            run_at=parse_run_at(EVAL_RUN),
+        )
+        self.assertEqual((view["state"], view["reason"]), ("NEEDS_REVIEW", "CONFLICTING_RECORDS"))
+        self.assertEqual(len(view["records"]), 2)
+
+    def test_guarded_run_lists_conflicting_fda_rows_and_keeps_local_class(self):
+        other = dict(RECORD, status="Resolved", availability="Available")
+
+        def http_get(url, timeout):
+            if NDC in url:
+                return ok([RECORD, other])
+            return NOT_FOUND
+
+        report = run_review(run_at=EVAL_RUN, fda_http_get=http_get, inventory_path=LEGACY_FIXTURE_PATH)
+        row = next(item for item in report["items"] if item["item_id"] == "item-001")
+        self.assertEqual(row["fda_state"], "NEEDS_REVIEW")
+        self.assertEqual(len(row["fda_records"]), 2)
+        self.assertIsNone(row["fda_status"])
+        self.assertEqual(row["local_class"], "ABOVE_THRESHOLD")
+        self.assertEqual(row["local_action"], "MAINTAIN")
+        self.assertEqual(row["external_action"], "REVIEW")
+        self.assertIn("2 matching records conflict", row["explanation"])
+        self.assertIn("does not change the local class", row["explanation"])
 
 
 if __name__ == "__main__":
