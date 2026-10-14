@@ -111,6 +111,15 @@ New read_store_inventory_database returns 20 rows through the real session poole
 
 # Date and Timestamp of Push
 
+## 2026-10-14T00:08:43-04:00
+
+Verified push to `feature/supabase-inventory-schema`: `144226cbbe823a87c2cb49614896badf5a0725f2..ac4de750221acf599f5d4540bf043816e74e5c0a`.
+Reviewed range: `144226cbbe823a87c2cb49614896badf5a0725f2..45d9cd667533df954f43b83c25d2af265c070ab3`.
+Grouped refusal/provider handling, guarded 150-item FDA reads and budgets, hard 90-second model ceiling,
+Back-control removal and full 150-row/32-column Home catalog were published.
+Validation: 250 tests; 85/85 containment, 55 detections, 0 misses/false positives; desktop/mobile browser checks.
+Both live runs completed 150 rows but rejected final model output; no main merge or deployment.
+
 ## 2026-10-13T21:59:26-04:00
 
 - Verified `origin/feature/pharmacy-agent-web-interface`: `d08a6b444ef1f71bca8c4e524410ccd4dce2cd3c..8abac2a2f50958af5a5eb168c7a7af181e39908c`.
