@@ -1,11 +1,11 @@
 """One guarded review: read inventory, validate, calculate, then read FDA for accepted NDCs."""
 try:
     from ..injection_prevention.action_guard import RunBudget, execute_guarded
-    from ..pharmacy_tools.fda import get_fda_shortage_context
+    from ..pharmacy_tools.fda import get_fda_shortage_context_batch
     from ..pharmacy_tools.inventory import read_store_inventory
 except ImportError:
     from injection_prevention.action_guard import RunBudget, execute_guarded
-    from pharmacy_tools.fda import get_fda_shortage_context
+    from pharmacy_tools.fda import get_fda_shortage_context_batch
     from pharmacy_tools.inventory import read_store_inventory
 
 from .calculate import calculate_item
@@ -52,9 +52,6 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
     accepted_ndcs = tuple(dict.fromkeys(
         result.package_ndc for result in item_results if result.package_ndc is not None
     ))
-    if len(accepted_ndcs) > 20:
-        accepted_ndcs = accepted_ndcs[:20]
-
     fda_payloads = {}
     if fda_sleep is not None:
         sleep = fda_sleep
@@ -69,27 +66,30 @@ def run_review(*, run_at=None, store_id=STORE_ID, inventory_path=None, fda_http_
             kwargs["http_get"] = fda_http_get
         if sleep is not None:
             kwargs["sleep"] = sleep
-        payload_fda = get_fda_shortage_context(**kwargs)
-        fda_payloads[arguments["package_ndc"]] = payload_fda
+        payload_fda = get_fda_shortage_context_batch(**kwargs)
+        fda_payloads[tuple(arguments["package_ndcs"])] = payload_fda
         return payload_fda
 
     if accepted_ndcs:
-        executors = {"get_fda_shortage_context": fda_reader}
-        for ndc in accepted_ndcs:
+        executors = {"get_fda_shortage_context_batch": fda_reader}
+        for offset in range(0,len(accepted_ndcs),10):
+            ndcs = accepted_ndcs[offset:offset+10]
             dispatch = execute_guarded(
-                {"name": "get_fda_shortage_context", "arguments": {"package_ndc": ndc}},
+                {"name": "get_fda_shortage_context_batch", "arguments": {"package_ndcs": list(ndcs)}},
                 executors=executors,
                 budget=budget,
                 allowed_package_ndcs=accepted_ndcs,
             )
-            # Capturing a callback result does not authorize its use. A failed
-            # inspection or deadline must replace even an already captured result.
-            if dispatch.state != "COMPLETE" or ndc not in fda_payloads:
-                fda_payloads[ndc] = {
-                    "results": [],
-                    "meta": {"state": "UNAVAILABLE", "package_ndc": ndc,
-                             "reason": dispatch.reason_code, "source": "openFDA drug shortages"},
-                }
+            # A captured callback is never usable after a failed inspection/deadline.
+            batch = fda_payloads.pop(ndcs, None) if dispatch.state == "COMPLETE" else None
+            if batch is None:
+                batch = {"results": [], "meta": {"state": "UNAVAILABLE",
+                         "reason": dispatch.reason_code, "source": "openFDA drug shortages"}}
+            meta = batch["meta"]
+            for ndc in ndcs:
+                exact = [row for row in batch["results"] if row.get("package_ndc") == ndc]
+                state = meta["state"] if meta["state"] in {"PARTIAL","UNAVAILABLE"} else "MATCH" if exact else "NO_MATCH"
+                fda_payloads[ndc] = {"results": exact, "meta": {**meta, "state": state, "package_ndc": ndc}}
             if dispatch.reason_code in {"RUN_BUDGET_EXHAUSTED", "RUN_DEADLINE_EXCEEDED"}:
                 break
 

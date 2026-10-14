@@ -23,9 +23,9 @@ import urllib.request
 from datetime import datetime, timezone
 
 try:  # imported as src.pharmacy_tools (tests run from the repo root)
-    from ..injection_prevention.boundary_contracts import ContractError, Limits, validate_tree
+    from ..injection_prevention.boundary_contracts import ContractError, InventoryLimits, Limits, validate_tree
 except ImportError:  # imported as pharmacy_tools with src on PYTHONPATH
-    from injection_prevention.boundary_contracts import ContractError, Limits, validate_tree
+    from injection_prevention.boundary_contracts import ContractError, InventoryLimits, Limits, validate_tree
 
 FDA_URL = "https://api.fda.gov/drug/shortages.json"  # fixed HTTPS host, never from input
 TIMEOUT_SECONDS = 10
@@ -33,6 +33,8 @@ MAX_ATTEMPTS = 2  # first request + one bounded retry for transient errors
 PAGE_LIMIT = 100
 MAX_RECORDS = 1000
 MAX_BODY_BYTES = 1_000_000
+BATCH_SIZE = 10
+BATCH_TIMEOUT_SECONDS = 3
 
 # Segmented package NDC formats only (4-4-2, 5-3-2, 5-4-1); no guessed conversion.
 NDC_PATTERN = re.compile(r"\d{4}-\d{4}-\d{2}|\d{5}-\d{3}-\d{2}|\d{5}-\d{4}-\d{1}", re.ASCII)
@@ -158,3 +160,67 @@ def get_fda_shortage_context(package_ndc, *, timeout=TIMEOUT_SECONDS, http_get=_
     if not isinstance(total, int) or len(records) < total:
         return finish("PARTIAL", exact, reason="INCOMPLETE_RETRIEVAL")
     return finish("MATCH" if exact else "NO_MATCH", exact)
+
+
+def get_fda_shortage_context_batch(package_ndcs, *, http_get=_http_get, sleep=time.sleep):
+    """One bounded OR query for up to ten exact NDCs; incomplete results stay PARTIAL.
+
+    A successful response with more than 100 reported records is not paged in a
+    150-item run. It is explicitly PARTIAL for every NDC in the batch.
+    """
+    if type(package_ndcs) not in (list, tuple) or not 1 <= len(package_ndcs) <= BATCH_SIZE or len(set(package_ndcs)) != len(package_ndcs) or any(
+        type(ndc) is not str or not NDC_PATTERN.fullmatch(ndc) for ndc in package_ndcs
+    ):
+        raise InvalidPackageNdc("INVALID_PACKAGE_NDC_BATCH")
+    ndcs = tuple(package_ndcs)
+    meta = {"source": "openFDA drug shortages", "package_ndcs": list(ndcs),
+            "retrieved_at": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+    query = urllib.parse.urlencode({
+        "search": "package_ndc:(" + " OR ".join(f'"{ndc}"' for ndc in ndcs) + ")",
+        "limit": PAGE_LIMIT,
+    })
+    url = f"{FDA_URL}?{query}"
+    outcome, body = None, None
+    for attempt in range(MAX_ATTEMPTS):
+        try:
+            status, raw = http_get(url, BATCH_TIMEOUT_SECONDS)
+            if len(raw) > MAX_BODY_BYTES:
+                outcome, body = "UNAVAILABLE", "RESPONSE_TOO_LARGE"
+                break
+            data = json.loads(raw)
+        except (TimeoutError, OSError):
+            outcome, body = "RETRY", "TRANSPORT_ERROR_OR_TIMEOUT"
+        except ValueError:
+            outcome, body = "UNAVAILABLE", "MALFORMED_BODY"
+        else:
+            if status == 200:
+                outcome, body = "OK", data
+                break
+            if status == 404 and type(data) is dict and type(data.get("error")) is dict and data["error"].get("code") == "NOT_FOUND":
+                outcome, body = "NOT_FOUND", None
+                break
+            outcome, body = ("RETRY", f"HTTP_{status}") if status == 429 or status >= 500 else ("UNAVAILABLE", f"HTTP_{status}")
+        if outcome != "RETRY" or attempt + 1 == MAX_ATTEMPTS:
+            break
+        sleep(1)
+    meta["requests"] = attempt + 1
+    if outcome == "NOT_FOUND":
+        meta["state"] = "NO_MATCH"
+        return {"results": [], "meta": meta}
+    if outcome != "OK" or type(body) is not dict or type(body.get("results")) is not list or type(body.get("meta")) is not dict:
+        meta.update(state="UNAVAILABLE", reason=body if type(body) is str else "UNEXPECTED_RESPONSE_SHAPE")
+        return {"results": [], "meta": meta}
+    total = body["meta"].get("results", {}).get("total") if type(body["meta"].get("results")) is dict else None
+    if type(body["meta"].get("last_updated")) is str:
+        meta["dataset_updated"] = body["meta"]["last_updated"]
+    meta["total_reported"] = total if type(total) is int else None
+    exact = [_prd_record(row) for row in body["results"] if type(row) is dict and row.get("package_ndc") in ndcs]
+    meta["state"] = "PARTIAL" if type(total) is not int or total > len(body["results"]) else "MATCH" if exact else "NO_MATCH"
+    if meta["state"] == "PARTIAL":
+        meta["reason"] = "INCOMPLETE_BATCH_RETRIEVAL"
+    payload = {"results": exact, "meta": meta}
+    try:
+        validate_tree(payload, InventoryLimits())
+    except ContractError:
+        return {"results": [], "meta": {**meta, "state": "UNAVAILABLE", "reason": "RESPONSE_EXCEEDS_BOUNDS"}}
+    return payload

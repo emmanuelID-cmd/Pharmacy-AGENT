@@ -4,11 +4,27 @@ import unittest
 from src.injection_prevention.action_guard import RunBudget, authorize_tool_call, execute_guarded
 from src.injection_prevention.output_guard import expected_report, validate_report
 from src.injection_prevention.safe_context import assemble_context
-from src.injection_prevention.boundary_contracts import Source
+from src.injection_prevention.boundary_contracts import ContractError, Source
 from tests.test_safe_context import fact, inventory
 
 
 class ActionOutputTests(unittest.TestCase):
+    def test_inventory_scope_caps_at_150_and_each_shortage_call_at_ten(self):
+        allowed = tuple(f"{index:05d}-123-45" for index in range(150))
+        ndcs = list(allowed[:10])
+        good = authorize_tool_call(
+            {"name": "get_fda_shortage_context_batch", "arguments": {"package_ndcs": ndcs}},
+            allowed_package_ndcs=allowed)
+        self.assertTrue(good.allowed)
+        for invalid in (ndcs + [allowed[10]], ndcs[:-1] + [ndcs[0]]):
+            denied = authorize_tool_call(
+                {"name": "get_fda_shortage_context_batch", "arguments": {"package_ndcs": invalid}},
+                allowed_package_ndcs=allowed)
+            self.assertFalse(denied.allowed)
+        with self.assertRaises(ContractError):
+            authorize_tool_call({"name": "get_fda_shortage_context_batch", "arguments": {"package_ndcs": ndcs}},
+                                allowed_package_ndcs=allowed + ("99999-999-99",))
+
     def test_forbidden_tools_never_reach_executor(self):
         calls=[]
         executors={name:lambda **kw:calls.append(kw) for name in ('order_medication','write_inventory','run_sql','shell','send_records','read_secrets')}

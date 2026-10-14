@@ -1,7 +1,7 @@
 """Exact structured report validation. Arbitrary model prose is not approved."""
 from dataclasses import dataclass
 import json
-from .boundary_contracts import ContractError, validate_tree
+from .boundary_contracts import ContractError, InventoryLimits, validate_tree
 
 
 @dataclass(frozen=True)
@@ -16,8 +16,10 @@ def expected_report(context: dict) -> dict:
     if type(context) is not dict or context.get('schema_version')!='prevention-v1':
         raise ContractError('TRUSTED_CONTEXT_REQUIRED')
     # Audit exception metadata is deeper than input; report facts stay bounded.
+    if type(context.get('items')) is not list or len(context['items']) > 150:
+        raise ContractError('INVALID_CONTEXT_ROWS')
     validate_tree({'items':context.get('items'),'run_state':context.get('run_state'),
-                   'external_context':context.get('external_context')})
+                   'external_context':context.get('external_context')}, InventoryLimits())
     if context.get('authority')!='HUMAN_EXECUTION_ONLY' or context.get('external_text_included') is not False:
         raise ContractError('INVALID_CONTEXT_AUTHORITY')
     warnings=[]
@@ -36,7 +38,7 @@ def validate_report(proposed: object, *, context: dict) -> OutputResult:
     expected=expected_report(context)
     valid=False
     try:
-        validate_tree(proposed)
+        validate_tree(proposed, InventoryLimits())
         valid=(type(proposed) is dict and json.dumps(proposed,sort_keys=True,allow_nan=False)==json.dumps(expected,sort_keys=True,allow_nan=False))
     except (ContractError,ValueError,TypeError):
         pass

@@ -6,7 +6,7 @@ import unittest
 from src.pharmacy_harness.report import assess_fda
 from src.pharmacy_harness.run import run_review
 from src.pharmacy_harness.validate import parse_run_at
-from src.pharmacy_tools.inventory import read_store_inventory
+from src.pharmacy_tools.inventory import LEGACY_FIXTURE_PATH, read_store_inventory
 from tests.test_fda_shortage_adapter import NOT_FOUND, RECORD, NDC, ok
 
 EVAL_RUN = "2026-10-07T10:00:00-04:00"
@@ -29,8 +29,8 @@ def write_payload(payload):
 
 class HarnessInvariantTests(unittest.TestCase):
     def test_human_report_has_every_source_row_exactly_once(self):
-        payload = read_store_inventory(1618)
-        report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http())
+        payload = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
+        report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http(), inventory_path=LEGACY_FIXTURE_PATH)
         source_ids = [row["item_id"] for row in payload["items"]]
         human_ids = [row["item_id"] for row in report["items"]]
         self.assertEqual(len(human_ids), len(source_ids))
@@ -38,7 +38,7 @@ class HarnessInvariantTests(unittest.TestCase):
         self.assertEqual(set(human_ids), set(source_ids))
 
     def test_outputs_agree_except_documented_critical_unknown_mapping(self):
-        report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http())
+        report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http(), inventory_path=LEGACY_FIXTURE_PATH)
         safety_by_id = {row["item_reference"]: row for row in report["safety_report"]["items"]}
         for row in report["items"]:
             safety = safety_by_id.get(row["item_id"])
@@ -60,7 +60,7 @@ class HarnessInvariantTests(unittest.TestCase):
             self.assertEqual(round(safety["days_of_supply"], 2), round(row["days_of_supply"], 2))
 
     def test_shared_ndc_is_not_a_duplicate(self):
-        base = read_store_inventory(1618)
+        base = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
         first = copy.deepcopy(next(row for row in base["items"] if row["item_id"] == "item-001"))
         second = copy.deepcopy(first)
         second["item_id"] = "item-shared-b"

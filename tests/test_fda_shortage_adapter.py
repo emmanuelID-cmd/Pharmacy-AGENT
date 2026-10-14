@@ -6,7 +6,7 @@ from src.injection_prevention.action_guard import RunBudget, execute_guarded
 from src.injection_prevention.boundary_contracts import Source
 from src.injection_prevention.contracts import Decision
 from src.injection_prevention.safe_context import inspect_payload
-from src.pharmacy_tools.fda import InvalidPackageNdc, get_fda_shortage_context
+from src.pharmacy_tools.fda import InvalidPackageNdc, get_fda_shortage_context, get_fda_shortage_context_batch
 
 NDC = "42023-240-01"
 
@@ -51,6 +51,37 @@ def run(*responses, ndc=NDC):
 
 
 class FdaShortageAdapterTests(unittest.TestCase):
+    def test_batch_query_is_one_bounded_or_request_and_keeps_only_exact_rows(self):
+        ndcs = (NDC, "0009-0280-02")
+        other = dict(RECORD, package_ndc="99999-9999-99")
+        fake = FakeFda(ok([RECORD, other]))
+        payload = get_fda_shortage_context_batch(ndcs, http_get=fake, sleep=lambda _seconds: None)
+        self.assertEqual(len(fake.urls), 1)
+        self.assertEqual(fake.urls[0].count("OR"), 1)
+        self.assertEqual(payload["meta"]["state"], "MATCH")
+        self.assertEqual(payload["meta"]["package_ndcs"], list(ndcs))
+        self.assertEqual([row["package_ndc"] for row in payload["results"]], [NDC])
+        self.assertEqual(payload["meta"]["requests"], 1)
+
+    def test_batch_not_found_and_partial_are_not_reported_as_complete_matches(self):
+        no_match, _ = run(NOT_FOUND)
+        ndcs = (NDC, "0009-0280-02")
+        payload = get_fda_shortage_context_batch(ndcs, http_get=FakeFda(NOT_FOUND), sleep=lambda _seconds: None)
+        self.assertEqual(payload["meta"]["state"], "NO_MATCH")
+        partial = get_fda_shortage_context_batch(
+            ndcs, http_get=FakeFda(ok([RECORD], total=101)), sleep=lambda _seconds: None)
+        self.assertEqual(partial["meta"]["state"], "PARTIAL")
+        self.assertEqual(partial["meta"]["reason"], "INCOMPLETE_BATCH_RETRIEVAL")
+        self.assertEqual(no_match["meta"]["state"], "NO_MATCH")
+
+    def test_batch_limit_and_scope_validate_before_dispatch(self):
+        fake = FakeFda()
+        invalid_batches = [(), tuple([NDC] * 2), tuple(f"{n:05d}-1234-01" for n in range(11))]
+        for batch in invalid_batches:
+            with self.subTest(batch_size=len(batch)), self.assertRaises(InvalidPackageNdc):
+                get_fda_shortage_context_batch(batch, http_get=fake)
+        self.assertEqual(fake.urls, [])
+
     def test_exact_match_keeps_only_prd_fields_as_strings(self):
         payload, fake = run(ok([RECORD]))
         self.assertEqual(payload["meta"]["state"], "MATCH")

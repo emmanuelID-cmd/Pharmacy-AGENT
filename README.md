@@ -12,7 +12,7 @@ Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD de
 
 ## Current status
 
-The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. The initial private Supabase schema, synthetic seed, and restricted database reader are also implemented. There is no language-model loop, FastAPI application, or live CVS inventory. Database-reader integration with the harness, per-item policy changes, and other proposed requirements remain separate work.
+The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. The initial private Supabase schema, synthetic seed, and restricted database reader are also implemented. The default tool fixture now has 150 distinct public FDA-listed human-prescription product/package identities linked to synthetic stock and usage. FDA listings are not approval claims; no live CVS inventory is present. There is no language-model loop or FastAPI application. The new catalog migration is local and has not been applied to hosted Supabase.
 
 ## Product foundation
 
@@ -48,7 +48,9 @@ Python with FastAPI and Pydantic for validated backend/tool contracts; pytest fo
 
 Python 3.13 is available through the Windows launcher. The prevention, tools, and harness logic uses the standard library and does not adopt the proposed full-application framework. Windows also needs the IANA timezone data pinned in `requirements-harness.txt` for `ZoneInfo("America/New_York")`.
 
-Database: Supabase PostgreSQL 17.11, project `xrptinavijhwvydoqdni`. See [schema and migration guide](docs/database/SCHEMA.md). The original file reader remains available. `read_store_inventory_database` now reads Supabase with dedicated restricted backend credentials; full harness integration remains separate.
+Database: Supabase PostgreSQL 17.11, project `xrptinavijhwvydoqdni`. See [schema and migration guide](docs/database/SCHEMA.md). `read_store_inventory` defaults to the 150-row public-identity fixture; the original 20-row fault/evaluation fixture remains available with `--legacy-fixture`. The dedicated database reader remains a separate tool path; the harness still uses the file fixture by default.
+
+Medication identity: the checked-in catalog comes from the public [openFDA NDC directory](https://open.fda.gov/apis/drug/ndc/) and NLM RxNorm/RxClass ATC lookups. One package NDC represents each of 150 distinct product NDCs. NLM mapping gaps remain explicit. Every quantity and usage value is synthetic and linked to its catalog package by exact package NDC; no pharmacy stock feed is connected.
 
 References: [FastAPI features](https://fastapi.tiangolo.com/features/) and [FDA shortages endpoint](https://open.fda.gov/apis/drug/drugshortages/how-to-use-the-endpoint/).
 
@@ -70,7 +72,8 @@ As approved behavior changes, update the affected PRD sections, policy, architec
 - `docs/presentations/`: editable slides, slide drafts, team presentation, and future mockups.
 - `src/pharmacy_harness/`: deterministic validation, calculation, guarded run, and PRD report.
 - `src/pharmacy_tools/`: read-only inventory fixture reader and openFDA adapter.
-- `data/synthetic/`: labeled synthetic store 1618 snapshot.
+- `data/catalog/`: public FDA/NLM product, package and classification snapshot with source metadata.
+- `data/synthetic/`: labeled 150-row synthetic store 1618 snapshot and retained 20-row evaluation fixture.
 
 README, AGENTS, Team Reference, workspace, and environment configuration remain at the root. Historical documents retain their original filenames and references; use this directory map to locate them.
 
@@ -96,13 +99,13 @@ py -3.13 -m src.injection_prevention.local_tester --port 8765
 
 Open http://127.0.0.1:8765 after starting the tester. No credentials or third-party packages are required. This page executes synthetic controls; it does not call a model, FDA/CVS, SQL, a shell or an ordering service.
 
-Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe detected,30 benign accepted), zero fixture misses/false positives; external text excluded 85/85. These count fixtures, not distinct attack techniques or a general detection rate. SECURITY Round1 found two MAJOR and five MINOR gaps; Round2 verified remediation. A language-model loop, live data provenance and database/deployment controls remain untested.
+Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe detected,30 benign accepted), zero fixture misses/false positives; external text excluded 85/85. These count fixtures, not distinct attack techniques or a general detection rate. SECURITY Round1 found two MAJOR and five MINOR gaps; Round2 verified remediation. Live model execution is not implemented; real pharmacy stock provenance and hosted deployment are outside this fixture.
 
 ## Harness implementation
 
 Phase 7 is Kerrian's harness lane. It calls Brahim's read-only tools through Emmanuel's `execute_guarded` dispatcher, validates evidence independently, calculates days of supply under [POLICY.md](docs/requirements/POLICY.md), and prints a human report. It does not run a model.
 
-The checked-in snapshot is dated 2026-10-07. Freeze the clock for a fresh eval; omitting `--run-at` uses the current time and will mark that snapshot stale.
+The default 150-product synthetic stock snapshot is dated 2026-10-07. Freeze the clock for a fresh eval; omitting `--run-at` uses the current time and will mark that snapshot stale. Add `--legacy-fixture` only to replay the original 20-row fault/evaluation cases.
 
 ```powershell
 python3 -m unittest discover -s tests -q

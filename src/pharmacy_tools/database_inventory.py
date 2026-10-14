@@ -8,10 +8,12 @@ from zoneinfo import ZoneInfo
 from .inventory import CONFIGURED_STORE_ID, InventoryUnavailable
 try:
     from ..injection_prevention import ContractError, strict_json_loads
+    from ..injection_prevention.boundary_contracts import InventoryLimits
 except ImportError:
     from injection_prevention import ContractError, strict_json_loads
+    from injection_prevention.boundary_contracts import InventoryLimits
 
-MAX_ITEMS = 20
+MAX_ITEMS = 150
 
 
 def _number(value):
@@ -42,7 +44,7 @@ def _read(connection, store_id):
         FROM pharmacy.medication_items i JOIN pharmacy.inventory_snapshots s
           ON s.store_id=i.store_id AND s.item_id=i.item_id
         WHERE i.store_id=%s AND s.snapshot_reference=%s AND i.active
-        ORDER BY i.item_id LIMIT 21
+        ORDER BY i.item_id LIMIT 151
     """, (store_id, reference)).fetchall()
     if not rows:
         raise InventoryUnavailable("EMPTY_SOURCE")
@@ -54,16 +56,16 @@ def _read(connection, store_id):
     usage = connection.execute("""
         SELECT item_id, usage_date, units FROM pharmacy.daily_usage
         WHERE store_id=%s AND item_id=ANY(%s) AND usage_date BETWEEN %s AND %s
-        ORDER BY item_id,usage_date LIMIT 281
+        ORDER BY item_id,usage_date LIMIT 2101
     """, (store_id, ids, start, end)).fetchall()
     exceptions = connection.execute("""
         SELECT item_id,reason_codes FROM pharmacy.inventory_exceptions
         WHERE store_id=%s AND item_id=ANY(%s) AND resolution_state='OPEN'
         AND import_id IN (SELECT import_id FROM pharmacy.inventory_snapshots
                           WHERE store_id=%s AND snapshot_reference=%s)
-        ORDER BY item_id,exception_id LIMIT 101
+        ORDER BY item_id,exception_id LIMIT 751
     """, (store_id, ids, store_id, reference)).fetchall()
-    if len(exceptions) > 100:
+    if len(exceptions) > 750:
         raise InventoryUnavailable("SOURCE_EXCEPTION_LIMIT")
     by_id = {item: [] for item in ids}
     reasons = {item: set() for item in ids}
@@ -76,7 +78,7 @@ def _read(connection, store_id):
         SELECT item_id,low_days,critical_days,version,approval,effective_at,expires_at
         FROM pharmacy.item_policies WHERE store_id=%s AND item_id=ANY(%s)
         AND approval IN ('TEST_APPROVED','OPERATION_APPROVED')
-        AND effective_at<=%s AND expires_at>%s ORDER BY item_id,policy_id LIMIT 21
+        AND effective_at<=%s AND expires_at>%s ORDER BY item_id,policy_id LIMIT 151
     """, (store_id, ids, as_of, as_of)).fetchall()
     policy_by_id = {}
     for item, low, critical, version, approval, effective, expires in policies:
@@ -104,7 +106,7 @@ def _read(connection, store_id):
         items.append(result)
     payload = dict(store_id=store_id,synthetic=True,snapshot_reference=reference,
                    snapshot_timestamp=as_of.isoformat(),policy_version=policy,items=items)
-    return strict_json_loads(json.dumps(payload,allow_nan=False).encode("utf-8"))
+    return strict_json_loads(json.dumps(payload,allow_nan=False).encode("utf-8"), InventoryLimits())
 
 
 def read_store_inventory_database(store_id):

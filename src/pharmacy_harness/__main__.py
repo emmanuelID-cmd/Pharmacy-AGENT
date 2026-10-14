@@ -5,6 +5,7 @@ import sys
 
 from .run import run_review
 from .validate import STORE_ID
+from ..pharmacy_tools.inventory import LEGACY_FIXTURE_PATH
 
 
 def main(argv=None):
@@ -17,8 +18,11 @@ def main(argv=None):
              "The dated fixture is fresh at 2026-10-07T10:00:00-04:00. Default: now.",
     )
     parser.add_argument("--store-id", type=int, default=STORE_ID)
+    parser.add_argument("--legacy-fixture", action="store_true",
+                        help="Use the original 20-row synthetic test fixture instead of the default 150-product catalog fixture.")
     args = parser.parse_args(argv)
-    report = run_review(run_at=args.run_at, store_id=args.store_id)
+    report = run_review(run_at=args.run_at, store_id=args.store_id,
+                        inventory_path=LEGACY_FIXTURE_PATH if args.legacy_fixture else None)
     json.dump(report, sys.stdout, indent=2)
     sys.stdout.write("\n")
     return 0 if report["source_state"] == "COMPLETE" else 1

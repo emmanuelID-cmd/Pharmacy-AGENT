@@ -39,3 +39,7 @@ Returned labels and all other records remain untrusted. Existing context isolati
 Live backend credentials could SELECT approved inventory. INSERT, UPDATE, DELETE, raw-import reads and SET ROLE postgres were denied. The test explicitly requested a read-write transaction to confirm that grants enforce denial independently of the default read-only setting. All probes rolled back; no stock changed.
 
 Secrets and .venv are ignored by Git. Historical synthetic evidence and file-reader behavior remain intact. Full model loop, operational source freshness/identity approval, cloud hosting, connection-pool load and harness integration remain outside this work.
+
+## Pending catalog capacity
+
+The local adapter now accepts up to 150 items for one configured store/snapshot, with bounded usage, policy and exception reads. This does not select a hosted catalog snapshot or integrate the database into the harness. Catalog migration and permission/seed tests remain undeployed and require isolated SQL validation first.

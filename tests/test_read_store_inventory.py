@@ -7,7 +7,7 @@ from src.injection_prevention.action_guard import RunBudget, execute_guarded
 from src.injection_prevention.boundary_contracts import Source
 from src.injection_prevention.contracts import Decision
 from src.injection_prevention.safe_context import TrustedFact, inspect_payload
-from src.pharmacy_tools.inventory import FIXTURE_PATH, InventoryUnavailable, read_store_inventory
+from src.pharmacy_tools.inventory import FIXTURE_PATH, LEGACY_FIXTURE_PATH, InventoryUnavailable, read_store_inventory
 
 
 def write_tmp(content):
@@ -19,7 +19,19 @@ def write_tmp(content):
 
 class ReadStoreInventoryTests(unittest.TestCase):
     def setUp(self):
-        self.payload = read_store_inventory(1618)
+        self.payload = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
+
+    def test_default_reader_returns_150_distinct_public_products_with_synthetic_stock(self):
+        payload = read_store_inventory(1618)
+        self.assertEqual(len(payload["items"]), 150)
+        self.assertIs(payload["synthetic"], True)
+        self.assertIn("openFDA", payload["catalog_source"])
+        self.assertIn("synthetic", payload["catalog_source"])
+        self.assertEqual(len({row["package_ndc"] for row in payload["items"]}), 150)
+        catalog = json.loads((FIXTURE_PATH.parents[1] / "catalog" / "fda_ndc_150.json").read_text(encoding="utf-8"))
+        self.assertEqual(len({row["product_ndc"] for row in catalog["packages"]}), 150)
+        self.assertEqual([row["package_ndc"] for row in payload["items"]],
+                         [row["package_ndc"] for row in catalog["packages"]])
 
     def test_returns_labeled_synthetic_snapshot_for_store_1618(self):
         self.assertEqual(self.payload["store_id"], 1618)

@@ -48,7 +48,11 @@ class DatabaseInventoryTests(unittest.TestCase):
         self.assertIn("INCOMPLETE_USAGE",result["exceptions"])
     def test_excess_rows_fail_instead_of_truncating(self):
         with self.assertRaisesRegex(InventoryUnavailable,"SOURCE_ROW_LIMIT"):
-            _read(Database(count=21),1618)
+            _read(Database(count=151),1618)
+    def test_reader_returns_the_full_150_row_limit(self):
+        result = _read(Database(count=150),1618)
+        self.assertEqual(len(result["items"]),150)
+        self.assertEqual(len({row["item_id"] for row in result["items"]}),150)
     def test_snapshot_conflict_fails(self):
         with self.assertRaisesRegex(InventoryUnavailable,"SOURCE_CONFLICT"):
             _read(Database(conflict=True),1618)

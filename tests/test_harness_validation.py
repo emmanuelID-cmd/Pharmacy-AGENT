@@ -5,13 +5,13 @@ from src.pharmacy_harness.validate import (
     SOURCE_FAILURE_CODES, duplicate_item_ids, inspect_item, inspect_snapshot,
     last_completed_day, parse_run_at,
 )
-from src.pharmacy_tools.inventory import read_store_inventory
+from src.pharmacy_tools.inventory import LEGACY_FIXTURE_PATH, read_store_inventory
 
 EVAL_RUN = parse_run_at("2026-10-07T10:00:00-04:00")
 
 
 def fixture():
-    return read_store_inventory(1618)
+    return read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
 
 
 class HarnessValidationTests(unittest.TestCase):

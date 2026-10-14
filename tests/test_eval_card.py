@@ -7,7 +7,7 @@ from src.injection_prevention.boundary_contracts import Source
 from src.pharmacy_harness.facts import to_trusted_fact
 from src.pharmacy_harness.run import run_review
 from src.pharmacy_harness.validate import inspect_item, inspect_snapshot, parse_run_at
-from src.pharmacy_tools.inventory import read_store_inventory
+from src.pharmacy_tools.inventory import LEGACY_FIXTURE_PATH, read_store_inventory
 from tests.test_fda_shortage_adapter import NOT_FOUND, RECORD, ok
 
 EVAL_RUN = "2026-10-07T10:00:00-04:00"
@@ -30,7 +30,7 @@ def by_id(report, item_id):
 
 class EvalCardTests(unittest.TestCase):
     def setUp(self):
-        self.report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http())
+        self.report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http(), inventory_path=LEGACY_FIXTURE_PATH)
 
     def test_case_1_golden_normal_input(self):
         row = by_id(self.report, "item-001")
@@ -64,7 +64,8 @@ class EvalCardTests(unittest.TestCase):
         self.assertIn("not guaranteed supply", row["explanation"])
 
     def test_case_3_missing_stock_incomplete_window_and_fda_timeout(self):
-        report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http(timeout_ndc="99901-111-01"))
+        report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http(timeout_ndc="99901-111-01"),
+                            inventory_path=LEGACY_FIXTURE_PATH)
         missing = by_id(report, "item-013")
         incomplete = by_id(report, "item-008")
         self.assertIsNone(missing["usable_quantity"])
@@ -80,14 +81,14 @@ class EvalCardTests(unittest.TestCase):
         self.assertNotIn("500", missing["explanation"])
 
     def test_every_fixture_row_is_accounted_for(self):
-        payload = read_store_inventory(1618)
+        payload = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
         source_ids = [row["item_id"] for row in payload["items"]]
         report_ids = {row["item_id"] for row in self.report["items"]}
         self.assertEqual(report_ids, set(source_ids))
         self.assertEqual(self.report["run_state"], "MANUAL_REVIEW")
 
     def test_tampered_safety_report_falls_back_to_manual_review(self):
-        payload = read_store_inventory(1618)
+        payload = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
         snapshot = inspect_snapshot(payload, run_at=parse_run_at(EVAL_RUN))
         row = next(item for item in snapshot.items if item["item_id"] == "item-001")
         from src.pharmacy_harness.calculate import calculate_item
