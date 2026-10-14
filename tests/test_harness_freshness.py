@@ -39,6 +39,8 @@ def one_item_payload(snapshot_timestamp):
             "item_id": ITEM_ID,
             "package_ndc": NDC,
             "product_label": "Synthetic freshness probe",
+            "dosage_form": "Tablet",
+            "strength": "10 mg",
             "dispensing_unit": "tablet",
             "usable_quantity": 80,
             "daily_usage": {

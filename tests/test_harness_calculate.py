@@ -84,6 +84,7 @@ class HarnessCalculateTests(unittest.TestCase):
         row = {
             "item_id": "item-tie",
             "package_ndc": "99901-199-01",
+            "strength": "10 mg",
             "dispensing_unit": "tablet",
             "usable_quantity": Decimal("26.65"),
             "daily_usage": {"window_end": "2026-10-06", "units": [10] * 14},
@@ -135,6 +136,7 @@ class HarnessCalculateTests(unittest.TestCase):
         row = {
             "item_id": "item-zero",
             "package_ndc": "99901-199-01",
+            "strength": "10 mg",
             "dispensing_unit": "tablet",
             "usable_quantity": 0,
             "daily_usage": {"window_end": "2026-10-05", "units": [1] * 13},

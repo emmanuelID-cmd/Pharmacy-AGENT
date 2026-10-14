@@ -212,7 +212,16 @@ def inspect_item(row, *, run_at, snapshot, duplicate_ids):
         dispensing_unit = None
         reasons.append("INVALID_DISPENSING_UNIT")
 
-    identity_ok = item_id is not None and package_ndc is not None and dispensing_unit is not None
+    # PRD AMBIGUOUS_ITEM: strength is required identity. Missing/blank/non-string
+    # withholds calculation — never MAINTAIN on an incomplete package identity.
+    raw_strength = row.get("strength") if "strength" in row else None
+    if type(raw_strength) is not str or not raw_strength.strip():
+        reasons.append("AMBIGUOUS_ITEM")
+
+    identity_ok = (
+        item_id is not None and package_ndc is not None and dispensing_unit is not None
+        and type(raw_strength) is str and bool(raw_strength.strip())
+    )
     if item_id is not None and item_id in duplicate_ids:
         identity_ok = False
     freshness_ok = (

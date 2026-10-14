@@ -10,7 +10,7 @@ One configured store: 1618. Stock and usage are synthetic; the CVS location is c
 
 ## Required local evidence
 
-- Store ID, synthetic marker, policy version, unique item ID, product label, validated segmented package NDC, dispensing unit, usable unallocated quantity, snapshot timestamp with timezone, and dated aggregate usage.
+- Store ID, synthetic marker, policy version, unique item ID, product label, validated segmented package NDC, dosage strength, dispensing unit, usable unallocated quantity, snapshot timestamp with timezone, and dated aggregate usage. Missing, blank, or non-string strength is `AMBIGUOUS_ITEM`: withhold days of supply and use MANUAL_REVIEW — never MAINTAIN on an incomplete package identity.
 - Snapshot age must be between 0 and 24 hours inclusive relative to the run timestamp (SYNTHETIC-v0 prototype default, not operational pharmacy policy). Future timestamps, absent timezone, or older snapshots require manual review. The 14-day usage window uses America/New_York calendar dates, not 24-hour arithmetic.
 - Use America/New_York calendar days. Require each of the last 14 completed calendar days, once each; missing dates are unknown, never zero. Daily consumption and stock must be finite nonnegative numbers in the same unit. No inferred package-to-unit conversion.
 - Usable quantity excludes reservations, expired, quarantined, and compromised units. The source supplies the usable value; if its meaning is unclear, require manual review.

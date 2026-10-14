@@ -1,6 +1,7 @@
 import copy
 import unittest
 
+from src.pharmacy_harness.calculate import calculate_item
 from src.pharmacy_harness.validate import (
     SOURCE_FAILURE_CODES, duplicate_item_ids, inspect_item, inspect_snapshot,
     last_completed_day, locate_identity_source_faults, parse_run_at,
@@ -81,11 +82,33 @@ class HarnessValidationTests(unittest.TestCase):
 
     def test_inspect_item_still_flags_a_missing_item_id(self):
         snapshot = inspect_snapshot(fixture(), run_at=EVAL_RUN)
-        row = {"package_ndc": "99901-101-01", "dispensing_unit": "tablet",
+        row = {"package_ndc": "99901-101-01", "strength": "10 mg", "dispensing_unit": "tablet",
                "usable_quantity": 1, "daily_usage": {"window_end": "2026-10-06", "units": [0] * 14}}
         evidence = inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=frozenset())
         self.assertIn("INVALID_ITEM_REFERENCE", evidence.reason_codes)
         self.assertIsNone(evidence.item_id)
+
+    def test_missing_strength_is_ambiguous_not_maintain(self):
+        payload = copy.deepcopy(fixture())
+        snapshot = inspect_snapshot(payload, run_at=EVAL_RUN)
+        row = next(item for item in snapshot.items if item["item_id"] == "item-001")
+        del row["strength"]
+        evidence = inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=frozenset())
+        self.assertFalse(evidence.identity_ok)
+        self.assertIn("AMBIGUOUS_ITEM", evidence.reason_codes)
+        result = calculate_item(evidence, evidence_reference="test-ref")
+        self.assertEqual(result.local_action, "MANUAL_REVIEW")
+        self.assertIsNone(result.days_of_supply)
+        self.assertNotEqual(result.local_action, "MAINTAIN")
+
+    def test_blank_strength_is_ambiguous(self):
+        payload = copy.deepcopy(fixture())
+        snapshot = inspect_snapshot(payload, run_at=EVAL_RUN)
+        row = next(item for item in snapshot.items if item["item_id"] == "item-001")
+        row["strength"] = "   "
+        evidence = inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=frozenset())
+        self.assertFalse(evidence.identity_ok)
+        self.assertIn("AMBIGUOUS_ITEM", evidence.reason_codes)
 
     def test_identity_source_faults_cite_row_and_field_only(self):
         faults = locate_identity_source_faults([
@@ -126,7 +149,8 @@ class HarnessValidationTests(unittest.TestCase):
 
     def test_boolean_true_is_not_a_quantity(self):
         snapshot = inspect_snapshot(fixture(), run_at=EVAL_RUN)
-        row = {"item_id": "item-x", "package_ndc": "99901-101-01", "dispensing_unit": "tablet",
+        row = {"item_id": "item-x", "package_ndc": "99901-101-01", "strength": "10 mg",
+               "dispensing_unit": "tablet",
                "usable_quantity": True, "daily_usage": {"window_end": "2026-10-06", "units": [0] * 14}}
         evidence = inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=frozenset())
         self.assertIn("INVALID_USABLE_STOCK", evidence.reason_codes)
