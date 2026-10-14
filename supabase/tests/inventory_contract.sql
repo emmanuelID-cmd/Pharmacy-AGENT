@@ -1,16 +1,28 @@
 -- Run inside a transaction; fixture seeded twice before these assertions.
 do $$ begin
- if (select count(*) from pharmacy.medication_items)<>20 then raise exception 'ITEM_COUNT'; end if;
- if (select count(*) from pharmacy.inventory_snapshots)<>20 then raise exception 'SNAPSHOT_COUNT'; end if;
- if (select count(*) from pharmacy.daily_usage)<>266 then raise exception 'USAGE_COUNT'; end if;
- if (select count(*) from pharmacy.synthetic_imports)<>1 then raise exception 'IMPORT_IDEMPOTENCY'; end if;
- if (select count(*) from pharmacy.inventory_exceptions)<>20 then raise exception 'EXCEPTION_COUNT'; end if;
+ if (select count(*) from pharmacy.medication_items where item_id like 'item-%')<>20 then raise exception 'LEGACY_ITEM_COUNT'; end if;
+ if (select count(*) from pharmacy.inventory_snapshots where snapshot_reference='synthetic-snapshot-2026-10-07')<>20 then raise exception 'LEGACY_SNAPSHOT_COUNT'; end if;
+ if (select count(*) from pharmacy.daily_usage where import_id='fixture-2026-10-07')<>266 then raise exception 'LEGACY_USAGE_COUNT'; end if;
+ if (select count(*) from pharmacy.synthetic_imports where import_id='fixture-2026-10-07')<>1 then raise exception 'IMPORT_IDEMPOTENCY'; end if;
+ if (select count(*) from pharmacy.inventory_exceptions where import_id='fixture-2026-10-07')<>20 then raise exception 'LEGACY_EXCEPTION_COUNT'; end if;
  if exists(select 1 from pharmacy.item_policies) then raise exception 'FABRICATED_POLICY'; end if;
  if exists(select 1 from pharmacy.daily_usage where item_id='item-008') then raise exception 'GUESSED_USAGE_DATES'; end if;
- if (select count(*) from pharmacy.inventory_snapshots where usable_quantity is null)<>2 then raise exception 'UNKNOWN_STOCK'; end if;
+ if (select count(*) from pharmacy.inventory_snapshots where snapshot_reference='synthetic-snapshot-2026-10-07' and usable_quantity is null)<>2 then raise exception 'UNKNOWN_STOCK'; end if;
  if not exists(select 1 from pharmacy.synthetic_imports s cross join lateral jsonb_array_elements(s.payload->'items') i where i->>'item_id'='item-012' and (i->>'usable_quantity')::numeric<0) then raise exception 'RAW_NEGATIVE_LOST'; end if;
  if not exists(select 1 from pharmacy.daily_usage where item_id='item-001' and usage_date='2026-09-23') then raise exception 'DATE_MAPPING'; end if;
- if exists(select 1 from pharmacy.inventory_snapshots where as_of<>'2026-10-07T09:00:00-04:00'::timestamptz) then raise exception 'RESTAMPED_SNAPSHOT'; end if;
+ if exists(select 1 from pharmacy.inventory_snapshots where snapshot_reference='synthetic-snapshot-2026-10-07' and as_of<>'2026-10-07T09:00:00-04:00'::timestamptz) then raise exception 'RESTAMPED_SNAPSHOT'; end if;
+ if (select count(*) from pharmacy.catalog_products)<>150 then raise exception 'CATALOG_PRODUCT_COUNT'; end if;
+ if (select count(*) from pharmacy.catalog_packages)<>150 then raise exception 'CATALOG_PACKAGE_COUNT'; end if;
+ if (select count(distinct product_ndc) from pharmacy.catalog_packages)<>150 then raise exception 'CATALOG_PRODUCT_DISTINCT'; end if;
+ if (select count(*) from pharmacy.medication_items where catalog_package_ndc=package_ndc)<>150 then raise exception 'STOCK_CATALOG_LINK_COUNT'; end if;
+ if exists(select 1 from pharmacy.medication_items i left join pharmacy.catalog_packages p on p.package_ndc=i.package_ndc where i.catalog_package_ndc is not null and p.package_ndc is null) then raise exception 'STOCK_CATALOG_LINK_MISSING'; end if;
+ if (select count(*) from pharmacy.inventory_snapshots where snapshot_reference='synthetic-snapshot-catalog-2026-10-07' and synthetic)<>150 then raise exception 'CATALOG_STOCK_SYNTHETIC_COUNT'; end if;
+ if (select count(*) from pharmacy.synthetic_imports where import_id='catalog-fixture-2026-10-07' and synthetic)<>1 then raise exception 'CATALOG_FIXTURE_SYNTHETIC_MARKER'; end if;
+ if not exists(select 1 from pharmacy.catalog_products where fda_source_url='https://api.fda.gov/drug/ndc.json?limit=500' and fda_dataset_updated='2026-10-13' and fda_retrieved_at is not null) then raise exception 'FDA_SOURCE_PROVENANCE'; end if;
+ if (select count(*) from pharmacy.catalog_packages where rxnorm_mapping_state='MISSING')<>6 then raise exception 'RXNORM_MISSING_STATE'; end if;
+ if (select count(*) from pharmacy.catalog_packages where atc_class_state='MISSING')<>2 then raise exception 'ATC_MISSING_STATE'; end if;
+ if exists(select 1 from pharmacy.catalog_packages p where p.rxnorm_mapping_state='SINGLE' and not exists(select 1 from pharmacy.catalog_rxnorm_mappings r where r.package_ndc=p.package_ndc)) then raise exception 'RXNORM_LINK_MISSING'; end if;
+ if exists(select 1 from pharmacy.catalog_atc_classes a left join pharmacy.catalog_rxnorm_mappings r using(package_ndc,rxcui) where r.package_ndc is null) then raise exception 'ATC_RXNORM_LINK_MISSING'; end if;
  if exists(select 1 from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='pharmacy' and c.relkind='r' and not c.relrowsecurity) then raise exception 'RLS_DISABLED'; end if;
  begin update pharmacy.inventory_snapshots set usable_quantity=-1 where item_id='item-001'; raise exception 'NEGATIVE_ACCEPTED'; exception when check_violation then null; end;
  begin update pharmacy.inventory_snapshots set usable_quantity='NaN' where item_id='item-001'; raise exception 'NAN_ACCEPTED'; exception when check_violation then null; end;
@@ -24,7 +36,8 @@ do $$ begin
 end $$;
 set local role pharmacy_inventory_reader;
 do $$ begin
- if (select count(*) from pharmacy.medication_items)<>20 then raise exception 'READER_CANNOT_READ'; end if;
+ if (select count(*) from pharmacy.inventory_snapshots where snapshot_reference='synthetic-snapshot-catalog-2026-10-07' and synthetic)<>150 then raise exception 'READER_CANNOT_READ_CATALOG_STOCK'; end if;
+ if (select count(*) from pharmacy.catalog_products)<>150 then raise exception 'READER_CANNOT_READ_CATALOG'; end if;
  begin delete from pharmacy.medication_items; raise exception 'READER_DELETE'; exception when insufficient_privilege then null; end;
  begin update pharmacy.inventory_snapshots set usable_quantity=1; raise exception 'READER_UPDATE'; exception when insufficient_privilege then null; end;
  begin insert into pharmacy.stores values(1618,'America/New_York'); raise exception 'READER_INSERT'; exception when insufficient_privilege then null; end;

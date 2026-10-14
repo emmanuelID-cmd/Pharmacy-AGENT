@@ -20,7 +20,7 @@ RLS on all nine tables. public, anon and authenticated have no pharmacy schema/t
 
 ## Seed integrity
 
-The original JSON is unchanged. Its SHA-256 is a1c24a4125fced0fb88229492cf3fb9bd629d5db846be528efe35a4302b683d6. The seed is repeatable and refuses an existing import ID with a different source hash. Counts: 20 items/snapshots, 266 dated usage rows, 20 exceptions, two null stock values. Dates remain October 7/September 23–October 6; the seed is deliberately stale, not a current operational snapshot.
+The original JSON is unchanged. Its SHA-256 is a1c24a4125fced0fb88229492cf3fb9bd629d5db846be528efe35a4302b683d6. The seed is repeatable and refuses an existing import ID with a different source hash. Counts: 20 items/snapshots, 266 dated usage rows, 20 exceptions, two null stock values. Dates remain October 7/September 23â€“October 6; the seed is deliberately stale, not a current operational snapshot.
 
 All 20 items lack per-item policy and complete package evidence. Do not treat importing them as approving classifications. The original file reader remains available; the separate database adapter now reads normalized source evidence. Full harness integration remains pending.
 
@@ -43,3 +43,11 @@ Recovery baseline had no application tables or migration history. Original files
 Rerun checks with `python -B scripts/verify_schema_migration.py`. This runs seed/constraint/permission tests inside a transaction and rolls it back, including the test-only role membership. Use `--empty-baseline` only on an empty target to test DDL; it will fail rather than replace an existing schema. The script targets only the approved project.
 
 Backend login/adapter implementation and live permission tests are documented in [BACKEND-READER.md](BACKEND-READER.md). Migration 20261013042410 creates the login without a password in source; provisioning occurs separately.
+
+## Pending public catalog migration - October 13, 2026
+
+Migration `20261013230004_medication_catalog.sql` is local and has not been deployed. It adds 150 distinct public FDA-listed human-prescription product/package identities, exact package-NDC links to synthetic stock, and explicit NLM RxNorm/ATC mapping states. FDA listing is not evidence of FDA approval. Inventory quantities and usage are synthetic; identity verification and approved item policy remain absent.
+
+The additive seed retains the original 20-item fixture and adds 150 items/snapshots, 2,100 dated usage rows and 150 review exceptions. The new catalog tables enable RLS, deny public/anon/authenticated access and grant only SELECT to the existing restricted reader role. The backend file contract accepts at most 150 rows; no database-to-harness integration or write service is enabled.
+
+Before hosted deployment, validate the new DDL and seed twice in an authorized isolated PostgreSQL environment, then verify counts, foreign keys, source hashes, SELECT permissions and write denial. Docker is unavailable in the current environment, so these SQL checks are outstanding. Do not run the previously documented verification script against hosted Supabase with this pending seed: its new catalog tables are not deployed.
