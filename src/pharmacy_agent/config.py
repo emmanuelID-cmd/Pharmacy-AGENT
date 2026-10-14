@@ -29,7 +29,7 @@ class Settings:
     def __post_init__(self):
         if not self.model.startswith("claude-haiku-") or len(self.model) > 100:
             raise ValueError("HAIKU_MODEL_REQUIRED")
-        if not 0 < self.run_seconds <= 120 or not 0 < self.model_seconds <= self.run_seconds:
+        if not 0 < self.run_seconds <= 120 or not 0 < self.model_seconds <= min(self.run_seconds, 90):
             raise ValueError("INVALID_AGENT_DEADLINE")
         if not 1 <= self.max_turns <= 6 or not 512 <= self.max_tokens <= 24576:
             raise ValueError("INVALID_MODEL_BUDGET")

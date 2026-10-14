@@ -231,7 +231,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         from unittest.mock import patch
         self.assertEqual(Settings().run_seconds, 120)
         self.assertEqual(Settings().max_tokens, 24576)
-        for invalid in ({"run_seconds": 121}, {"max_tokens": 24577}, {"max_turns": 7}):
+        for invalid in ({"run_seconds": 121}, {"model_seconds": 91}, {"max_tokens": 24577}, {"max_turns": 7}):
             with self.assertRaises(ValueError):
                 Settings(**invalid)
         with tempfile.TemporaryDirectory() as folder:
