@@ -15,6 +15,11 @@ from ..pharmacy_tools.instructions import render_warnings
 from .anthropic_client import ClaudeClient, ProviderUnavailable, claude_tools
 from .review import EvidenceReview
 
+PROVIDER_ERROR_CODES = frozenset({
+    "PROVIDER_UNAVAILABLE", "PROVIDER_NOT_CONFIGURED", "PROVIDER_AUTHENTICATION_FAILED",
+    "MODEL_NOT_AVAILABLE", "PROVIDER_RATE_LIMITED", "MODEL_TIMEOUT",
+})
+
 
 class ReadActivity:
     """Keep cancelled read workers visible to the server's existing run limit."""
@@ -113,14 +118,25 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                 called = True
                 if review.remaining() <= 0:
                     return failed("RUN_DEADLINE_EXCEEDED", unavailable=True)
-                response = await provider.complete(messages=deepcopy(messages), tools=offered,
-                    choice=choice, timeout=min(settings.model_seconds, review.remaining()))
+                try:
+                    response = await provider.complete(messages=deepcopy(messages), tools=offered,
+                        choice=choice, timeout=min(settings.model_seconds, review.remaining()))
+                except (ProviderUnavailable, TimeoutError):
+                    raise
+                except Exception:
+                    return failed("MODEL_ERROR", unavailable=True)
                 if review.remaining() <= 0:
                     return failed("RUN_DEADLINE_EXCEEDED", unavailable=True)
+                if response is None:
+                    return failed("MODEL_NO_RESPONSE")
+                if type(response) is dict and response.get("stop_reason") == "refusal":
+                    return failed("MODEL_REFUSAL")
                 if type(response) is not dict or type(response.get("content")) is not list:
                     return failed("INVALID_MODEL_RESPONSE")
                 blocks = response["content"]
-                if not blocks or len(blocks) > 24:
+                if not blocks:
+                    return failed("MODEL_NO_RESPONSE")
+                if len(blocks) > 24:
                     return failed("INVALID_MODEL_RESPONSE")
                 calls = [block for block in blocks if type(block) is dict and block.get("type") == "tool_use"]
                 if calls:
@@ -177,7 +193,8 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                                 called=called, accepted=True, turns=turns, counts=budget.counts())
             return failed("MODEL_TURN_LIMIT")
     except ProviderUnavailable as error:
-        return failed(error.code, unavailable=True)
+        code = error.code if type(error.code) is str and error.code in PROVIDER_ERROR_CODES else "MODEL_ERROR"
+        return failed(code, unavailable=True)
     except TimeoutError:
         return failed("RUN_DEADLINE_EXCEEDED", unavailable=True)
     except Exception:

@@ -98,6 +98,13 @@ process permits one active review and a ten-second interval; these limits are
 not a distributed rate limiter for multiple workers. A timed-out blocking read
 continues to occupy the active-read limit until its worker actually finishes.
 
+The web loop stops on an explicit provider refusal (`MODEL_REFUSAL`) or a missing/empty
+response (`MODEL_NO_RESPONSE`). Unexpected provider exceptions and unknown provider
+error codes become `MODEL_ERROR`; raw refusal text and error details are omitted.
+Turn exhaustion remains `MODEL_TURN_LIMIT`. Any independently verified partial
+report survives with a manual-review warning; no further reads or automatic retries run.
+These paths are covered by synthetic scripted-provider tests, without live API calls.
+
 See [web handoff and contract](docs/planning/WEB-INTERFACE-CONTRACT.md),
 [runtime architecture](docs/architecture/Pharmacy-Web-Agent-Architecture.md), and
 [hosting preparation](docs/planning/WEB-HOSTING.md). Existing diagrams and decks

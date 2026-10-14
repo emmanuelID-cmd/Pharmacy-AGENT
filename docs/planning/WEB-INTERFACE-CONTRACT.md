@@ -60,3 +60,17 @@ exactly two sequential security rounds and a read-only final review.
 ## Integration fixture boundary
 
 The web Agent and Demo explicitly use the original 20-row synthetic fixture and single-NDC read schema. This retains their bounded 24-attempt review and output contract when the shared CLI reader defaults to the new 150-product fixture with ten-NDC batches. No database adapter is wired into either web endpoint. Hosted migration and web deployment remain pending.
+
+## Approved loop termination handling - October 13, 2026
+
+- A provider `stop_reason` of `refusal` returns Manual Review / `MODEL_REFUSAL`,
+  before examining or dispatching any tool blocks in that response. Refusal prose is omitted.
+- `None` or an empty content-block list returns Manual Review / `MODEL_NO_RESPONSE`.
+  Other malformed responses retain their existing validation reason codes.
+- Unexpected exceptions from the provider call return Temporarily Unavailable /
+  `MODEL_ERROR`. Only known fixed provider failure codes survive; unknown codes and
+  raw exception details are excluded. Existing timeout/deadline behavior is preserved.
+- Exhausted model turns return Manual Review / `MODEL_TURN_LIMIT`.
+- Every terminal path stops further model/tool calls, leaves output unaccepted,
+  and preserves independently verified partial facts under manual review when available.
+  No refusal retry, new tool, database connection or budget increase is introduced.

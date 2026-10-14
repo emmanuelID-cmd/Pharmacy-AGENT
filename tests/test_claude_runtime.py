@@ -53,6 +53,20 @@ class ScriptedClaude:
         return {"content": [{"type": "text", "text": json.dumps(report)}], "stop_reason": "end_turn"}
 
 
+class SequenceClaude:
+    """Synthetic terminal responses; an unexpected extra turn fails the test."""
+    def __init__(self, *responses):
+        self.responses = list(responses)
+        self.requests = []
+
+    async def complete(self, **request):
+        self.requests.append(deepcopy(request))
+        response = self.responses.pop(0)
+        if isinstance(response, Exception):
+            raise response
+        return response
+
+
 class RuntimeTests(unittest.IsolatedAsyncioTestCase):
     async def run_case(self, provider, request="Review inventory", reader=None, run_at=FROZEN):
         return await run_agent(request, settings=Settings(), provider=provider,
@@ -205,6 +219,107 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         result = await self.run_case(Unavailable())
         self.assertEqual(result["reason_code"], "PROVIDER_AUTHENTICATION_FAILED")
         self.assertEqual(result["state"], "Temporarily Unavailable")
+
+    async def test_refusal_before_reads_ignores_embedded_tool_calls_and_text(self):
+        marker = "SyntheticPrivateRefusalMarker"
+        refusal = tool("order_medication", {"notes": marker})
+        refusal["stop_reason"] = "refusal"
+        refusal["content"].append({"type": "text", "text": marker})
+        provider = SequenceClaude(refusal)
+        reads = []
+        result = await self.run_case(provider, reader=lambda **args: reads.append(args))
+        self.assertEqual(result["reason_code"], "MODEL_REFUSAL")
+        self.assertEqual(result["state"], "Manual Review")
+        self.assertIsNone(result["report"])
+        self.assertEqual(reads, [])
+        self.assertEqual(len(provider.requests), 1)
+        self.assertEqual(result["agent"]["counts"]["attempted"], 0)
+        self.assertFalse(result["agent"]["output_accepted"])
+        self.assertNotIn(marker, json.dumps(result))
+
+    async def test_refusal_after_partial_reads_preserves_verified_evidence(self):
+        marker = "SyntheticPrivateRefusalMarker"
+        provider = SequenceClaude(
+            tool("read_store_inventory", {"store_id": 1618}),
+            tool("get_fda_shortage_context", {"package_ndc": "42023-240-01"}, "call_fda"),
+            {"stop_reason": "refusal", "content": [{"type": "text", "text": marker}]},
+        )
+        result = await self.run_case(provider)
+        self.assertEqual(result["reason_code"], "MODEL_REFUSAL")
+        self.assertEqual(result["state"], "Manual Review")
+        self.assertEqual(len(provider.requests), 3)
+        self.assertEqual(result["agent"]["counts"]["dispatched"], 2)
+        row = next(row for row in result["report"]["items"] if row["item_id"] == "item-001")
+        self.assertEqual(row["usable_quantity"], 80)
+        self.assertEqual(row["days_of_supply_display"], "6.22")
+        self.assertEqual(row["fda_state"], "NO_MATCH")
+        self.assertIn("MODEL_REFUSAL", result["report"]["source_reason_codes"])
+        self.assertEqual(result["report"]["run_state"], "MANUAL_REVIEW")
+        self.assertFalse(result["report"]["order_placed"])
+        self.assertFalse(result["report"]["inventory_changed"])
+        self.assertNotIn(marker, json.dumps(result))
+
+    async def test_missing_and_empty_responses_stop_before_or_after_inventory(self):
+        for response in (None, {"stop_reason": "end_turn", "content": []}):
+            for after_read in (False, True):
+                with self.subTest(response=response, after_read=after_read):
+                    prior = [tool("read_store_inventory", {"store_id": 1618})] if after_read else []
+                    provider = SequenceClaude(*prior, response)
+                    result = await self.run_case(provider)
+                    self.assertEqual(result["reason_code"], "MODEL_NO_RESPONSE")
+                    self.assertEqual(result["state"], "Manual Review")
+                    self.assertEqual(len(provider.requests), 1 + int(after_read))
+                    self.assertEqual(result["agent"]["counts"]["dispatched"], int(after_read))
+                    self.assertFalse(result["agent"]["output_accepted"])
+                    if after_read:
+                        self.assertEqual(len(result["report"]["items"]), 20)
+                        self.assertIn("MODEL_NO_RESPONSE", result["report"]["source_reason_codes"])
+                    else:
+                        self.assertIsNone(result["report"])
+
+    async def test_model_errors_and_unknown_provider_codes_are_redacted(self):
+        marker = "SyntheticPrivateErrorMarker"
+        for error in (RuntimeError(marker), ProviderUnavailable(marker), ProviderUnavailable([marker])):
+            for after_read in (False, True):
+                with self.subTest(error=type(error).__name__, after_read=after_read):
+                    prior = [tool("read_store_inventory", {"store_id": 1618})] if after_read else []
+                    provider = SequenceClaude(*prior, error)
+                    result = await self.run_case(provider)
+                    self.assertEqual(result["reason_code"], "MODEL_ERROR")
+                    self.assertEqual(result["state"], "Temporarily Unavailable")
+                    self.assertEqual(len(provider.requests), 1 + int(after_read))
+                    self.assertEqual(result["agent"]["counts"]["dispatched"], int(after_read))
+                    self.assertFalse(result["agent"]["output_accepted"])
+                    self.assertNotIn(marker, json.dumps(result))
+                    if after_read:
+                        row = next(row for row in result["report"]["items"] if row["item_id"] == "item-001")
+                        self.assertEqual(row["usable_quantity"], 80)
+                        self.assertEqual(row["days_of_supply_display"], "6.22")
+
+    async def test_known_provider_failure_after_read_preserves_report(self):
+        provider = SequenceClaude(tool("read_store_inventory", {"store_id": 1618}),
+                                  ProviderUnavailable("PROVIDER_AUTHENTICATION_FAILED"))
+        result = await self.run_case(provider)
+        self.assertEqual(result["reason_code"], "PROVIDER_AUTHENTICATION_FAILED")
+        self.assertEqual(result["state"], "Temporarily Unavailable")
+        self.assertEqual(len(result["report"]["items"]), 20)
+        self.assertEqual(result["agent"]["counts"]["dispatched"], 1)
+
+    async def test_turn_limit_stops_without_accepting_output_or_recalling_tools(self):
+        for limit in (1, 2):
+            with self.subTest(limit=limit):
+                provider = ScriptedClaude()
+                result = await run_agent("Review inventory", settings=Settings(max_turns=limit),
+                    provider=provider, fda_http_get=no_match, run_at=FROZEN)
+                self.assertEqual(result["reason_code"], "MODEL_TURN_LIMIT")
+                self.assertEqual(result["state"], "Manual Review")
+                self.assertEqual(len(provider.requests), limit)
+                self.assertEqual(result["agent"]["turns"], limit)
+                self.assertFalse(result["agent"]["output_accepted"])
+                row = next(row for row in result["report"]["items"] if row["item_id"] == "item-001")
+                self.assertEqual(row["usable_quantity"], 80)
+                self.assertEqual(row["days_of_supply_display"], "6.22")
+                self.assertFalse(result["report"]["order_placed"])
 
     async def test_deadline_bounds_model_wait(self):
         class Slow:

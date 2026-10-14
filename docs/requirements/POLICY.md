@@ -56,6 +56,14 @@ FDA availability/status may add a human external-risk review action but never ch
 
 ## Review, changes, and recovery
 
+Engineering implementation note, approved October 13, 2026: the web agent stops
+on explicit model refusal, missing/empty response, provider failure or model-turn
+exhaustion. Incomplete execution never establishes an all-clear or accepted model
+output. Independently verified partial evidence may remain visible for human review;
+raw refusal prose, exception text and unknown provider error codes are excluded.
+The existing read-only authority, operational thresholds and SYNTHETIC-v0 calculations
+are unchanged. The deterministic CLI's optional single model turn remains separate.
+
 Every report shows synthetic status, store, run/snapshot time, usage window, policy version, calculation inputs, and external state. Manual-review exceptions are prominent and identify a correction/retry step. Policy cannot be edited by the running agent.
 
 Before a significant change, record the new version and rationale, then rerun all three PRD Eval Card cases and relevant boundary/fault variants. Before live use, authorized pharmacy staff approve operational values and data meaning; developers verify backend access boundaries and exact API behavior. No live readiness is implied by this document.

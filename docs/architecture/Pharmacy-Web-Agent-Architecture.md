@@ -71,3 +71,14 @@ exist. Fixture coverage and guard tests do not establish universal injection det
 ## Integration fixture boundary
 
 The web Agent and Demo explicitly use the original 20-row synthetic fixture and single-NDC read schema. This retains their bounded 24-attempt review and output contract when the shared CLI reader defaults to the new 150-product fixture with ten-NDC batches. No database adapter is wired into either web endpoint. Hosted migration and web deployment remain pending.
+
+## Terminal response boundary
+
+`run_agent` checks explicit refusal and absent/empty responses before tool dispatch.
+Refusal (`MODEL_REFUSAL`) and no response (`MODEL_NO_RESPONSE`) end the run with
+Manual Review. Unexpected provider failures and unknown provider error codes expose
+only `MODEL_ERROR`; known fixed adapter codes and existing deadline codes remain.
+Turn exhaustion remains bounded by `MODEL_TURN_LIMIT`. The existing evidence
+coordinator constructs any partial report from verified facts, adds a manual-review
+warning and omits raw model/error text. No terminal response enters conversation
+history or authorizes another read. The deterministic CLI harness is unchanged.
