@@ -16,10 +16,12 @@ From the repository root. The dated fixture snapshot is `2026-10-07T09:00:00-04:
 
 ```powershell
 python3 -m unittest discover -s tests -q
-python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+python3 -m src.pharmacy_harness --offline
+python3 -m src.pharmacy_harness --offline --model-copy
+python3 -m src.pharmacy_harness --offline --json
 ```
 
-`--run-at` is required for a fresh eval against the checked-in fixture. Omitting it uses the current time. The CLI calls the real openFDA shortages endpoint; unit tests inject `fda_http_get` and do not use the network.
+The CLI defaults to `2026-10-07T10:00:00-04:00` so the dated fixture is fresh. `--now` uses the current clock (the snapshot will be stale). `--offline` injects the recorded Case 1 FDA payload and does not call openFDA. `--model-copy` runs one guarded model turn without an LLM; `--model` requires `PHARMACY_MODEL_URL`. Omit `--offline` for a live read-only openFDA request. `--json` prints `harness-report-v1`. Unit tests inject `fda_http_get` and do not use the network.
 
 ## Integration
 
@@ -27,13 +29,13 @@ python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
 2. Harness validates identity, units, freshness and the 14-day window, then calculates days of supply.
 3. `TrustedFact` objects are constructed in harness code and passed to `assemble_context`.
 4. `execute_guarded` FDA for each accepted package NDC on the same `RunBudget`.
-5. Human report lists every input row. `report-v1` is the prevention safety copy. `order_placed` and `inventory_changed` stay false.
+5. Human report lists every input row and every exact-match FDA record. Conflicting FDA records are `NEEDS_REVIEW`; they never change local class. `report-v1` is the prevention safety copy. `order_placed` and `inventory_changed` stay false.
 
 TrustedFact cannot store CRITICAL with a missing duration. A verified zero-stock fact with no usage basis stays CRITICAL on the human report and maps to UNKNOWN in prevention context.
 
 ## Validation
 
-Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, output-guard fallback on a tampered `report-v1`, Decimal exact-2/exact-5 boundaries, source vs row isolation, shared-NDC reuse, and the human/`report-v1` invariant. Run the full unittest suite before handoff.
+Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, output-guard fallback on a tampered `report-v1`, Decimal exact-2/exact-5 boundaries, source vs row isolation, shared-NDC reuse, the human/`report-v1` invariant, multi-record FDA agreement versus conflict/`NEEDS_REVIEW`, PARTIAL/malformed/package-mismatch survival through `run_review`, a Case 2 same-NDC overlay, and the manager-table CLI. Run the full unittest suite before handoff.
 
 These evals test harness arithmetic and prevention guards. They do not test how a language model reacts to injected text. A future model whose report must match `expected_report` exactly adds no independent judgment. Live FDA provenance, database grants, and operational pharmacy policy remain untested.
 

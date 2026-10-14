@@ -26,13 +26,13 @@ Documentation is grouped in docs/requirements, docs/templates, docs/planning, an
 
 ## Latest local handoff — Phase 7 harness
 
-Branch `feature/pharmacy-harness`. Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. No language-model loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
+Branch `feature/pharmacy-harness`. Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW`. The CLI prints a manager table by default (`--json` for the machine copy), freezes the Eval Card clock unless `--now` is passed, and uses `--offline` for a recorded FDA payload. Phase 8 adds one guarded model turn (`--model-copy` or `--model`); invented numbers are rejected. No language-model loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
 
 | Member | Part | Verified contribution/status |
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display merged on main (PRs #5–#8) |
-| Kerrian Gordon | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+| Kerrian Gordon | Harness | Deterministic guarded run, POLICY.md calculations, TrustedFact construction, PRD report, and one guarded model turn implemented in Phases 7–8 |
 
 | Part | Integration handoff | Status |
 |---|---|---|
@@ -81,6 +81,36 @@ New read_store_inventory_database returns 20 rows through the real session poole
 # Date and Timestamp of Push
 
 Push records are ordered newest first.
+
+## 2026-10-13T15:54:46-04:00
+
+- Verified feature/pharmacy-harness push 0bdb0168d3c8e86f192f8c1b4ef9ca95e8efd1fc..06cd1061e95736c67f4e4842aae3e5bc2b1f0185.
+- Model turn prepends a harness wrapper that tools already ran; Brahim's SYSTEM_PROMPT is unchanged. No main merge. Draft PR #13 remains the review.
+
+## 2026-10-13T15:06:17-04:00
+
+- Verified feature/pharmacy-harness push fed64285454849e4b3b8f973f4b4349f79b69b8a..176b80f65e7fbcee1b36a525afc71360e9e1846d.
+- One guarded model turn: copy report-v1 or reject invented numbers. `--model-copy` is a wire check, not an LLM. No main merge. Draft PR #13 remains the review.
+- Harness tests: 71 OK.
+
+## 2026-10-13T12:01:35-04:00
+
+- Verified feature/pharmacy-harness push 8ef41d2889afb812b080e555b5544c2cecb59b6d..7dbf6d8f13951fa0e31369e607b72fb1bb3ddbeb.
+- CLI defaults to the Eval Card clock; `--now` uses the wall clock; `--offline` uses a recorded Case 1 FDA payload. No main merge. Draft PR #13 remains the review.
+- Harness tests: 61 OK.
+
+## 2026-10-13T11:53:33-04:00
+
+- Verified feature/pharmacy-harness push d61414aa9044b824e947e19517e681eecaca28d1..dd181cad9ffacbfc77ea52fae53d6b629efe1b4a.
+- Default CLI is the PRD manager table; `--json` prints harness-report-v1. PARTIAL, malformed FDA, package-mismatch, and Case 2 same-NDC overlay tests added. No main merge. Draft PR #13 remains the review.
+- Harness tests: 56 OK.
+
+## 2026-10-13T11:26:17-04:00
+
+- Verified feature/pharmacy-harness push 4b5817225ede54224793d308fa84c782fe065cd6..a7201b9fc87aedb338e9226ede0d3949108a0e48.
+- Listed every exact-match FDA record; conflicting identity, status, availability, or update_date become NEEDS_REVIEW without changing local class.
+- Rebased onto origin/feature/pharmacy-harness and kept the Windows virtual-environment README commands. No main merge. Draft PR #11 remains the review.
+- Harness tests: 47 OK. Full discover on this machine ran 146 methods; one pre-existing `local_tester` headerless-parse error is outside this change.
 
 ## 2026-10-13T11:18:04-04:00
 

@@ -89,3 +89,7 @@ One cohesive catalog/data migration group; one dependent reader/guard/harness in
 - Markdown fences: PASS for changed Markdown files.
 
 Validation: 161 passing tests; qualification 85/85, misses 0, false positives 0, containment 85. SQL execution remains untested; no hosted deployment.
+
+## Harness integration review
+
+The fetched harness head `2f950ac` is integrated with the retained 150-row batches and `--legacy-fixture`. Three textual conflicts in `.env.example`, README and CLI were reconciled without removing either approved configuration path. Historical tests explicitly select the original fixture. The reviewed FDA `related_info` reinsertion is corrected in a separate error-control commit with a regression test. Combined validation: 192 tests pass. Final integrated security and review remain required before push.

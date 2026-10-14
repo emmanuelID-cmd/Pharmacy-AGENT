@@ -13,10 +13,21 @@ except ImportError:
     from injection_prevention.boundary_contracts import Source
     from pharmacy_tools.instructions import HUMAN_NEXT_STEP, render_warnings
 
+from .loop import run_model_turn
 from .validate import POLICY_VERSION, STORE_ID, USAGE_DAYS, last_completed_day
 
 CLASS_ORDER = {"MANUAL_REVIEW": 0, "CRITICAL": 1, "LOW": 2, "ABOVE_THRESHOLD": 3, "UNKNOWN": 4}
 FDA_DATASET_STALE_DAYS = 2
+FDA_RECORD_FIELDS = (
+    "package_ndc", "generic_name", "availability", "related_info", "update_date",
+    "therapeutic_category", "dosage_form", "presentation", "company_name",
+    "shortage_reason", "status",
+)
+# Identity, shortage facts, and record dates. Narrative related_info is shown, not compared.
+FDA_CONFLICT_FIELDS = (
+    "package_ndc", "generic_name", "dosage_form", "presentation",
+    "status", "availability", "update_date",
+)
 
 
 def json_number(value):
@@ -28,28 +39,50 @@ def json_number(value):
     return value
 
 
+def _copy_fda_record(row):
+    copied = {}
+    for key in FDA_RECORD_FIELDS:
+        value = row.get(key)
+        copied[key] = value if type(value) is str else None
+    return copied
+
+
+def _fda_view(*, state, status=None, availability=None, update_date=None, dataset_updated=None,
+              external_risk=False, reason=None, records=()):
+    return {
+        "state": state, "status": status, "availability": availability, "update_date": update_date,
+        "dataset_updated": dataset_updated, "external_risk": external_risk, "reason": reason,
+        "records": tuple(records),
+    }
+
+
 def assess_fda(payload, *, run_at):
     """Label national context without changing local stock class.
+
+    Every exact-match result row is copied. Summary status/availability/update_date are
+    filled only when those copied records agree. Conflicting identity, shortage facts,
+    or record dates become NEEDS_REVIEW; the harness does not pick a winner.
 
     A fetch performed during this run is fresh: adapter retrieved_at uses wall-clock now()
     and must not be compared to a frozen --run-at (that would look like a future timestamp).
     Dataset calendar age is compared to run_at in America/New_York. A dataset date newer
     than the run (negative age) is not stale. SYNTHETIC-v0 prototype: older than two
-    calendar days is STALE.
+    calendar days is STALE when records otherwise agree.
     """
-    empty = {"state": "UNAVAILABLE", "status": None, "availability": None, "update_date": None,
-             "dataset_updated": None, "external_risk": False, "reason": "NOT_RETRIEVED"}
+    empty = _fda_view(state="UNAVAILABLE", reason="NOT_RETRIEVED")
     if type(payload) is not dict or type(payload.get("meta")) is not dict:
         return empty
     meta = payload["meta"]
     state = meta.get("state") if type(meta.get("state")) is str else "UNAVAILABLE"
     results = payload.get("results") if type(payload.get("results")) is list else []
-    row = results[0] if results and type(results[0]) is dict else {}
-    status = row.get("status") if type(row.get("status")) is str else None
-    availability = row.get("availability") if type(row.get("availability")) is str else None
-    update_date = row.get("update_date") if type(row.get("update_date")) is str else None
+    records = tuple(_copy_fda_record(row) for row in results if type(row) is dict)
+    signatures = {tuple(record[key] for key in FDA_CONFLICT_FIELDS) for record in records}
+    conflict = len(signatures) > 1
     dataset_updated = meta.get("dataset_updated") if type(meta.get("dataset_updated")) is str else None
     reason = meta.get("reason") if type(meta.get("reason")) is str else None
+    if conflict and state in {"MATCH", "PARTIAL", "STALE"}:
+        state = "NEEDS_REVIEW"
+        reason = "CONFLICTING_RECORDS"
     # Intentionally ignore meta.retrieved_at: same-run fetches are fresh.
     if state in {"MATCH", "PARTIAL"} and dataset_updated:
         try:
@@ -59,9 +92,22 @@ def assess_fda(payload, *, run_at):
         if dataset_date is not None and (run_at.date() - dataset_date).days > FDA_DATASET_STALE_DAYS:
             state = "STALE"
             reason = "DATASET_OLDER_THAN_TWO_DAYS"
-    external_risk = state in {"MATCH", "PARTIAL", "STALE"} and status == "Current" and availability == "Unavailable"
-    return {"state": state, "status": status, "availability": availability, "update_date": update_date,
-            "dataset_updated": dataset_updated, "external_risk": external_risk, "reason": reason}
+    if len(signatures) == 1:
+        status = records[0]["status"]
+        availability = records[0]["availability"]
+        update_date = records[0]["update_date"]
+    else:
+        status = availability = update_date = None
+    shortage_signal = any(
+        record["status"] == "Current" and record["availability"] == "Unavailable"
+        for record in records
+    )
+    external_risk = shortage_signal and state in {"MATCH", "PARTIAL", "STALE", "NEEDS_REVIEW"}
+    return _fda_view(
+        state=state, status=status, availability=availability, update_date=update_date,
+        dataset_updated=dataset_updated, external_risk=external_risk, reason=reason,
+        records=records,
+    )
 
 
 def explain(result, fda):
@@ -100,6 +146,13 @@ def explain(result, fda):
             parts.append("PARTIAL is not a complete national result.")
         if fda["state"] == "STALE":
             parts.append("National dataset date is stale relative to this run.")
+        if fda["state"] == "NEEDS_REVIEW":
+            parts.append(
+                f"{len(fda.get('records') or ())} matching records conflict; "
+                "compare all returned records."
+            )
+        elif len(fda.get("records") or ()) > 1:
+            parts.append(f"{len(fda['records'])} matching records shown; they agree.")
     parts.append("No order quantity. Human executes operational action outside the agent.")
     return " ".join(parts)
 
@@ -113,11 +166,9 @@ def sort_items(rows):
 
 
 def build_item_row(result, *, input_index, fda, run_at):
-    view = fda if fda is not None else {
-        "state": "NOT_CALLED", "status": None, "availability": None, "update_date": None,
-        "dataset_updated": None, "external_risk": False, "reason": None,
-    }
+    view = fda if fda is not None else _fda_view(state="NOT_CALLED")
     external_action = "REVIEW" if view.get("external_risk") else None
+    records = [dict(row) for row in view.get("records") or ()]
     return {
         "input_index": input_index,
         "item_id": result.item_id,
@@ -134,13 +185,15 @@ def build_item_row(result, *, input_index, fda, run_at):
         "fda_status": view["status"],
         "fda_availability": view["availability"],
         "fda_update_date": view["update_date"],
+        "fda_records": records,
         "external_action": external_action,
         "reason_codes": list(result.reason_codes),
         "explanation": explain(result, view),
     }
 
 
-def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, inventory_dispatch):
+def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, inventory_dispatch,
+                 fda_source="LIVE", complete=None):
     rows = []
     for index, result in enumerate(item_results):
         ndc = result.package_ndc
@@ -152,15 +205,27 @@ def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, i
         run_state = "MANUAL_REVIEW"
     if inventory_dispatch.state != "COMPLETE":
         run_state = "MANUAL_REVIEW"
+    model_turn = {"state": "SKIPPED", "reason_code": None}
     try:
         context = assemble_context(payload, source=Source.INVENTORY, facts=facts)
-        safety = expected_report(context)
+        if complete is None:
+            safety = expected_report(context)
+        else:
+            outcome = run_model_turn(context, complete)
+            safety = outcome.report
+            model_turn = {
+                "state": "ACCEPTED" if outcome.accepted else "REJECTED",
+                "reason_code": outcome.reason_code,
+            }
+            if not outcome.accepted:
+                run_state = "MANUAL_REVIEW"
         warning_codes = list(safety["warning_codes"])
     except Exception:
         context = None
         safety = None
         warning_codes = ["MANUAL_REVIEW_REQUIRED"]
         run_state = "MANUAL_REVIEW"
+        model_turn = {"state": "ERROR", "reason_code": "CONTEXT_ASSEMBLY_FAILED"}
     if run_state == "MANUAL_REVIEW" and "MANUAL_REVIEW_REQUIRED" not in warning_codes:
         warning_codes.append("MANUAL_REVIEW_REQUIRED")
     window_end = last_completed_day(run_at)
@@ -186,11 +251,13 @@ def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, i
         "human_next_step": HUMAN_NEXT_STEP,
         "order_placed": False,
         "inventory_changed": False,
+        "fda_source": fda_source,
+        "model_turn": model_turn,
         "safety_report": safety,
     }
 
 
-def failed_source_report(*, run_at, inventory_dispatch):
+def failed_source_report(*, run_at, inventory_dispatch, fda_source="LIVE"):
     warning_codes = ["MANUAL_REVIEW_REQUIRED"]
     return {
         "schema_version": "harness-report-v1",
@@ -211,5 +278,7 @@ def failed_source_report(*, run_at, inventory_dispatch):
         "human_next_step": HUMAN_NEXT_STEP,
         "order_placed": False,
         "inventory_changed": False,
+        "fda_source": fda_source,
+        "model_turn": {"state": "NOT_REACHED", "reason_code": None},
         "safety_report": None,
     }

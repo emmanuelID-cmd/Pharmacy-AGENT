@@ -8,11 +8,11 @@ Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD de
 |---|---|---|
 | Emmanuel De Jesus | Injection Risk Prevention | Standalone detection, context/action/output guards, synthetic local tester and qualification implemented in Phase 6 |
 | Brahim Maouloud | Agent Instructions and Tooling | Read-only inventory reader, openFDA adapter, system prompt and warning display implemented on main |
-| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction and PRD report implemented in Phase 7 |
+| Kerrian Gordon | Harness | Deterministic guarded inventory/FDA run, POLICY.md calculations, TrustedFact construction, PRD report, and one guarded model turn implemented in Phases 7â€“8 |
 
 ## Current status
 
-The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. The initial private Supabase schema, synthetic seed, and restricted database reader are also implemented. The default tool fixture now has 150 distinct public FDA-listed human-prescription product/package identities linked to synthetic stock and usage. FDA listings are not approval claims; no live CVS inventory is present. There is no language-model loop or FastAPI application. The new catalog migration is local and has not been applied to hosted Supabase.
+The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. The initial private Supabase schema, synthetic seed, and restricted database reader are also implemented. The default tool fixture now has 150 distinct public FDA-listed human-prescription product/package identities linked to synthetic stock and usage. FDA listings are not approval claims; no live CVS inventory is present. One optional guarded model turn is implemented; there is no FastAPI application. Do not train a model. The new catalog migration is local and has not been applied to hosted Supabase.
 
 ## Product foundation
 
@@ -20,7 +20,7 @@ The proposed agent helps an inventory manager at one configured store review syn
 
 The complete PRD, including journeys, priorities, success metrics, tool contracts, safeguards, prompts, and evaluation cases, remains the requirements source:
 
-- [Updated PRD — MOD review copy](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-Mod.md)
+- [Updated PRD â€” MOD review copy](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-Mod.md)
 - [PRD changes report](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-Changes.html)
 - [Original draft PRD](docs/requirements/Pharmacy%20Inventory%20Logistics%5BPRD%5D-draft.md)
 - [Original PRD template](docs/templates/Copy%20of%2020260515%20PRD%20Template%20%281%29.md)
@@ -79,7 +79,7 @@ README, AGENTS, Team Reference, workspace, and environment configuration remain 
 
 ## Injection prevention implementation
 
-Phase 6 continues completed historical Phases 1–5 on `feature/injection-risk-prevention`. This is Emmanuel's standalone prevention lane. Typed facts and fixed read callbacks are supplied by trusted harness code; a model, live source, database, staff-write service and operational calculations are not implemented here. Server-side placement alone does not make a record safe.
+Phase 6 continues completed historical Phases 1â€“5 on `feature/injection-risk-prevention`. This is Emmanuel's standalone prevention lane. Typed facts and fixed read callbacks are supplied by trusted harness code; a model, live source, database, staff-write service and operational calculations are not implemented here. Server-side placement alone does not make a record safe.
 
 | Boundary | Implemented behavior | Evidence |
 |---|---|---|
@@ -99,17 +99,19 @@ py -3.13 -m src.injection_prevention.local_tester --port 8765
 
 Open http://127.0.0.1:8765 after starting the tester. No credentials or third-party packages are required. This page executes synthetic controls; it does not call a model, FDA/CVS, SQL, a shell or an ordering service.
 
-Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe detected,30 benign accepted), zero fixture misses/false positives; external text excluded 85/85. These count fixtures, not distinct attack techniques or a general detection rate. SECURITY Round1 found two MAJOR and five MINOR gaps; Round2 verified remediation. Live model execution is not implemented; real pharmacy stock provenance and hosted deployment are outside this fixture.
+Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe detected,30 benign accepted), zero fixture misses/false positives; external text excluded 85/85. These count fixtures, not distinct attack techniques or a general detection rate. SECURITY Round1 found two MAJOR and five MINOR gaps; Round2 verified remediation. Historical Phase 6 qualification does not exercise live models; real pharmacy stock provenance and hosted deployment are outside this fixture.
 
 ## Harness implementation
 
 Phase 7 is Kerrian's harness lane. It calls Brahim's read-only tools through Emmanuel's `execute_guarded` dispatcher, validates evidence independently, calculates days of supply under [POLICY.md](docs/requirements/POLICY.md), and prints a human report. It does not run a model.
 
-The default 150-product synthetic stock snapshot is dated 2026-10-07. Freeze the clock for a fresh eval; omitting `--run-at` uses the current time and will mark that snapshot stale. Add `--legacy-fixture` only to replay the original 20-row fault/evaluation cases.
+The default 150-product synthetic snapshot is dated 2026-10-07. The CLI defaults to that evaluation clock; `--now` uses the current time and marks it stale. Add `--legacy-fixture` to replay the original 20-row fault/evaluation cases.
 
 ```powershell
 python3 -m unittest discover -s tests -q
-python3 -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+python3 -m src.pharmacy_harness --offline
+python3 -m src.pharmacy_harness --offline --model-copy
+python3 -m src.pharmacy_harness --offline --json
 ```
 
 On Windows, create the project virtual environment if it does not already exist, then install its timezone data and use its interpreter:
@@ -118,10 +120,12 @@ On Windows, create the project virtual environment if it does not already exist,
 py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements-harness.txt
 .\.venv\Scripts\python.exe -B -m unittest discover -s tests -q
-.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --run-at 2026-10-07T10:00:00-04:00
+.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline
+.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline --model-copy
+.\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline --json
 ```
 
-Unit tests stub FDA HTTP. The CLI performs real openFDA reads. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage.
+Unit tests stub FDA HTTP. The CLI defaults to the Eval Card clock and prints a manager table. `--offline` uses the recorded Case 1 FDA payload (no network). `--model-copy` runs one guarded model turn without an LLM; `--model` uses `PHARMACY_MODEL_URL` and rejects invented numbers. Omit `--offline` for a live openFDA read; `--now` uses the current clock; `--json` prints `harness-report-v1`. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
 
 - [Phase 7 plan](docs/planning/Phase/Phase7/PHASE-7-PLAN.md)
 - [Phase 7 handoff](docs/planning/Phase/Phase7/PHASE-7-HANDOFF.md)

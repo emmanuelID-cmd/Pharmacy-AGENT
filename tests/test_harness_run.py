@@ -140,6 +140,47 @@ class HarnessRunTests(unittest.TestCase):
         self.assertTrue(all(row["local_action"] == "MANUAL_REVIEW" for row in report["items"]))
         self.assertTrue(all(row["days_of_supply"] is None for row in report["items"]))
 
+    def test_partial_fda_pagination_survives_run_review(self):
+        def http_get(url, timeout):
+            if NDC in url:
+                return ok([RECORD], total=2)
+            return NOT_FOUND
+
+        report = run(fda_http_get=http_get)
+        row = next(item for item in report["items"] if item["item_id"] == "item-001")
+        self.assertEqual(row["fda_state"], "PARTIAL")
+        self.assertEqual(row["local_class"], "ABOVE_THRESHOLD")
+        self.assertEqual(row["days_of_supply_display"], "6.22")
+        self.assertIn("not a complete national result", row["explanation"])
+
+    def test_malformed_fda_body_is_unavailable_not_no_shortage(self):
+        def http_get(url, timeout):
+            if NDC in url:
+                return 200, b"<html>not json"
+            return NOT_FOUND
+
+        report = run(fda_http_get=http_get)
+        row = next(item for item in report["items"] if item["item_id"] == "item-001")
+        self.assertEqual(row["fda_state"], "UNAVAILABLE")
+        self.assertEqual(row["local_class"], "ABOVE_THRESHOLD")
+        self.assertIn("not no shortage", row["explanation"])
+
+    def test_fda_package_mismatch_is_no_match_and_keeps_local_class(self):
+        other = dict(RECORD, package_ndc="42023-240-02")
+
+        def http_get(url, timeout):
+            if NDC in url:
+                return ok([other])
+            return NOT_FOUND
+
+        report = run(fda_http_get=http_get)
+        row = next(item for item in report["items"] if item["item_id"] == "item-001")
+        self.assertEqual(row["package_ndc"], NDC)
+        self.assertEqual(row["fda_state"], "NO_MATCH")
+        self.assertEqual(row["local_class"], "ABOVE_THRESHOLD")
+        self.assertIsNone(row["external_action"])
+        self.assertIn("not guaranteed supply", row["explanation"])
+
 
 if __name__ == "__main__":
     unittest.main()
