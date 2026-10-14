@@ -61,8 +61,9 @@ silently made fresh. Demo uses a visibly frozen October 7 clock and stubbed FDA.
 Provider failures are Temporarily Unavailable; browser offline is distinguished
 from server/DNS/provider failures. Incomplete reviews cannot be all-clear.
 
-Run deadline 50 seconds; six model turns; 24 attempted tools; max 8192 model output
-tokens; bounded input/body/result contracts. Every FDA network attempt checks the
+Local run deadline 120 seconds (hosted loading: 50); six model turns; 24 attempted
+tools; 4,096 output tokens for read decisions and 24,576 for the full report;
+bounded input/body/result contracts. Every FDA network attempt checks the
 remaining run time with an independent transport cap. Client cancellation only
 stops waiting; Python cannot forcibly cancel a blocking read callback. A lingering
 worker stays visible to the one-active-review gate until it finishes. No writes
@@ -70,7 +71,7 @@ exist. Fixture coverage and guard tests do not establish universal injection det
 
 ## Integration fixture boundary
 
-The web Agent and Demo explicitly use the original 20-row synthetic fixture and single-NDC read schema. This retains their bounded 24-attempt review and output contract when the shared CLI reader defaults to the new 150-product fixture with ten-NDC batches. No database adapter is wired into either web endpoint. Hosted migration and web deployment remain pending.
+The web Agent uses the 150-product catalog fixture and ten-NDC FDA batches. Demo explicitly retains the original 20-row fixture. Each batch must contain distinct, context-bound identifiers that have not already been read. Requested identifiers are captured before IO; mismatched returned batch binding withholds FDA evidence. No database adapter is wired into either endpoint. Hosted migration and web deployment remain pending.
 
 ## Terminal response boundary
 
@@ -82,3 +83,20 @@ Turn exhaustion remains bounded by `MODEL_TURN_LIMIT`. The existing evidence
 coordinator constructs any partial report from verified facts, adds a manual-review
 warning and omits raw model/error text. No terminal response enters conversation
 history or authorizes another read. The deterministic CLI harness is unchanged.
+
+## Approved 150-row Agent limits
+
+Local default: 120 seconds overall, 90 seconds per model call, six model turns and
+24 attempted reads. Fifteen ten-NDC FDA batches plus inventory cover 150 rows.
+The provider receives copied shared tool schemas and pinned instructions; tool
+decisions are capped at 4,096 output tokens, final output at 24,576. Final JSON
+uses the fixed 150-row inventory limits and the unchanged exact report guard.
+Hosted configuration loading retains a 50-second run and 45-second model cap
+within the prepared 60-second host budget; full catalog completion on that host
+requires separate deployment validation. Refusal/no-response handling is preserved.
+
+Tests inject scripted providers and FDA responses. Authorized live evaluation uses
+the configured model and fixed FDA endpoint, records sanitized outcomes separately,
+and makes at most two end-to-end runs without automatic model retries. A frozen
+October 7 evaluation clock is explicitly labeled; normal Agent reviews use current
+time and preserve stale-snapshot review requirements.

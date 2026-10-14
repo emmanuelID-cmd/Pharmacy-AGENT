@@ -21,17 +21,17 @@ class Settings:
     reviewer_username: str = field(default="", repr=False)
     reviewer_password: str = field(default="", repr=False)
     allowed_hosts: tuple[str, ...] = ("localhost", "127.0.0.1", "[::1]")
-    run_seconds: float = 50
-    model_seconds: float = 15
+    run_seconds: float = 120
+    model_seconds: float = 90
     max_turns: int = 6
-    max_tokens: int = 8192
+    max_tokens: int = 24576
 
     def __post_init__(self):
         if not self.model.startswith("claude-haiku-") or len(self.model) > 100:
             raise ValueError("HAIKU_MODEL_REQUIRED")
-        if not 0 < self.run_seconds <= 50 or not 0 < self.model_seconds <= self.run_seconds:
+        if not 0 < self.run_seconds <= 120 or not 0 < self.model_seconds <= self.run_seconds:
             raise ValueError("INVALID_AGENT_DEADLINE")
-        if not 1 <= self.max_turns <= 6 or not 512 <= self.max_tokens <= 8192:
+        if not 1 <= self.max_turns <= 6 or not 512 <= self.max_tokens <= 24576:
             raise ValueError("INVALID_MODEL_BUDGET")
 
     @property
@@ -66,10 +66,13 @@ class Settings:
             hosts.append(os.environ["VERCEL_URL"])
         if values.get("PHARMACY_ALLOWED_HOSTS"):
             hosts = [v.strip() for v in values["PHARMACY_ALLOWED_HOSTS"].split(",") if v.strip()]
+        app_env = "production" if hosted else values.get("APP_ENV", "development")
         return cls(
             model=values.get("ANTHROPIC_MODEL") or LATEST_HAIKU,
             api_key=values.get("provider_key", ""),
-            app_env="production" if hosted else values.get("APP_ENV", "development"),
+            app_env=app_env,
+            run_seconds=50 if app_env != "development" else 120,
+            model_seconds=45 if app_env != "development" else 90,
             reviewer_username=values.get("PHARMACY_REVIEWER_USERNAME", ""),
             reviewer_password=values.get("PHARMACY_REVIEWER_PASSWORD", ""),
             allowed_hosts=tuple(hosts),

@@ -27,7 +27,7 @@
           <li>Calculate supply and check FDA context.</li>
           <li>Return evidence or a safe failure.</li>
         </ol>
-        <div class="detail-row"><span>Existing fixture</span><strong>20 inventory rows</strong></div>
+        <div class="detail-row"><span>Agent catalog fixture</span><strong>150 inventory rows</strong></div>
         <div class="detail-row"><span>Source mode</span><strong>{{ source_mode|default('fixture')|title }}</strong></div>
       </aside>
     </div>
@@ -79,7 +79,7 @@
     <p class="lead">Inspect what each tool supplies and what the harness validates.</p>
     <div class="split-layout">
       <article class="panel"><h2>Store inventory</h2><code class="code-chip">read_store_inventory(store_id=1618)</code><p>Stock, units, item identity, snapshot, and aggregate 14-day usage.</p><span class="badge badge-soft">Synthetic fixture reader</span><div class="notice notice-warn">The current local fixture is dated October 7, 2026. Freshness is checked at run time.</div></article>
-      <article class="panel"><h2>National shortage context</h2><code class="code-chip">get_fda_shortage_context(package_ndc)</code><p>FDA context for validated inventory NDCs. It does not establish local stock.</p><span class="badge badge-soft">FDA adapter</span><div class="notice notice-warn">Unavailable or incomplete results stay explicitly unavailable.</div></article>
+      <article class="panel"><h2>National shortage context</h2><code class="code-chip">get_fda_shortage_context_batch(package_ndcs)</code><p>FDA context in groups of up to ten validated inventory NDCs. It does not establish local stock.</p><span class="badge badge-soft">FDA adapter</span><div class="notice notice-warn">Unavailable or incomplete results stay explicitly unavailable.</div></article>
     </div>
   </section>
 

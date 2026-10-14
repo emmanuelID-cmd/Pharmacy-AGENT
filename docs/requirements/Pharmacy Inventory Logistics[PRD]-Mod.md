@@ -377,3 +377,14 @@ fixed safe codes only. Verified partial inventory/FDA evidence survives with a
 manual-review warning; model output is not accepted and operational actions remain
 outside agent authority. This implementation does not change the deterministic
 harness, fixture choice, calculations, tool permissions or existing run budgets.
+
+### Approved 150-row web Agent integration - October 13, 2026
+
+The user approved connecting the existing web Agent to the catalog fixture and
+bounded ten-NDC FDA reads, sizing the context/output budgets and testing the
+configured model plus live FDA endpoint. This supersedes the earlier 20-row Agent
+integration boundary; the historical fixed Demo remains unchanged. Verified
+calculations and exact report comparison remain authoritative. Refusals, invalid
+batches, duplicate reads, binding failures and run limits stop safely while
+supported partial evidence remains available for human review. No database
+integration, migration deployment, write tool or automatic model retry is added.

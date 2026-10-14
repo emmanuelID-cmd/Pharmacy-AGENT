@@ -1,6 +1,6 @@
 """Trusted per-run evidence; reuse harness validators and calculations unchanged."""
 import time
-from functools import partial
+from dataclasses import replace
 
 from ..injection_prevention.action_guard import execute_guarded
 from ..injection_prevention.boundary_contracts import Source
@@ -9,15 +9,15 @@ from ..pharmacy_harness.calculate import calculate_item
 from ..pharmacy_harness.facts import to_trusted_fact
 from ..pharmacy_harness.report import assess_fda, build_report, failed_source_report
 from ..pharmacy_harness.validate import duplicate_item_ids, inspect_item, inspect_snapshot
-from ..pharmacy_tools.fda import _http_get, get_fda_shortage_context
-from ..pharmacy_tools.inventory import LEGACY_FIXTURE_PATH, read_store_inventory
+from ..pharmacy_tools.fda import _http_get, get_fda_shortage_context_batch
+from ..pharmacy_tools.inventory import read_store_inventory
 
 
 class EvidenceReview:
     def __init__(self, *, moment, budget, inventory_reader=None, fda_http_get=None):
         self.moment = moment
         self.budget = budget
-        self.inventory_reader = inventory_reader or partial(read_store_inventory, path=LEGACY_FIXTURE_PATH)
+        self.inventory_reader = inventory_reader or read_store_inventory
         self.http_get = fda_http_get or _http_get
         self.payload = None
         self.snapshot = None
@@ -74,26 +74,37 @@ class EvidenceReview:
             time.sleep(seconds)
 
         def reader(**arguments):
-            captured["payload"] = get_fda_shortage_context(
+            captured["ndcs"] = tuple(arguments["package_ndcs"])
+            captured["payload"] = get_fda_shortage_context_batch(
                 **arguments, http_get=bounded_http, sleep=bounded_sleep)
             return captured["payload"]
 
-        dispatch = execute_guarded(call, executors={"get_fda_shortage_context": reader},
+        dispatch = execute_guarded(call, executors={"get_fda_shortage_context_batch": reader},
                                    budget=self.budget, allowed_package_ndcs=self.ndcs)
-        ndc = call.get("arguments", {}).get("package_ndc")
+        ndcs = captured.get("ndcs", ())
+        if dispatch.state == "COMPLETE" and captured["payload"]["meta"].get("package_ndcs") != list(ndcs):
+            dispatch = replace(dispatch, state="MANUAL_REVIEW", reason_code="FDA_BATCH_BINDING_FAILED")
         if dispatch.state != "COMPLETE" or "payload" not in captured:
-            if ndc in self.ndcs:
+            for ndc in ndcs:
                 self.fda_views[ndc] = assess_fda({"results": [], "meta": {
                     "state": "UNAVAILABLE", "reason": dispatch.reason_code}}, run_at=self.moment)
             return dispatch, None
-        view = assess_fda(captured["payload"], run_at=self.moment)
-        self.fda_views[ndc] = view
-        self.called_ndcs.add(ndc)
-        # No FDA free text, status sentence, URL or label is sent to the model.
-        state = view["state"] if view["state"] in {
-            "MATCH", "NO_MATCH", "UNAVAILABLE", "PARTIAL", "STALE"} else "UNAVAILABLE"
-        return dispatch, {"package_ndc": ndc, "state": state,
-                          "external_risk": bool(view["external_risk"]),
+        payload = captured["payload"]
+        meta = payload["meta"]
+        safe_rows = []
+        for ndc in ndcs:
+            exact = [row for row in payload["results"] if row.get("package_ndc") == ndc]
+            state = meta["state"] if meta["state"] in {"PARTIAL", "UNAVAILABLE"} else "MATCH" if exact else "NO_MATCH"
+            view = assess_fda({"results": exact, "meta": {**meta, "state": state, "package_ndc": ndc}},
+                              run_at=self.moment)
+            self.fda_views[ndc] = view
+            self.called_ndcs.add(ndc)
+            # No FDA narrative, URL or label is sent to the model.
+            safe_state = view["state"] if view["state"] in {
+                "MATCH", "NO_MATCH", "UNAVAILABLE", "PARTIAL", "STALE"} else "UNAVAILABLE"
+            safe_rows.append({"package_ndc": ndc, "state": safe_state,
+                              "external_risk": bool(view["external_risk"])})
+        return dispatch, {"package_ndcs": list(ndcs), "results": safe_rows,
                           "authority": "NATIONAL_CONTEXT_ONLY"}
 
     def report(self):

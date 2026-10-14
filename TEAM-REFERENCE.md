@@ -10,11 +10,17 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 13, 2026 local follow-up: 150-row Agent/catalog integration and bounded
+model/FDA API evaluation are approved. Prior refusal changes are preserved.
+Agent uses catalog batches; Demo retains the original fixture. No new commit,
+push, database migration or web deployment is claimed by this local handoff.
+
 October 13, 2026 local follow-up: the user approved explicit refusal/no-response
 handling in the existing web agent loop, safe provider-error codes and synthetic
 termination tests. Verified partial evidence remains available under manual review.
-The deterministic CLI, read-only tools, historical 20-row web fixture and existing
-budgets are preserved. This follow-up is local work, not a commit or push record.
+The deterministic CLI and read-only authority are preserved. The later approved
+150-row Agent follow-up retains these refusal checks while adapting batch reads
+and bounded output/time budgets; the fixed 20-row Demo remains. This follow-up is local work, not a commit or push record.
 
 October 13, 2026 integration: catalog/database, harness and historical web preview are reconciled locally. The CLI defaults to the 150-row public-identity/synthetic-stock fixture; web Agent/Demo explicitly retain the original 20-row fixture. Optional FDA narrative is omitted from outgoing JSON. No hosted catalog migration or web deployment has occurred. Full suite: 233 passing tests. SQL migration/seed execution remains outstanding without Docker. Earlier handoffs below describe their historical branch state.
 

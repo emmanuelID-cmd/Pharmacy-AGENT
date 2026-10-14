@@ -181,3 +181,45 @@ SECURITY independently passed the final credential regression and retained its
 local-scope clearance. Actual hosting, proxy identity and shared platform controls
 remain deployment checks. This verdict does not authorize staging, Git publication
 or a main merge; the working preview is available for the user's review.
+
+## October 13, 2026: 150-item Agent evaluation
+
+This follow-up covers the approved Agent catalog expansion and terminal refusal/error
+handling. The historical Demo remains on its original 20-row fixture. Changes are
+local and unstaged; no migration, hosting deployment or Git publication occurred.
+
+Two real Claude Haiku 5.5/openFDA evaluations completed without automatic retries.
+The direct runner used the fixture evaluation clock; the web endpoint used the
+current clock through the application's ASGI route. Both used the configured
+provider service and actual FDA HTTP reads. Only fixed diagnostic metadata was
+recorded; model text and credentials were excluded.
+
+| Evaluation (America/New_York) | Reads completed | Verified rows | Model turns | Outcome |
+| --- | --- | --- | --- | --- |
+| Direct runner, 2026-10-13 23:23:10 -04:00 | 16 (inventory + 15 FDA batches) | 150 | 3 | OUTPUT_EVIDENCE_MISMATCH; Manual Review |
+| Web endpoint, 2026-10-13 23:23:44 -04:00 | 16 (inventory + 15 FDA batches) | 150 | 3 | OUTPUT_EVIDENCE_MISMATCH; Manual Review |
+
+Each evaluation returned 149 FDA NO_MATCH items and one MATCH item; HTTP results
+were fourteen 404 responses and one 200 response. The current-clock evaluation
+also correctly flagged STALE_SNAPSHOT. Neither evaluation accepted model output,
+placed an order or changed inventory. Final model output was 611 and 686 tokens,
+respectively; the expected compact report measured 20,117 tokens through the
+provider token-count API, within the 24,576-token final-output ceiling. The raw
+responses were not retained, so their precise mismatch content is not asserted.
+
+The actual agent selected the tools and completed all bounded reads. End-to-end
+acceptance of the exact 150-row model report remains unresolved. Successful local
+scripted-provider tests do not establish successful live model acceptance; the
+output guard remains strict. No third live evaluation was attempted.
+
+SECURITY Round 1 passed 88 focused behavior methods. Review identified that the
+90-second model timeout was only a default; FIXER enforced it as a hard ceiling
+and added a 91-second rejection counterexample before Round 2.
+
+SECURITY Round 2 passed all 247 unittest methods in the project virtual environment
+and the qualification CLI: 85/85 contained fixtures, 55 unsafe detected, 30 benign
+accepted, zero misses and zero false positives. The first full-suite command used
+system Python without the project's dependencies and failed imports; the corrected
+virtual-environment run passed. Whitespace validation passed. Browser checks at
+1024, 640 and 320 pixels passed earlier in this follow-up. Live exact-report
+acceptance remains an explicit outstanding issue despite these local passes.

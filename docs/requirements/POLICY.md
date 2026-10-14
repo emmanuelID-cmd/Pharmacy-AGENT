@@ -67,3 +67,13 @@ are unchanged. The deterministic CLI's optional single model turn remains separa
 Every report shows synthetic status, store, run/snapshot time, usage window, policy version, calculation inputs, and external state. Manual-review exceptions are prominent and identify a correction/retry step. Policy cannot be edited by the running agent.
 
 Before a significant change, record the new version and rationale, then rerun all three PRD Eval Card cases and relevant boundary/fault variants. Before live use, authorized pharmacy staff approve operational values and data meaning; developers verify backend access boundaries and exact API behavior. No live readiness is implied by this document.
+
+## Catalog Agent integration note - October 13, 2026
+
+The approved web Agent now reads the 150-row synthetic catalog fixture and calls
+the fixed FDA adapter in distinct context-bound groups of at most ten NDCs.
+Calculations, operational thresholds and exact output comparison are unchanged.
+Transport/run/token bounds are enforced by trusted application configuration;
+partial, unavailable and binding-failed FDA evidence does not become NO_MATCH.
+The fixed historical Demo remains 20 rows. Live API evaluations are labeled
+separately from scripted tests and do not restamp or approve a stale snapshot.

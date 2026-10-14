@@ -15,29 +15,17 @@ class ProviderUnavailable(Exception):
 
 
 def claude_tools():
-    """Preserve the historical preview's single-NDC reads using the batch item's schema."""
-    specs = {spec["function"]["name"]: spec["function"] for spec in TOOL_SPECS}
-    inventory = specs["read_store_inventory"]
-    batch = specs["get_fda_shortage_context_batch"]
-    return [{"name": inventory["name"], "description": inventory["description"],
-             "input_schema": deepcopy(inventory["parameters"])},
-            {"name": "get_fda_shortage_context",
-             "description": "Read national FDA shortage context for one exact trusted package NDC. Read-only.",
-             "input_schema": {"type": "object", "properties": {
-                 "package_ndc": deepcopy(batch["parameters"]["properties"]["package_ndcs"]["items"])},
-                 "required": ["package_ndc"], "additionalProperties": False}}]
+    """Copy the shared inventory/batched-FDA read contracts for the provider."""
+    return [{"name": spec["function"]["name"], "description": spec["function"]["description"],
+             "input_schema": deepcopy(spec["function"]["parameters"])} for spec in TOOL_SPECS]
 
 
 def preview_system_prompt():
-    """Reuse shared safety/output rules with the preview's historical tool declaration."""
-    start = SYSTEM_PROMPT.index("TOOLS (read-only, the only two that exist):")
-    end = SYSTEM_PROMPT.index("No other tool exists.", start)
-    declaration = ("HISTORICAL WEB PREVIEW: the original 20-row synthetic fixture, not the 150-row catalog.\n"
-                   "TOOLS (read-only, the only two that exist):\n"
-                   "1. read_store_inventory(store_id=1618): call it exactly once, first.\n"
-                   "2. get_fda_shortage_context(package_ndc): call once per distinct package NDC from the trusted context, "
-                   "each identifier exactly as written. Never guess, reformat or invent an NDC.\n")
-    return SYSTEM_PROMPT[:start] + declaration + SYSTEM_PROMPT[end:]
+    """Reuse pinned safety rules and specify the bounded catalog review schedule."""
+    return ("CATALOG REVIEW: 150 public product identities linked to synthetic stock.\n"
+            "After inventory, request all remaining FDA reads in the same turn, using distinct groups of up to "
+            "ten package NDCs (at most fifteen groups). Never repeat an NDC. After the tool results, copy the "
+            "supplied compact report JSON exactly, without prose, markdown or added whitespace.\n\n" + SYSTEM_PROMPT)
 
 
 class ClaudeClient:
@@ -47,7 +35,7 @@ class ClaudeClient:
     async def complete(self, *, messages, tools, choice, timeout):
         if not self.settings.api_key:
             raise ProviderUnavailable("PROVIDER_NOT_CONFIGURED")
-        kwargs = dict(model=self.settings.model, max_tokens=self.settings.max_tokens,
+        kwargs = dict(model=self.settings.model, max_tokens=min(self.settings.max_tokens, 4096) if tools else self.settings.max_tokens,
                       system=preview_system_prompt(), messages=deepcopy(messages),
                       thinking={"type": "disabled"})
         if tools:

@@ -6,7 +6,7 @@ import re
 import threading
 
 from ..injection_prevention.action_guard import RunBudget, authorize_tool_call, execute_guarded
-from ..injection_prevention.boundary_contracts import ContractError, Source, strict_json_loads
+from ..injection_prevention.boundary_contracts import ContractError, InventoryLimits, Source, strict_json_loads
 from ..injection_prevention.contracts import Decision
 from ..injection_prevention.output_guard import expected_report, validate_report
 from ..injection_prevention.safe_context import inspect_payload
@@ -109,11 +109,11 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                     choice = {"type": "tool", "name": "read_store_inventory", "disable_parallel_tool_use": True}
                 elif remaining_ndcs:
                     offered = [deepcopy(tools[1])]
-                    offered[0]["input_schema"]["properties"]["package_ndc"]["enum"] = list(remaining_ndcs)
+                    offered[0]["input_schema"]["properties"]["package_ndcs"]["items"]["enum"] = list(remaining_ndcs)
                     choice = {"type": "any"}
                 else:
                     offered, choice = [], None
-                    messages.append({"role": "user", "content": "Tool reads are complete. Return the exact JSON report below, built from trusted context. Add nothing.\n" + json.dumps(expected_report(review.context), allow_nan=False)})
+                    messages.append({"role": "user", "content": "Tool reads are complete. Return the exact JSON report below, built from trusted context. Add nothing.\n" + json.dumps(expected_report(review.context), allow_nan=False, separators=(",", ":"))})
                 turns += 1
                 called = True
                 if review.remaining() <= 0:
@@ -149,7 +149,7 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                     tool_results = []
                     assistant_calls = []
                     for block in calls:
-                        call = {"name": block.get("name"), "arguments": block.get("input")}
+                        call = {"name": block.get("name"), "arguments": deepcopy(block.get("input"))}
                         # General permission checks run even for out-of-order/repeated calls.
                         name, args = call["name"], call["arguments"]
                         permission = authorize_tool_call(call, allowed_package_ndcs=review.ndcs)
@@ -159,7 +159,9 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                             return failed(dispatch.reason_code)
                         if name == "read_store_inventory" and review.context is None:
                             dispatch, safe = await read_activity.execute(review.read_inventory, call)
-                        elif name == "get_fda_shortage_context" and review.context is not None and type(args) is dict and args.get("package_ndc") not in review.called_ndcs:
+                        elif name == "get_fda_shortage_context_batch" and review.context is not None and all(
+                            ndc not in review.called_ndcs for ndc in args["package_ndcs"]
+                        ):
                             dispatch, safe = await read_activity.execute(review.read_fda, call)
                         else:
                             dispatch = execute_guarded(call, executors={}, budget=budget,
@@ -168,7 +170,8 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                         if dispatch.state != "COMPLETE" or safe is None:
                             return failed(dispatch.reason_code)
                         assistant_calls.append({"type": "tool_use", "id": block["id"],
-                                                "name": name, "input": deepcopy(args)})
+                                                "name": name, "input": {"store_id": 1618} if name == "read_store_inventory"
+                                                else {"package_ndcs": list(safe["package_ndcs"])}})
                         tool_results.append({"type": "tool_result", "tool_use_id": block["id"],
                                              "content": json.dumps(safe, allow_nan=False)})
                     messages.extend([{"role": "assistant", "content": assistant_calls},
@@ -180,7 +183,7 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                     return failed("INVALID_MODEL_RESPONSE")
                 text = "".join(block["text"] for block in blocks)
                 try:
-                    proposed = strict_json_loads(text.encode("utf-8"))
+                    proposed = strict_json_loads(text.encode("utf-8"), InventoryLimits())
                 except (ContractError, UnicodeError):
                     proposed = None
                 output = validate_report(proposed, context=review.context)
