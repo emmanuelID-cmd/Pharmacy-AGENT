@@ -26,6 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.pharmacy_agent.anthropic_client import ProviderUnavailable, preview_system_prompt  # noqa: E402
 from src.pharmacy_agent.config import Settings  # noqa: E402
 from src.pharmacy_agent.runtime import run_agent  # noqa: E402
+from src.pharmacy_tools.alert import send_critical_alert  # noqa: E402
 from src.pharmacy_tools.fda import _ssl_context  # noqa: E402
 from src.pharmacy_tools.inventory import LEGACY_FIXTURE_PATH, read_store_inventory  # noqa: E402
 
@@ -141,6 +142,8 @@ def main():
     parser.add_argument("--catalog", action="store_true", help="use the 150-item catalog instead of the 20-row fixture")
     parser.add_argument("--fixture", help="inventory JSON to use instead of the 20-row fixture (eval cases)")
     parser.add_argument("--trace", help="write the full trace (model inputs, raw tool results, model outputs, final report) to this JSON file")
+    parser.add_argument("--alert-channel", help="after the review, offer to post CRITICAL items to this Slack channel id "
+                                                "(asks for 'yes' first; token from SLACK_ALERT_TOKEN)")
     parser.add_argument("--run-at", default="2026-10-07T10:00:00-04:00",
                         help="review time; defaults to the fixture's snapshot day so data is fresh ('now' = real clock)")
     args = parser.parse_args()
@@ -175,6 +178,15 @@ def main():
         for item in report.get("items", []):
             classes[item.get("local_class")] = classes.get(item.get("local_class"), 0) + 1
         print("item classes:", classes)
+
+    if args.alert_channel:
+        # New capability with a human-in-the-loop checkpoint: nothing is posted without an explicit "yes".
+        if not (report and result["agent"]["output_accepted"]):
+            print("\nAlert skipped: no verified report to alert on.")
+            return
+        outcome = send_critical_alert(report, channel=args.alert_channel,
+                                      token=os.environ.get("SLACK_ALERT_TOKEN", ""))
+        print("Alert:", outcome["state"])
 
 
 if __name__ == "__main__":
