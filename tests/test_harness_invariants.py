@@ -40,7 +40,7 @@ class HarnessInvariantTests(unittest.TestCase):
         self.assertEqual(set(human_ids), set(source_ids))
 
     def _clone_item_001(self):
-        base = read_store_inventory(1618)
+        base = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
         return copy.deepcopy(next(row for row in base["items"] if row["item_id"] == "item-001"))
 
     def _named(self, item_id):
