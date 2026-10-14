@@ -31,7 +31,7 @@ CLI .env parsing failure is unresolved; deployment bypassed it with byte-verifie
 
 APPROVE within the initial synthetic schema/seed scope. No live-readiness claim. No Git publication performed.
 
-## Backend follow-up review — October 13, 2026
+## Backend follow-up review â€” October 13, 2026
 
 The initial review above records the schema-stage boundary. The subsequently approved backend login and separate reader are implemented and live-tested. Migration 20261013042410 is recorded; two rollback-only role tests and actual-login permission probes passed. Reader SELECT succeeds; write, raw-import and escalation probes fail. 103 tests and 85 selected qualification fixtures pass. Credentials are in ignored .env.database; no password is in migrations or tracked sources. Staff writes, API exposure and full harness integration remain pending. See BACKEND-READER.md for the updated boundary.
 
@@ -93,3 +93,49 @@ Validation: 161 passing tests; qualification 85/85, misses 0, false positives 0,
 ## Harness integration review
 
 The fetched harness head `2f950ac` is integrated with the retained 150-row batches and `--legacy-fixture`. Three textual conflicts in `.env.example`, README and CLI were reconciled without removing either approved configuration path. Historical tests explicitly select the original fixture. The reviewed FDA `related_info` reinsertion is corrected in a separate error-control commit with a regression test. Combined validation: 192 tests pass. Final integrated security and review remain required before push.
+
+## Final integrated validation
+
+The historical web preview is retained explicitly on the 20-row fixture and single-NDC schema; catalog CLI behavior remains 150 rows and ten-NDC batches. All original database and web PRD appendices survive their conflict resolution. Source reads remain guarded, arithmetic is reconstructed by the harness, external narrative stays out of outgoing JSON, and no hosted migration or web deployment occurred.
+
+Integrated SECURITY Round 1: 100 security-facing tests pass and 85/85 qualification cases agree (55 detected, 0 misses, 0 false positives, 85 contained). Integrated SECURITY Round 2: full 233-test regression suite passes; no remediation is outstanding within tested scope. Docker/isolated SQL, hosted permission/deployment and live model calls remain untested. Browser checks cover all eight routes at 1024/640/320 widths, retained drafts, Unicode/required input, keyboard navigation, declared 20-row demo, denied writes, tampered reports and failure recovery; no browser exceptions.
+
+UX review: the inventory reviewer has stable navigation, visible synthetic/read-only status, grouped evidence and an explicit human next step. Keyboard, responsive, loading/error/recovery checks pass; retaining the historical web fixture intentionally avoids expanding its model/output budget during catalog integration. Laws of UX grouping and continuity informed review: https://lawsofux.com/. These principles do not substitute for user research.
+
+## Integrated Line Return Reference
+
+- `.env.example`: prior 1 removed/replaced; current 1 added/replaced; current 21-27 added/replaced
+- `.python-version`: current 1 added/replaced
+- `AGENTS.md`: prior 31 removed/replaced; current 31 added/replaced
+- `README.md`: prior 11 removed/replaced; current 11 added/replaced; prior 15 removed/replaced; current 15-17 added/replaced; prior 23 removed/replaced; current 25 added/replaced; prior 43 removed/replaced; current 45 added/replaced; prior 45 removed/replaced; current 47 added/replaced; prior 47 removed/replaced; current 49 added/replaced; current 57-58 added/replaced; current 63-105 added/replaced; prior 82 removed/replaced; current 129 added/replaced
+- `TEAM-REFERENCE.md`: current 13-26 added/replaced; prior 67 removed/replaced; current 81 added/replaced; prior 75 removed/replaced; current 89 added/replaced
+- `app.py`: current 1-4 added/replaced
+- `docs/architecture/Pharmacy-Web-Agent-Architecture.md`: current 1-73 added/replaced
+- `docs/planning/WEB-HOSTING.md`: current 1-45 added/replaced
+- `docs/planning/WEB-INTERFACE-CONTRACT.md`: current 1-62 added/replaced
+- `docs/planning/WEB-REVIEW.md`: current 1-183 added/replaced
+- `docs/requirements/Pharmacy Inventory Logistics[PRD]-Mod.md`: current 322-369 added/replaced
+- `requirements-web.txt`: current 1-30 added/replaced
+- `requirements.txt`: current 1-2 added/replaced
+- `src/pharmacy_agent/__init__.py`: current 1 added/replaced
+- `src/pharmacy_agent/anthropic_client.py`: current 1-73 added/replaced
+- `src/pharmacy_agent/config.py`: current 1-76 added/replaced
+- `src/pharmacy_agent/review.py`: current 1-106 added/replaced
+- `src/pharmacy_agent/runtime.py`: current 1-184 added/replaced
+- `src/pharmacy_web/__init__.py`: current 1 added/replaced
+- `src/pharmacy_web/app.py`: current 1-281 added/replaced
+- `tests/browser/pharmacy_web_check.mjs`: current 1-104 added/replaced
+- `tests/test_claude_runtime.py`: current 1-277 added/replaced
+- `tests/test_pharmacy_web.py`: current 1-224 added/replaced
+- `vercel.json`: current 1-9 added/replaced
+- `web/assets/pharmacy.css`: current 1-167 added/replaced
+- `web/assets/pharmacy.js`: current 1-486 added/replaced
+- `web/templates/base.html`: current 1-43 added/replaced
+- `web/templates/page.html`: current 1-162 added/replaced
+
+## Secondary Checks
+
+- Trailing whitespace: PASS.
+- Markdown fences: PASS.
+- Conflict markers in working content: absent.
+- `docs/database/MIGRATION-REVIEW.md`: current 34; current 96-140; final self-reference line added.

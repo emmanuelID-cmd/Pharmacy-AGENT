@@ -10,6 +10,20 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 13, 2026 integration: catalog/database, harness and historical web preview are reconciled locally. The CLI defaults to the 150-row public-identity/synthetic-stock fixture; web Agent/Demo explicitly retain the original 20-row fixture. Optional FDA narrative is omitted from outgoing JSON. No hosted catalog migration or web deployment has occurred. Full suite: 233 passing tests. SQL migration/seed execution remains outstanding without Docker. Earlier handoffs below describe their historical branch state.
+
+October 13, 2026: user approved the web interface and guarded Claude connection on
+`feature/pharmacy-agent-web-interface`, selecting the newest Haiku. Authenticated
+Models API verified active `claude-haiku-5-5`. New code lives in `src/pharmacy_agent`,
+`src/pharmacy_web`, `web/templates`, and `web/assets`; existing contributor modules,
+CLI, local tester and presentations are preserved. This is local implementation,
+not a push record. No commit, PR merge or deployment is claimed.
+
+`feature/supabase-inventory-schema` contains the separate approved reader/schema;
+it is not merged into this web branch. Open teammate PR #13 targets main for FDA
+match-row/conflict reporting and remains separate. Main was verified current at
+the web build baseline `d08a6b444ef1f71bca8c4e524410ccd4dce2cd3c`.
+
 October 8, 2026, America/New_York: workspace/documentation setup authorized. The nine existing foundation files are preserved. PRD remains a draft. SQL/database implementation and proposed changes remain deferred. Team Alignment was subsequently authorized; the editable ODP is published in PR #9.
 
 No application runtime, database, live inventory integration, deployment, or dependency installation is included in this setup. Proposed future stack: Python, FastAPI, Pydantic, pytest, and simple HTML/CSS/JavaScript.
@@ -64,7 +78,7 @@ Validation: 66 behavior methods and85 selected fixtures;55 unsafe detected,30 be
 
 The active phase records live under [docs/planning/Phase](docs/planning/Phase/README.md). Historical Phases 1-5 and sub-phases 6.1-6.6 have explicitly reconstructed plan records referencing their verified implementation commits. Phase 7 is the harness implementation. Parent Phase 6 approval and historical comparison content are preserved. Publication is separately authorized after the original local Phase 6 handoff; verified pushes are recorded below after remote confirmation.
 
-## Supabase schema handoff — October 13, 2026
+## Supabase schema handoff â€” October 13, 2026
 
 Approved initial schema and seed deployed to xrptinavijhwvydoqdni using CLI management access. Nine pharmacy tables have RLS; no anon/authenticated grants or reader account memberships were added. Source imports are private; the scoped reader has SELECT only on six approved tables.
 
@@ -72,7 +86,7 @@ Two migrations recorded: 20261013040620 and 20261013040621. Seed: 20 items, 20 s
 
 Two rollback-only database/security rounds passed; 94 application tests and 85 qualification fixtures passed. The repository .env has a CLI parsing error; secret values were not inspected. Deployment used byte-verified temporary config/migration/seed copies. Existing presentation cleanup remains separate. No Git commit or push for this schema work yet. This is a deployment handoff, not a Git push record.
 
-## Read-only backend handoff — October 13, 2026
+## Read-only backend handoff â€” October 13, 2026
 
 Approved dedicated backend login and database reader implemented independently of the full harness. Migration 20261013042410 deployed; pharmacy_agent_backend inherits the restricted reader and defaults to read-only transactions. Generated password is only in ignored .env.database; no credential values were shown or committed.
 

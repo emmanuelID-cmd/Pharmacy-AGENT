@@ -1,0 +1,2 @@
+# Hosting entry: identical pinned dependencies to local web development.
+-r requirements-web.txt

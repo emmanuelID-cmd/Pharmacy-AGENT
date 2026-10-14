@@ -319,3 +319,51 @@ Approved initial private schema and synthetic seed deployed to project xrptinavi
 ### Read-only backend integration ? October 13, 2026
 
 Approved dedicated login and database-backed inventory reader are implemented. [Backend reader guide](../database/BACKEND-READER.md) records credential isolation, fixed queries, limits and actual permission tests. The reader returns untrusted source data and preserves manual-review evidence; it does not perform harness verification or calculations. Full harness integration remains separate. Original file reader, source fixture and POLICY.md are preserved.
+
+### Web Agent implementation — October 13, 2026
+
+This dated appendix supplements the historical implementation notes above. It does
+not make the proposed SYNTHETIC-v1 policy canonical or edit original POLICY.md.
+User approved the shared web build and selected the most up-to-date Haiku.
+Authenticated Models API confirmed active `claude-haiku-5-5` on the approval date.
+
+- [P0] User can navigate Home, Agent, Tools, Harness, Injection Risk Test, Failure
+  State, Demo, and Architecture through one consistent pharmacy shell, with keyboard
+  navigation, visible status, shared header/footer and a logo placeholder.
+- [P0] User can submit a nonblank 1–1000 Unicode-character review request, see
+  field/summary errors, preserve drafts during internal navigation, and stop waiting
+  without a claim that a blocking server read was forcibly cancelled.
+- [P0] User can inspect a deterministic report with evidence dates, usage window,
+  local classification/action, exceptions and separate FDA national context. Current
+  reviews use the current clock; a stale October 7 fixture stays stale.
+- [P0] User can run server-owned synthetic injection/output-tamper cases through
+  the existing Python tester. Tester and recovery previews do not call the live model.
+- [P0] User can run the fixed demo with an explicitly labelled October 7 clock and
+  synthetic FDA responses. No demo claim establishes current source freshness.
+- [P0] Hosted prototype access fails closed without reviewer credentials; provider
+  secrets stay server-side. This team gate is not operational staff role management.
+
+The new server coordinator authorizes every model call through the existing guard,
+enforces inventory-first/exactly-once and once-per-context-NDC reads, validates
+evidence through existing harness calculations, and sends minimal structured facts
+to Claude. Submitted request text and external free text are excluded even when
+accepted by a detector. Model output is checked against the exact deterministic
+report; malformed, fabricated or unauthorized output becomes manual review.
+No ordering, write, secret, arbitrary URL, SQL, shell or messaging tool is added.
+
+Bounded defaults: 50-second overall run, six model turns, 24 attempted tool calls,
+8192 output tokens, zero automatic provider retries, input/body/result limits and
+independent remaining-time checks for FDA IO. One active review and a ten-second
+interval apply per server process, not as a distributed abuse-prevention guarantee.
+Cloud hosting, wider-access controls and source freshness remain to be verified on
+the actual deployment. Staff services and replacement per-item policy remain separate.
+
+Supabase schema/reader code exists separately on `feature/supabase-inventory-schema`;
+this web branch does not merge it or change grants. Existing source, CLI, independent
+tester, original draft/policy, architecture PNGs and presentations are preserved.
+See [web contract](../planning/WEB-INTERFACE-CONTRACT.md),
+[runtime architecture](../architecture/Pharmacy-Web-Agent-Architecture.md), and
+[hosting preparation](../planning/WEB-HOSTING.md). Verified build/review evidence is
+recorded separately; this appendix does not assert universal injection prevention.
+
+Integration boundary: web Agent/Demo explicitly retain the historical 20-row fixture and single-NDC read workflow. The CLI catalog review defaults to 150 products with ten-NDC batches. Public catalog identity is not FDA approval; all stock/usage remains synthetic. The catalog migration is undeployed and database-to-harness integration remains separate.
