@@ -127,6 +127,13 @@ New read_store_inventory_database returns 20 rows through the real session poole
 - Exact hosting-only snapshot: 250 passing tests on Python 3.13.15. Qualification: 85 contained, 55 unsafe detected, 30 benign accepted, zero misses/false positives. Vercel preview build passed; unauthenticated access redirects to Vercel login, so application runtime and secrets remain unverified.
 - PR [#19](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/19) targets main; no merge or model call occurred.
 
+## 2026-10-14T11:14:34-04:00
+
+- Verified user-requested PR #16 rebase publication on `feature/pharmacy-harness`: `e67990d753c5cff8cab03818b52ed2b550f2d577..5d9bb719ccc74680c326661900fcdb44d8d655be` (history rewrite guarded by the exact old-tip lease).
+- Rebase review range: `e57d07f40d9a14c6ac17363cf09c7b412d7eeda5..637e3bb8f69d7732ed86486327c5653053b86886`. All eight original author identities, dates and messages are preserved; both push ledgers survive.
+- Rebased tree: 265 tests pass; qualification 85/85 contained, 55 unsafe detected, 30 benign accepted, zero misses/false positives. The six pending local fixes were excluded and retained byte-for-byte.
+- Rebase only: no main merge, provider switch, data restamping or native Mac tester fix. Credential-alias precedence and live CLI fixture selection remain separate follow-ups.
+
 ## 2026-10-14T04:07:31-04:00
 
 - Verified feature/pharmacy-harness push be3105940115404f8832c5f5c92bdad023ecfdc3..4c0b6a8607dba0d37325da787f0661c19df1837d.
