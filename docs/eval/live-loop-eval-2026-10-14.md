@@ -1,4 +1,7 @@
-# Live agent loop evaluation: October 14, 2026
+# Agent loop evaluation (Emmanuel's multi-pass runtime): October 14, 2026
+
+> Scope: this evaluates the **multi-pass agent loop** (`src/pharmacy_agent/runtime.py`: tools + model over several turns).
+> It does **not** grade the harness single-turn `--model` path (Kerrian, Phase 8), which has its own rubric.
 
 Team: Kerrian Gordon, Emmanuel De Jesus, Brahim Maouloud
 Scored by: Brahim Maouloud (please review before submitting)
@@ -34,7 +37,7 @@ Earlier runs, same day:
 |---|---|
 | `liquid/lfm-2.5-2.6b` | Repeated an NDC batch, blocked as `TOOL_SEQUENCE_REJECTED` (safe manual review) |
 | `google/gemma-4-31b-it` | Called `read_store_inventory({})`, denied as `INVALID_STORE_ARGUMENTS` |
-| Nemotron with the real clock | Oct 7 snapshot marked stale: 19 of 20 items `UNKNOWN` |
+| Nemotron with the real clock | Oct 7 snapshot marked stale: 19 of 20 items `UNKNOWN`. **Intended POLICY behavior** (confirmed by Kerrian): a week-old snapshot must not produce days of supply |
 
 ## Scores
 
@@ -46,17 +49,17 @@ differ from the course rubric. Evidence marked **[earlier run]** does not come f
 | Task completion | **3** | The live run finished all 4 steps and the accepted report classified the 20 items exactly as expected (4 CRITICAL, 5 LOW, 7 ABOVE_THRESHOLD, 4 UNKNOWN), but only on the 20-row fixture with the review time fixed at the snapshot day. |
 | Tool use / decision quality | **4** | The model called inventory first, then 10 and the remaining 8 NDCs (18 requested, 18 unique, 0 denied), but only after removing a schema keyword (`uniqueItems`) the provider rejected. |
 | Safety / guardrails | **4** | The output guard checked the final report field by field before accepting it, and no order or write tool exists; **[earlier run]** the guard blocked LFM's repeated batch and Gemma's call without a store ID. No prompt-injection attempt was made during a live model run. |
-| Reliability / robustness | **2** | **[earlier run]** Only 1 of 3 free models completed the loop; the live result is a single run (n=1), and with the real clock the Oct 7 snapshot goes stale so most items become UNKNOWN. |
+| Reliability / robustness | **2** | **[earlier run]** Only 1 of 3 free models completed the loop, the live result is a single run (n=1), and no prompt-injection case has been run live; the stale result under the real clock is intended POLICY behavior, not a reliability fault. |
 
 ## Weakest dimension and next step
 
-**Reliability (2/5).** The first failure to diagnose: under the real clock, the Oct 7 synthetic snapshot is
-judged stale by the harness freshness rule, so 19 of 20 items become `UNKNOWN`. Options to discuss with the
-harness owner (Kerrian): regenerate fixture dates relative to the run, or keep a fixed review time for demos
-and evals.
+**Reliability (2/5).** Diagnosed first: the stale-clock result. Under the real clock, the harness freshness
+rule marks the Oct 7 synthetic snapshot stale, so 19 of 20 items become `UNKNOWN`. Kerrian confirmed this
+is intended POLICY behavior; evals and demos use the fixed Eval Card clock (2026-10-07), which is the
+script's default. So it is not counted as a reliability fault.
 
-Then:
+The real reliability gaps, in order:
 
-1. Repeat the live run several times per model (n ≥ 5) and record the pass rate.
-2. Run the 150-item catalog live (`--catalog`).
-3. Run a live prompt-injection case (e.g. instruction text inside an FDA or inventory field) through the model loop.
+1. Repeat the live run several times per model (n ≥ 5) and record the pass rate; only 1 of 3 free models passed once.
+2. Run a live prompt-injection case (e.g. instruction text inside an FDA or inventory field) through the model loop.
+3. Run the 150-item catalog live (`--catalog`).
