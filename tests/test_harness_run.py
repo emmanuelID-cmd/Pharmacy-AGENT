@@ -30,6 +30,14 @@ def run(**kwargs):
 
 
 class HarnessRunTests(unittest.TestCase):
+    def test_optional_fda_narrative_is_absent_from_outgoing_json(self):
+        record = dict(RECORD, related_info="A supplier update for human source review.")
+        report = run(fda_http_get=stub_http(match_record=record))
+        encoded = json.dumps(report)
+        self.assertNotIn('"related_info"', encoded)
+        self.assertNotIn(record["related_info"], encoded)
+        self.assertEqual(report["source_state"], "COMPLETE")
+
     def test_guarded_inventory_read_uses_store_1618_fixture(self):
         report = run()
         self.assertEqual(report["source_state"], "COMPLETE")

@@ -19,11 +19,11 @@ from .validate import POLICY_VERSION, STORE_ID, USAGE_DAYS, last_completed_day
 CLASS_ORDER = {"MANUAL_REVIEW": 0, "CRITICAL": 1, "LOW": 2, "ABOVE_THRESHOLD": 3, "UNKNOWN": 4}
 FDA_DATASET_STALE_DAYS = 2
 FDA_RECORD_FIELDS = (
-    "package_ndc", "generic_name", "availability", "related_info", "update_date",
+    "package_ndc", "generic_name", "availability", "update_date",
     "therapeutic_category", "dosage_form", "presentation", "company_name",
     "shortage_reason", "status",
 )
-# Identity, shortage facts, and record dates. Narrative related_info is shown, not compared.
+# Identity, shortage facts, and record dates. Narrative related_info is never forwarded.
 FDA_CONFLICT_FIELDS = (
     "package_ndc", "generic_name", "dosage_form", "presentation",
     "status", "availability", "update_date",
