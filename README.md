@@ -70,6 +70,9 @@ From this repository root in PowerShell:
 ```
 
 Open http://127.0.0.1:8770. Home defines the shared design across all eight URLs.
+Home includes the full 150-item catalog joined to local synthetic stock and all
+14 daily usage values by exact package NDC. The table scrolls within its panel;
+source text is escaped for human inspection and does not enter model context.
 Navigation uses the shared tabs without a separate in-page Back control.
 Agent runs the real guarded model/tool loop; Demo and Injection Risk Test run
 existing deterministic Python behavior without calling a model. Failure State

@@ -30,6 +30,26 @@
         <div class="detail-row"><span>Source mode</span><strong>{{ source_mode|default('fixture')|title }}</strong></div>
       </aside>
     </div>
+    <section class="panel catalog-section" aria-labelledby="catalog-title">
+      <p class="eyebrow">Catalog · Product and inventory data</p>
+      <h2 id="catalog-title">150-item catalog</h2>
+      <p class="muted">Product details are connected to synthetic stock and 14-day usage by exact package NDC. Source data is shown for inspection; FDA listing does not establish approval.</p>
+      {% if catalog %}
+      <details class="catalog-source"><summary>Source and snapshot details</summary>
+        <dl class="report-meta-grid">{% for label, value in catalog.metadata %}<div><dt>{{ label }}</dt><dd>{{ value }}</dd></div>{% endfor %}</dl>
+      </details>
+      <p class="small muted" id="catalog-help">All 150 rows are shown. Scroll across for every column and down for more products. Daily usage values use the row's dispensing unit.</p>
+      <div class="table-wrap catalog-scroll" tabindex="0" role="region" aria-label="Full catalog table" aria-describedby="catalog-help">
+        <table class="report-table catalog-table">
+          <caption>150 products · Synthetic stock and usage · Snapshot {{ catalog.metadata[3][1] }}</caption>
+          <thead><tr>{% for label in catalog.columns %}<th scope="col">{{ label }}</th>{% endfor %}</tr></thead>
+          <tbody>{% for row in catalog.rows %}<tr>{% for value in row %}{% if loop.first %}<th scope="row">{{ value }}</th>{% else %}<td>{{ value }}</td>{% endif %}{% endfor %}</tr>{% endfor %}</tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="notice notice-error" role="status">Catalog unavailable. The local catalog and inventory could not be connected. Reload after the source files are restored.</div>
+      {% endif %}
+    </section>
   </section>
 
   {% elif active_view == 'agent' %}

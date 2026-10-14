@@ -388,3 +388,11 @@ calculations and exact report comparison remain authoritative. Refusals, invalid
 batches, duplicate reads, binding failures and run limits stop safely while
 supported partial evidence remains available for human review. No database
 integration, migration deployment, write tool or automatic model retry is added.
+
+### Approved Home catalog display
+
+The user requested removal of the redundant in-page Back control and the full
+catalog below Home content. All 150 product rows show connected local inventory
+and the complete 14-day usage series, joined by exact package NDC. Source text is
+escaped for human inspection; it does not establish trusted model facts. Tabs,
+keyboard access and responsive table scrolling preserve the shared interface.

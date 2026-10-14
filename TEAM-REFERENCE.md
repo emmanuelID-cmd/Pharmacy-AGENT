@@ -10,6 +10,11 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+Local UI follow-up: user requested removal of the redundant Back control and
+the complete 150-row catalog at the bottom of Home. Product columns, stock and
+14 daily usage values join by exact package NDC for escaped human display.
+This addition uses fixed local files and does not invoke the Agent or database.
+
 October 13, 2026 local follow-up: 150-row Agent/catalog integration and bounded
 model/FDA API evaluation are approved. Prior refusal changes are preserved.
 Agent uses catalog batches; Demo retains the original fixture. No new commit,

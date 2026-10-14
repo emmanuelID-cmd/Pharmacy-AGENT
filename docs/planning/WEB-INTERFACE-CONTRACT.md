@@ -15,6 +15,16 @@ Navigation uses the shared tabs; the user-requested UI revision removes the
 redundant in-page Back control. No patient data,
 orders, inventory writes, numerical reorder quantities or policy changes.
 
+Home appends all 150 catalog rows with 32 columns: product/package identifiers,
+labels, forms, package details, marketing date, RxNorm/ATC mappings and states,
+synthetic stock/unit, usage window and each of the 14 dated daily usage values.
+The fixed local files join by exact package NDC; duplicate, missing or mismatched
+bindings show an unavailable state with source recovery guidance. Jinja escapes
+all displayed source values. Provenance is available alongside the table; this
+human inspection view does not provide model evidence or run any external API.
+The table has row/column headers, keyboard focus and internal scrolling while
+the existing shell and tabs remain consistent at smaller widths.
+
 ## Server/client contract
 
 - Template context: `active_view`, `navigation` (key/label/path), `model`,

@@ -223,3 +223,26 @@ system Python without the project's dependencies and failed imports; the correct
 virtual-environment run passed. Whitespace validation passed. Browser checks at
 1024, 640 and 320 pixels passed earlier in this follow-up. Live exact-report
 acceptance remains an explicit outstanding issue despite these local passes.
+
+## October 14, 2026: Home catalog and navigation revision
+
+User requested removal of the redundant Back control and the complete connected
+catalog at the bottom of Home. The implementation joins the two fixed local
+files by exact package NDC, shows all 150 rows and 32 columns including every
+dated daily usage value, and keeps provenance available next to the table.
+Source strings are escaped for human display, never promoted to model evidence.
+Unavailable files or missing/duplicate bindings show recovery guidance. The
+original tab shell, browser history, keyboard navigation and Demo are preserved.
+
+SECURITY Round 1: 23 focused web tests passed, including source-text escaping,
+binding failure, unavailable-source recovery and existing access controls.
+The navigation cleanup initially left a dangling history branch; the syntax
+check detected it and FIXER removed it before browser verification.
+SECURITY Round 2: all 250 unittest methods passed; qualification contained all
+85 fixtures, detected 55 unsafe cases, accepted 30 benign cases, with zero
+misses and zero false positives. JavaScript syntax checks passed. Browser checks
+passed all eight routes at 1024/640/320 pixels, verified 150 rows/32 columns,
+internal scrolling and keyboard access, and reported no browser exceptions.
+The Home screenshot was visually inspected. This UI change makes no model/API
+calls, does not change Supabase and does not resolve the live output mismatch.
+Changes remain local and unstaged for the user's preview review.

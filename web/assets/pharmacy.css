@@ -110,6 +110,15 @@ textarea[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(-
 .report-table th { background: var(--soft); font-size: 12px; white-space: nowrap; }
 .report-table tr:last-child td { border-bottom: 0; }
 .report-table td { overflow-wrap: anywhere; }
+.catalog-section { margin-top: 36px; }
+.catalog-source summary { width: fit-content; min-height: 40px; padding: 8px 0; color: var(--brand); cursor: pointer; }
+.catalog-scroll { max-height: 620px; overflow: auto; }
+.catalog-table { width: max-content; min-width: 100%; }
+.catalog-table caption { text-align: left; padding: 12px; color: var(--muted); font-size: 13px; }
+.catalog-table thead th { position: sticky; top: 0; z-index: 1; }
+.catalog-table tbody th { background: var(--surface); white-space: nowrap; }
+.catalog-table td { min-width: 110px; max-width: 340px; }
+.catalog-table th, .catalog-table td { border-right: 1px solid var(--border); }
 .report-detail-row td { padding: 0 11px 11px; }
 .report-detail-row details { padding: 4px 0; }
 .report-detail-row summary { min-height: 36px; width: fit-content; padding: 6px 2px; color: var(--brand); font-weight: 600; cursor: pointer; }
