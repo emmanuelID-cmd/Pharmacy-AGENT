@@ -40,6 +40,53 @@ class WebTests(TestCase):
         self.assertNotIn("synthetic-SECRET-marker", response.text)
         self.assertNotIn("synthetic-SECRET-marker", local_client(app).get("/agent").text)
 
+    def test_home_connects_all_catalog_rows_and_daily_usage_without_model_calls(self):
+        from src.pharmacy_web.catalog import home_catalog
+        catalog = home_catalog()
+        self.assertEqual(len(catalog["rows"]), 150)
+        self.assertEqual(catalog["columns"][-14:], [f"2026-09-{day:02}" for day in range(23, 31)] +
+                         [f"2026-10-{day:02}" for day in range(1, 7)])
+        first = dict(zip(catalog["columns"], catalog["rows"][0]))
+        self.assertEqual(first["Item ID"], "catalog-001")
+        self.assertEqual(first["Package NDC"], "76420-622-01")
+        self.assertEqual(first["Brand name"], "Pro-C-Dure 6 Kit")
+        self.assertEqual(first["Usable quantity"], "17")
+        self.assertEqual(catalog["rows"][0][-14:], [str(v) for v in (2,3,4,5,6,7,8,1,2,3,4,5,6,7)])
+        html = self.client.get("/").text
+        self.assertIn("catalog-150", html)
+        self.assertIn('aria-label="Full catalog table"', html)
+        self.assertEqual(self.calls, [])
+        for entry in NAVIGATION:
+            self.assertNotIn("data-back", self.client.get(entry["path"]).text)
+
+    def test_catalog_source_text_is_escaped_and_never_calls_agent(self):
+        from unittest.mock import patch
+        from src.pharmacy_tools.inventory import read_store_inventory
+        payload = read_store_inventory(1618)
+        marker = '<img src=x onerror="alert(1)">'
+        payload["items"][0]["product_label"] = marker
+        with patch("src.pharmacy_web.catalog.read_store_inventory", return_value=payload):
+            html = self.client.get("/").text
+        self.assertNotIn(marker, html)
+        self.assertIn("&lt;img src=x onerror=", html)
+        self.assertEqual(self.calls, [])
+
+    def test_catalog_binding_or_unavailable_source_shows_recovery(self):
+        from unittest.mock import patch
+        from src.pharmacy_tools.inventory import InventoryUnavailable, read_store_inventory
+        payload = read_store_inventory(1618)
+        payload["items"][-1]["package_ndc"] = payload["items"][0]["package_ndc"]
+        with patch("src.pharmacy_web.catalog.read_store_inventory", return_value=payload):
+            response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Catalog unavailable", response.text)
+        self.assertNotIn('class="report-table catalog-table"', response.text)
+        with patch("src.pharmacy_web.catalog.read_store_inventory", side_effect=InventoryUnavailable("SOURCE_UNREADABLE")):
+            response = self.client.get("/")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Catalog unavailable", response.text)
+        self.assertEqual(self.calls, [])
+
     def test_unicode_boundary_and_extra_fields(self):
         self.assertEqual(self.client.post("/api/review", json={"request": "💊"*1000}).status_code, 200)
         self.assertEqual(len(self.calls[0]), 1000)

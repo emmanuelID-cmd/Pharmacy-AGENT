@@ -14,7 +14,7 @@ Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD de
 
 The PRD remains a draft specification. Injection prevention, read-only inventory/FDA tools, and a deterministic harness that calls those tools are implemented. The initial private Supabase schema, synthetic seed, and restricted database reader are also implemented. The default tool fixture now has 150 distinct public FDA-listed human-prescription product/package identities linked to synthetic stock and usage. FDA listings are not approval claims; no live CVS inventory is present. One optional guarded model turn is implemented; a private FastAPI web preview is also implemented. Do not train a model. The new catalog migration is local and has not been applied to hosted Supabase.
 
-The web Agent and Demo preserve the original 20-row synthetic evaluation fixture explicitly. The harness CLI defaults to the 150-row public-identity/synthetic-stock fixture. Neither path uses live CVS inventory or the database adapter. Hosted catalog migration and web deployment remain pending.
+The web Agent uses the 150-row catalog fixture; Demo preserves the original 20-row synthetic evaluation fixture explicitly. The harness CLI defaults to the 150-row public-identity/synthetic-stock fixture. Neither path uses live CVS inventory or the database adapter. Hosted catalog migration and web deployment remain pending.
 
 ## Product foundation
 
@@ -54,7 +54,7 @@ Database: Supabase PostgreSQL 17.11, project `xrptinavijhwvydoqdni`. See [schema
 
 Medication identity: the checked-in catalog comes from the public [openFDA NDC directory](https://open.fda.gov/apis/drug/ndc/) and NLM RxNorm/RxClass ATC lookups. One package NDC represents each of 150 distinct product NDCs. NLM mapping gaps remain explicit. Every quantity and usage value is synthetic and linked to its catalog package by exact package NDC; no pharmacy stock feed is connected.
 
-The web application keeps the separate Supabase database adapter unconnected; it uses the explicitly selected historical fixture.
+The web application keeps the separate Supabase database adapter unconnected; the Agent uses the catalog fixture and Demo uses the historical fixture.
 
 References: [FastAPI features](https://fastapi.tiangolo.com/features/) and [FDA shortages endpoint](https://open.fda.gov/apis/drug/drugshortages/how-to-use-the-endpoint/).
 
@@ -70,6 +70,10 @@ From this repository root in PowerShell:
 ```
 
 Open http://127.0.0.1:8770. Home defines the shared design across all eight URLs.
+Home includes the full 150-item catalog joined to local synthetic stock and all
+14 daily usage values by exact package NDC. The table scrolls within its panel;
+source text is escaped for human inspection and does not enter model context.
+Navigation uses the shared tabs without a separate in-page Back control.
 Agent runs the real guarded model/tool loop; Demo and Injection Risk Test run
 existing deterministic Python behavior without calling a model. Failure State
 explicitly illustrates recovery scenarios; it does not inject live failures.
@@ -90,13 +94,22 @@ process; one requester's failures do not lock out every reviewer on that worker.
 Basic reviewer access is a team prototype
 gate, not pharmacy staff role administration; use HTTPS on a host.
 
-Runs have a 50-second application deadline, six model turns, at most 24 attempted
-tool calls, explicit provider timeouts and no automatic provider retries. Each
+Local Agent runs have a 120-second application deadline, six model turns, at most 24 attempted
+tool calls and 90-second per-model caps; hosted settings retain a 50-second run and
+45-second model cap. Tool decisions allow up to 4,096 output tokens and the final
+150-row exact report allows up to 24,576. There are no automatic provider retries. Each
 FDA request/retry rechecks remaining time. The browser's Stop waiting aborts the
 wait; an already-started read may finish within its independent timeouts. Each
 process permits one active review and a ten-second interval; these limits are
 not a distributed rate limiter for multiple workers. A timed-out blocking read
 continues to occupy the active-read limit until its worker actually finishes.
+
+The web loop stops on an explicit provider refusal (`MODEL_REFUSAL`) or a missing/empty
+response (`MODEL_NO_RESPONSE`). Unexpected provider exceptions and unknown provider
+error codes become `MODEL_ERROR`; raw refusal text and error details are omitted.
+Turn exhaustion remains `MODEL_TURN_LIMIT`. Any independently verified partial
+report survives with a manual-review warning; no further reads or automatic retries run.
+These paths are covered by synthetic scripted-provider tests, without live API calls.
 
 See [web handoff and contract](docs/planning/WEB-INTERFACE-CONTRACT.md),
 [runtime architecture](docs/architecture/Pharmacy-Web-Agent-Architecture.md), and

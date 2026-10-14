@@ -24,6 +24,7 @@ from ..pharmacy_agent.config import ROOT, Settings
 from ..pharmacy_agent.runtime import ReadActivity, envelope, run_agent
 from ..pharmacy_harness.run import run_review
 from ..pharmacy_tools.inventory import LEGACY_FIXTURE_PATH
+from .catalog import home_catalog
 
 NAVIGATION = [
     {"key": "home", "label": "Home", "path": "/"},
@@ -201,6 +202,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None):
         return templates.TemplateResponse(request=request, name="page.html", context={
             "active_view": entry["key"], "navigation": NAVIGATION, "model": settings.model,
             "provider_configured": settings.provider_configured, "source_mode": "fixture", "store_id": 1618,
+            "catalog": home_catalog() if entry["key"] == "home" else None,
         })
 
     for entry in NAVIGATION:

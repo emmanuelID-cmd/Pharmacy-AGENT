@@ -10,6 +10,23 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+Local UI follow-up: user requested removal of the redundant Back control and
+the complete 150-row catalog at the bottom of Home. Product columns, stock and
+14 daily usage values join by exact package NDC for escaped human display.
+This addition uses fixed local files and does not invoke the Agent or database.
+
+October 13, 2026 local follow-up: 150-row Agent/catalog integration and bounded
+model/FDA API evaluation are approved. Prior refusal changes are preserved.
+Agent uses catalog batches; Demo retains the original fixture. No new commit,
+push, database migration or web deployment is claimed by this local handoff.
+
+October 13, 2026 local follow-up: the user approved explicit refusal/no-response
+handling in the existing web agent loop, safe provider-error codes and synthetic
+termination tests. Verified partial evidence remains available under manual review.
+The deterministic CLI and read-only authority are preserved. The later approved
+150-row Agent follow-up retains these refusal checks while adapting batch reads
+and bounded output/time budgets; the fixed 20-row Demo remains. This follow-up is local work, not a commit or push record.
+
 October 13, 2026 integration: catalog/database, harness and historical web preview are reconciled locally. The CLI defaults to the 150-row public-identity/synthetic-stock fixture; web Agent/Demo explicitly retain the original 20-row fixture. Optional FDA narrative is omitted from outgoing JSON. No hosted catalog migration or web deployment has occurred. Full suite: 233 passing tests. SQL migration/seed execution remains outstanding without Docker. Earlier handoffs below describe their historical branch state.
 
 October 13, 2026: user approved the web interface and guarded Claude connection on
@@ -93,6 +110,15 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## 2026-10-14T00:08:43-04:00
+
+Verified push to `feature/supabase-inventory-schema`: `144226cbbe823a87c2cb49614896badf5a0725f2..ac4de750221acf599f5d4540bf043816e74e5c0a`.
+Reviewed range: `144226cbbe823a87c2cb49614896badf5a0725f2..45d9cd667533df954f43b83c25d2af265c070ab3`.
+Grouped refusal/provider handling, guarded 150-item FDA reads and budgets, hard 90-second model ceiling,
+Back-control removal and full 150-row/32-column Home catalog were published.
+Validation: 250 tests; 85/85 containment, 55 detections, 0 misses/false positives; desktop/mobile browser checks.
+Both live runs completed 150 rows but rejected final model output; no main merge or deployment.
 
 ## 2026-10-13T21:59:26-04:00
 

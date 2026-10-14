@@ -6,7 +6,7 @@ import re
 import threading
 
 from ..injection_prevention.action_guard import RunBudget, authorize_tool_call, execute_guarded
-from ..injection_prevention.boundary_contracts import ContractError, Source, strict_json_loads
+from ..injection_prevention.boundary_contracts import ContractError, InventoryLimits, Source, strict_json_loads
 from ..injection_prevention.contracts import Decision
 from ..injection_prevention.output_guard import expected_report, validate_report
 from ..injection_prevention.safe_context import inspect_payload
@@ -14,6 +14,11 @@ from ..pharmacy_harness.validate import parse_run_at
 from ..pharmacy_tools.instructions import render_warnings
 from .anthropic_client import ClaudeClient, ProviderUnavailable, claude_tools
 from .review import EvidenceReview
+
+PROVIDER_ERROR_CODES = frozenset({
+    "PROVIDER_UNAVAILABLE", "PROVIDER_NOT_CONFIGURED", "PROVIDER_AUTHENTICATION_FAILED",
+    "MODEL_NOT_AVAILABLE", "PROVIDER_RATE_LIMITED", "MODEL_TIMEOUT",
+})
 
 
 class ReadActivity:
@@ -104,23 +109,34 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                     choice = {"type": "tool", "name": "read_store_inventory", "disable_parallel_tool_use": True}
                 elif remaining_ndcs:
                     offered = [deepcopy(tools[1])]
-                    offered[0]["input_schema"]["properties"]["package_ndc"]["enum"] = list(remaining_ndcs)
+                    offered[0]["input_schema"]["properties"]["package_ndcs"]["items"]["enum"] = list(remaining_ndcs)
                     choice = {"type": "any"}
                 else:
                     offered, choice = [], None
-                    messages.append({"role": "user", "content": "Tool reads are complete. Return the exact JSON report below, built from trusted context. Add nothing.\n" + json.dumps(expected_report(review.context), allow_nan=False)})
+                    messages.append({"role": "user", "content": "Tool reads are complete. Return the exact JSON report below, built from trusted context. Add nothing.\n" + json.dumps(expected_report(review.context), allow_nan=False, separators=(",", ":"))})
                 turns += 1
                 called = True
                 if review.remaining() <= 0:
                     return failed("RUN_DEADLINE_EXCEEDED", unavailable=True)
-                response = await provider.complete(messages=deepcopy(messages), tools=offered,
-                    choice=choice, timeout=min(settings.model_seconds, review.remaining()))
+                try:
+                    response = await provider.complete(messages=deepcopy(messages), tools=offered,
+                        choice=choice, timeout=min(settings.model_seconds, review.remaining()))
+                except (ProviderUnavailable, TimeoutError):
+                    raise
+                except Exception:
+                    return failed("MODEL_ERROR", unavailable=True)
                 if review.remaining() <= 0:
                     return failed("RUN_DEADLINE_EXCEEDED", unavailable=True)
+                if response is None:
+                    return failed("MODEL_NO_RESPONSE")
+                if type(response) is dict and response.get("stop_reason") == "refusal":
+                    return failed("MODEL_REFUSAL")
                 if type(response) is not dict or type(response.get("content")) is not list:
                     return failed("INVALID_MODEL_RESPONSE")
                 blocks = response["content"]
-                if not blocks or len(blocks) > 24:
+                if not blocks:
+                    return failed("MODEL_NO_RESPONSE")
+                if len(blocks) > 24:
                     return failed("INVALID_MODEL_RESPONSE")
                 calls = [block for block in blocks if type(block) is dict and block.get("type") == "tool_use"]
                 if calls:
@@ -133,7 +149,7 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                     tool_results = []
                     assistant_calls = []
                     for block in calls:
-                        call = {"name": block.get("name"), "arguments": block.get("input")}
+                        call = {"name": block.get("name"), "arguments": deepcopy(block.get("input"))}
                         # General permission checks run even for out-of-order/repeated calls.
                         name, args = call["name"], call["arguments"]
                         permission = authorize_tool_call(call, allowed_package_ndcs=review.ndcs)
@@ -143,7 +159,9 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                             return failed(dispatch.reason_code)
                         if name == "read_store_inventory" and review.context is None:
                             dispatch, safe = await read_activity.execute(review.read_inventory, call)
-                        elif name == "get_fda_shortage_context" and review.context is not None and type(args) is dict and args.get("package_ndc") not in review.called_ndcs:
+                        elif name == "get_fda_shortage_context_batch" and review.context is not None and all(
+                            ndc not in review.called_ndcs for ndc in args["package_ndcs"]
+                        ):
                             dispatch, safe = await read_activity.execute(review.read_fda, call)
                         else:
                             dispatch = execute_guarded(call, executors={}, budget=budget,
@@ -152,7 +170,8 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                         if dispatch.state != "COMPLETE" or safe is None:
                             return failed(dispatch.reason_code)
                         assistant_calls.append({"type": "tool_use", "id": block["id"],
-                                                "name": name, "input": deepcopy(args)})
+                                                "name": name, "input": {"store_id": 1618} if name == "read_store_inventory"
+                                                else {"package_ndcs": list(safe["package_ndcs"])}})
                         tool_results.append({"type": "tool_result", "tool_use_id": block["id"],
                                              "content": json.dumps(safe, allow_nan=False)})
                     messages.extend([{"role": "assistant", "content": assistant_calls},
@@ -164,7 +183,7 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                     return failed("INVALID_MODEL_RESPONSE")
                 text = "".join(block["text"] for block in blocks)
                 try:
-                    proposed = strict_json_loads(text.encode("utf-8"))
+                    proposed = strict_json_loads(text.encode("utf-8"), InventoryLimits())
                 except (ContractError, UnicodeError):
                     proposed = None
                 output = validate_report(proposed, context=review.context)
@@ -177,7 +196,8 @@ async def run_agent(request, *, settings, provider=None, run_at=None,
                                 called=called, accepted=True, turns=turns, counts=budget.counts())
             return failed("MODEL_TURN_LIMIT")
     except ProviderUnavailable as error:
-        return failed(error.code, unavailable=True)
+        code = error.code if type(error.code) is str and error.code in PROVIDER_ERROR_CODES else "MODEL_ERROR"
+        return failed(code, unavailable=True)
     except TimeoutError:
         return failed("RUN_DEADLINE_EXCEEDED", unavailable=True)
     except Exception:

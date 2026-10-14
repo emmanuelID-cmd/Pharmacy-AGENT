@@ -367,3 +367,32 @@ See [web contract](../planning/WEB-INTERFACE-CONTRACT.md),
 recorded separately; this appendix does not assert universal injection prevention.
 
 Integration boundary: web Agent/Demo explicitly retain the historical 20-row fixture and single-NDC read workflow. The CLI catalog review defaults to 150 products with ten-NDC batches. Public catalog identity is not FDA approval; all stock/usage remains synthetic. The catalog migration is undeployed and database-to-harness integration remains separate.
+
+### Approved web loop termination handling - October 13, 2026
+
+The user approved extending the existing web loop with explicit refusal/no-response
+handling and synthetic refusal/failure/turn-limit tests. Refusal or missing/empty
+response stops further calls and requires manual review. Provider exceptions expose
+fixed safe codes only. Verified partial inventory/FDA evidence survives with a
+manual-review warning; model output is not accepted and operational actions remain
+outside agent authority. This implementation does not change the deterministic
+harness, fixture choice, calculations, tool permissions or existing run budgets.
+
+### Approved 150-row web Agent integration - October 13, 2026
+
+The user approved connecting the existing web Agent to the catalog fixture and
+bounded ten-NDC FDA reads, sizing the context/output budgets and testing the
+configured model plus live FDA endpoint. This supersedes the earlier 20-row Agent
+integration boundary; the historical fixed Demo remains unchanged. Verified
+calculations and exact report comparison remain authoritative. Refusals, invalid
+batches, duplicate reads, binding failures and run limits stop safely while
+supported partial evidence remains available for human review. No database
+integration, migration deployment, write tool or automatic model retry is added.
+
+### Approved Home catalog display
+
+The user requested removal of the redundant in-page Back control and the full
+catalog below Home content. All 150 product rows show connected local inventory
+and the complete 14-day usage series, joined by exact package NDC. Source text is
+escaped for human inspection; it does not establish trusted model facts. Tabs,
+keyboard access and responsive table scrolling preserve the shared interface.

@@ -40,7 +40,11 @@ for (const width of [1024, 640, 320]) {
   for (const path of routes) {
     await navigate(path);
     const check = await evaluate(`(()=>{const nav=document.querySelector('.primary-nav');const header=document.querySelector('.site-header');return {path:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,navY:nav.getBoundingClientRect().y,headerY:header.getBoundingClientRect().y,labels:Array.from(nav.querySelectorAll('a')).map(a=>a.textContent),active:nav.querySelector('[aria-current="page"]')?.getAttribute('href'),back:!!document.querySelector('[data-back]')};})()`);
-    if (check.overflow || check.active !== path || !check.back) throw Error('Route/layout failed ' + JSON.stringify(check));
+    if (check.overflow || check.active !== path || check.back) throw Error('Route/layout failed ' + JSON.stringify(check));
+    if (path === '/') {
+      const catalog = await evaluate(`(()=>{const table=document.querySelector('.catalog-table');const scroll=document.querySelector('.catalog-scroll');return {rows:table?.tBodies[0].rows.length,columns:table?.tHead.rows[0].cells.length,first:table?.tBodies[0].rows[0].cells[0].textContent,last:table?.tBodies[0].rows[149].cells[0].textContent,scrollable:scroll.scrollWidth>scroll.clientWidth,focusable:scroll.tabIndex===0};})()`);
+      if (catalog.rows !== 150 || catalog.columns !== 32 || catalog.first !== 'catalog-001' || catalog.last !== 'catalog-150' || !catalog.scrollable || !catalog.focusable) throw Error('Catalog layout failed ' + JSON.stringify(catalog));
+    }
     if (check.labels.join('|') !== 'Home|Agent|Tools|Harness|Injection Risk Test|Failure State|Demo|Architecture') throw Error('Navigation order');
     baseline ??= check;
     if (check.navY !== baseline.navY || check.headerY !== baseline.headerY) throw Error('Shared shell shifted');

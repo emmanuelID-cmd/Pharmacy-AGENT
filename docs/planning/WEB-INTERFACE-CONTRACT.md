@@ -11,8 +11,19 @@ Home `/`, Agent `/agent`, Tools `/tools`, Harness `/harness`,
 Injection Risk Test `/injection-risk-test`, Failure State `/failure-state`,
 Demo `/demo`, Architecture `/architecture` (Steps-to-connect).
 All pages use the same template, banner, footer, logo placeholder and tokens.
-Each navigable view has a consistent top-left back control. No patient data,
+Navigation uses the shared tabs; the user-requested UI revision removes the
+redundant in-page Back control. No patient data,
 orders, inventory writes, numerical reorder quantities or policy changes.
+
+Home appends all 150 catalog rows with 32 columns: product/package identifiers,
+labels, forms, package details, marketing date, RxNorm/ATC mappings and states,
+synthetic stock/unit, usage window and each of the 14 dated daily usage values.
+The fixed local files join by exact package NDC; duplicate, missing or mismatched
+bindings show an unavailable state with source recovery guidance. Jinja escapes
+all displayed source values. Provenance is available alongside the table; this
+human inspection view does not provide model evidence or run any external API.
+The table has row/column headers, keyboard focus and internal scrolling while
+the existing shell and tabs remain consistent at smaller widths.
 
 ## Server/client contract
 
@@ -59,4 +70,35 @@ exactly two sequential security rounds and a read-only final review.
 
 ## Integration fixture boundary
 
-The web Agent and Demo explicitly use the original 20-row synthetic fixture and single-NDC read schema. This retains their bounded 24-attempt review and output contract when the shared CLI reader defaults to the new 150-product fixture with ten-NDC batches. No database adapter is wired into either web endpoint. Hosted migration and web deployment remain pending.
+The web Agent uses the 150-product catalog fixture and ten-NDC FDA batches. Demo explicitly retains the original 20-row fixture. Each batch must contain distinct, context-bound identifiers that have not already been read. Requested identifiers are captured before IO; mismatched returned batch binding withholds FDA evidence. No database adapter is wired into either endpoint. Hosted migration and web deployment remain pending.
+
+## Approved loop termination handling - October 13, 2026
+
+- A provider `stop_reason` of `refusal` returns Manual Review / `MODEL_REFUSAL`,
+  before examining or dispatching any tool blocks in that response. Refusal prose is omitted.
+- `None` or an empty content-block list returns Manual Review / `MODEL_NO_RESPONSE`.
+  Other malformed responses retain their existing validation reason codes.
+- Unexpected exceptions from the provider call return Temporarily Unavailable /
+  `MODEL_ERROR`. Only known fixed provider failure codes survive; unknown codes and
+  raw exception details are excluded. Existing timeout/deadline behavior is preserved.
+- Exhausted model turns return Manual Review / `MODEL_TURN_LIMIT`.
+- Every terminal path stops further model/tool calls, leaves output unaccepted,
+  and preserves independently verified partial facts under manual review when available.
+  No refusal retry, new tool, database connection or budget increase is introduced.
+
+## Approved 150-row Agent limits
+
+Local default: 120 seconds overall, 90 seconds per model call, six model turns and
+24 attempted reads. Fifteen ten-NDC FDA batches plus inventory cover 150 rows.
+The provider receives copied shared tool schemas and pinned instructions; tool
+decisions are capped at 4,096 output tokens, final output at 24,576. Final JSON
+uses the fixed 150-row inventory limits and the unchanged exact report guard.
+Hosted configuration loading retains a 50-second run and 45-second model cap
+within the prepared 60-second host budget; full catalog completion on that host
+requires separate deployment validation. Refusal/no-response handling is preserved.
+
+Tests inject scripted providers and FDA responses. Authorized live evaluation uses
+the configured model and fixed FDA endpoint, records sanitized outcomes separately,
+and makes at most two end-to-end runs without automatic model retries. A frozen
+October 7 evaluation clock is explicitly labeled; normal Agent reviews use current
+time and preserve stale-snapshot review requirements.
