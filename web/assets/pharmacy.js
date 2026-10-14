@@ -37,7 +37,6 @@
   let agentNotice = '';
   let reviewController = null;
   let navigationBusy = false;
-  const routeStack = [window.location.pathname];
 
   const byId = (id, root = document) => root.getElementById(id);
   const make = (tag, className, text) => {
@@ -116,10 +115,8 @@
         });
         if (replace) {
           history.replaceState({ pharmacy: true }, '', target.pathname);
-          routeStack[routeStack.length - 1] = target.pathname;
         } else {
           history.pushState({ pharmacy: true }, '', target.pathname);
-          routeStack.push(target.pathname);
         }
         setStatus(routeStatus, navigationNotice, 'info');
         bindPage();
@@ -146,11 +143,6 @@
         navigate(link.href);
         return;
       }
-      const back = event.target.closest('[data-back]');
-      if (back) {
-        if (routeStack.length > 1) history.back();
-        else navigate('/');
-      }
     });
     document.querySelector('.primary-nav')?.addEventListener('keydown', event => {
       if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(event.key)) return;
@@ -163,8 +155,6 @@
     });
     window.addEventListener('popstate', () => {
       const path = window.location.pathname;
-      if (routeStack.length > 1 && routeStack[routeStack.length - 2] === path) routeStack.pop();
-      else if (routeStack[routeStack.length - 1] !== path) routeStack.push(path);
       navigate(path, { replace: true });
     });
   }

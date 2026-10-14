@@ -70,6 +70,7 @@ From this repository root in PowerShell:
 ```
 
 Open http://127.0.0.1:8770. Home defines the shared design across all eight URLs.
+Navigation uses the shared tabs without a separate in-page Back control.
 Agent runs the real guarded model/tool loop; Demo and Injection Risk Test run
 existing deterministic Python behavior without calling a model. Failure State
 explicitly illustrates recovery scenarios; it does not inject live failures.

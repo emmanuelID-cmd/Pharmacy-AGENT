@@ -47,9 +47,7 @@ a:focus-visible, button:focus-visible, select:focus-visible, textarea:focus-visi
 .nav-link:hover { background: var(--soft); color: var(--ink); }
 .nav-link.is-active, .nav-link[aria-current="page"] { background: var(--brand); color: var(--on-brand); }
 .main-content { flex: 1; padding: 20px 26px 38px; }
-.page-topline { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 34px; margin-bottom: 13px; }
-.back-link { min-height: 40px; padding: 4px 8px 4px 0; border: 0; background: transparent; color: var(--brand); font-weight: 600; cursor: pointer; }
-.back-link span { text-decoration: underline; text-underline-offset: 3px; }
+.page-topline { display: flex; align-items: center; justify-content: flex-end; gap: 12px; min-height: 40px; margin-bottom: 13px; }
 .live-clock { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand); }
 .view { min-height: 460px; }

@@ -40,7 +40,7 @@ for (const width of [1024, 640, 320]) {
   for (const path of routes) {
     await navigate(path);
     const check = await evaluate(`(()=>{const nav=document.querySelector('.primary-nav');const header=document.querySelector('.site-header');return {path:location.pathname,overflow:document.documentElement.scrollWidth>innerWidth,navY:nav.getBoundingClientRect().y,headerY:header.getBoundingClientRect().y,labels:Array.from(nav.querySelectorAll('a')).map(a=>a.textContent),active:nav.querySelector('[aria-current="page"]')?.getAttribute('href'),back:!!document.querySelector('[data-back]')};})()`);
-    if (check.overflow || check.active !== path || !check.back) throw Error('Route/layout failed ' + JSON.stringify(check));
+    if (check.overflow || check.active !== path || check.back) throw Error('Route/layout failed ' + JSON.stringify(check));
     if (check.labels.join('|') !== 'Home|Agent|Tools|Harness|Injection Risk Test|Failure State|Demo|Architecture') throw Error('Navigation order');
     baseline ??= check;
     if (check.navY !== baseline.navY || check.headerY !== baseline.headerY) throw Error('Shared shell shifted');

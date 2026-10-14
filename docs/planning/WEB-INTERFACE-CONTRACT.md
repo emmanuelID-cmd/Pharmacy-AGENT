@@ -11,7 +11,8 @@ Home `/`, Agent `/agent`, Tools `/tools`, Harness `/harness`,
 Injection Risk Test `/injection-risk-test`, Failure State `/failure-state`,
 Demo `/demo`, Architecture `/architecture` (Steps-to-connect).
 All pages use the same template, banner, footer, logo placeholder and tokens.
-Each navigable view has a consistent top-left back control. No patient data,
+Navigation uses the shared tabs; the user-requested UI revision removes the
+redundant in-page Back control. No patient data,
 orders, inventory writes, numerical reorder quantities or policy changes.
 
 ## Server/client contract

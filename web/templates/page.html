@@ -2,7 +2,6 @@
 {% block title %}{{ navigation|selectattr('key', 'equalto', active_view)|map(attribute='label')|first|default('Home') }} · Pharmacy-AGENT{% endblock %}
 {% block content %}
   <div class="page-topline">
-    <button class="back-link" type="button" data-back aria-label="Go back to the previous page or Home">← <span>Back</span></button>
     <div class="live-clock" aria-label="Current local time"><span class="status-dot" aria-hidden="true"></span><span>Current time</span><time id="current-clock"></time></div>
   </div>
 
