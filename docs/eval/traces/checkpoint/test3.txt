@@ -1,0 +1,21 @@
+Model: nvidia/nemotron-3-super-120b-a12b:free | data: 20-row synthetic fixture | run_at: 2026-10-07T10:00:00-04:00
+Step 1: offered ['read_store_inventory'] -> model decided ['read_store_inventory({"store_id": 1618})']
+Step 2: offered ['get_fda_shortage_context_batch'] -> model decided ['get_fda_shortage_context_batch({"package_ndcs": ["42023-240-01", "0009-0280-02", "99901-101-01", "99901-102-01")']
+Step 3: offered ['get_fda_shortage_context_batch'] -> model decided ['get_fda_shortage_context_batch({"package_ndcs": ["99901-109-01", "99901-112-01", "99901-113-01", "99901-114-01")']
+Step 4: offered ['(none: write the final report)'] -> model decided ['final text, 4981 chars']
+
+FINAL: {"state": "Manual Review", "reason_code": "VERIFIED_STRUCTURED_OUTPUT", "agent": {"model": "nvidia/nemotron-3-super-120b-a12b:free", "model_called": true, "output_accepted": true, "turns": 4, "counts": {"attempted": 3, "denied": 0, "dispatched": 3, "completed": 3}}}
+run_state: MANUAL_REVIEW | warnings: ['MANUAL_REVIEW_REQUIRED', 'EXTERNAL_CONTEXT_UNVERIFIED']
+item classes: {'UNKNOWN': 4, 'CRITICAL': 4, 'LOW': 5, 'ABOVE_THRESHOLD': 7}
+
+--- Slack alert preview (channel C0000000000) ---
+SYNTHETIC TEST DATA: store 1618
+Critical stock: 4 item(s) need replenishment review
+- item-003 | NDC 99901-101-01 | 2.00 days of supply | FDA NO_MATCH
+- item-006 | NDC 99901-104-01 | 0.00 (zero stock) days of supply | FDA NO_MATCH
+- item-015 | NDC 99901-113-01 | 1.00 days of supply | FDA NO_MATCH
+- item-018 | NDC 99901-116-01 | 1.33 days of supply | FDA NO_MATCH
+Review only: no order was placed and no inventory was changed. Verify the evidence before acting.
+---
+About to: post this critical-stock alert to Slack channel C0000000000 (cannot be unsent)
+Proceed? (yes/no): Alert: CANCELLED
