@@ -127,6 +127,12 @@ New read_store_inventory_database returns 20 rows through the real session poole
 - Exact hosting-only snapshot: 250 passing tests on Python 3.13.15. Qualification: 85 contained, 55 unsafe detected, 30 benign accepted, zero misses/false positives. Vercel preview build passed; unauthenticated access redirects to Vercel login, so application runtime and secrets remain unverified.
 - PR [#19](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/19) targets main; no merge or model call occurred.
 
+## 2026-10-14T01:31:04-04:00
+
+- Verified feature/pharmacy-harness push e2031dfbd8b2443529a0a9f7e09c12b5dfc66d02..3247fce4d768b9adc54bfbd66829cd2cff60b924.
+- Identity source faults cite 1-based row and field; POLICY/PRD name rounding, zero-usage quantity, staleness defaults, and eval scope. FDA retrieved_at after the frozen clock is asserted. No main merge. Draft PR #13 remains the review.
+- Harness tests: 84 OK.
+
 ## 2026-10-14T00:08:43-04:00
 
 Verified push to `feature/supabase-inventory-schema`: `144226cbbe823a87c2cb49614896badf5a0725f2..ac4de750221acf599f5d4540bf043816e74e5c0a`.
