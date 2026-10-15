@@ -231,6 +231,9 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         from unittest.mock import patch
         self.assertEqual(Settings().run_seconds, 120)
         self.assertEqual(Settings().max_tokens, 24576)
+        self.assertEqual(Settings(model="claude-sonnet-5-5").model, "claude-sonnet-5-5")
+        with self.assertRaises(ValueError):
+            Settings(model="claude-opus-5-5")
         for invalid in ({"run_seconds": 121}, {"model_seconds": 91}, {"max_tokens": 24577}, {"max_turns": 7}):
             with self.assertRaises(ValueError):
                 Settings(**invalid)
@@ -266,7 +269,20 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
                                   tools=tools, choice={"type": "any"}, timeout=1)
             await client.complete(messages=[{"role": "user", "content": "Copy exact JSON"}],
                                   tools=[], choice=None, timeout=1)
-        self.assertEqual([record[2]["max_tokens"] for record in sent], [4096, 24576])
+            sonnet = ClaudeClient(Settings(model="claude-sonnet-5-5", api_key="synthetic-provider-key"))
+            await sonnet.complete(messages=[{"role": "user", "content": "Synthetic Sonnet review"}],
+                                  tools=tools, choice={"type": "any"}, timeout=1)
+            await sonnet.complete(messages=[{"role": "user", "content": "Copy exact JSON"}],
+                                  tools=[], choice=None, timeout=1)
+        self.assertEqual([record[2]["max_tokens"] for record in sent], [4096, 24576, 4096, 24576])
+        self.assertEqual(sent[0][2]["thinking"], {"type": "disabled"})
+        self.assertEqual(sent[2][2]["thinking"], {"type": "between_tools"})
+        self.assertEqual(sent[2][2]["tool_choice"], {"type": "auto"})
+        self.assertTrue(all(spec["strict"] for spec in sent[2][2]["tools"]))
+        fda_schema = sent[2][2]["tools"][1]["input_schema"]["properties"]["package_ndcs"]
+        self.assertNotIn("maxItems", fda_schema)
+        self.assertNotIn("pattern", fda_schema["items"])
+        self.assertEqual(sent[3][2]["output_config"], {"effort": "low"})
         self.assertTrue(all(host == "https://api.anthropic.com" and retries == 0 for host, retries, _ in sent))
         sent[0][2]["tools"][0]["input_schema"]["properties"]["store_id"]["enum"] = [9]
         self.assertEqual(tools[0]["input_schema"]["properties"]["store_id"]["enum"], [1618])

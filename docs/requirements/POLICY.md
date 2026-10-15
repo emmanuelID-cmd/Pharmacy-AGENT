@@ -87,3 +87,16 @@ Transport/run/token bounds are enforced by trusted application configuration;
 partial, unavailable and binding-failed FDA evidence does not become NO_MATCH.
 The fixed historical Demo remains 20 rows. Live API evaluations are labeled
 separately from scripted tests and do not restamp or approve a stale snapshot.
+
+## Internal alerts and per-run reporting ? October 15, 2026
+
+Status: Approved scope clarification for synthetic prototype testing. SYNTHETIC-v0 thresholds remain prototype assumptions, not CVS policy or operational pharmacy guidance.
+
+- An alert is a deterministic, per-item review cue in the current run's report. It is not a separate notification or an instruction to order.
+- Apply the existing thresholds without rounding: CRITICAL at 2 days or less; LOW above 2 through 5 days; ABOVE_THRESHOLD above 5 days. At 10 units of verified daily usage, 50 usable units produce 5.00 days and LOW/REVIEW; 20 usable units produce 2.00 days and CRITICAL/REVIEW.
+- Show CRITICAL items first, then LOW items. Keep manual-review exceptions prominent and separate. FDA shortage context may add an external-risk review cue but cannot change a local class or threshold alert.
+- Produce one report for each user-requested run. It begins with total and per-class/review-state counts, then identifies the synthetic data mode, configured store, run and snapshot times, usage window, policy version, per-item calculation and threshold, FDA state, exceptions, run completeness and human next step. Every input row is either reported or explicitly withheld; partial or failed runs are never all-clear.
+- Group multiple reasons for the same item within a run into one alert. Keep unaffected supported items reportable.
+- Deliver reports and alerts only in the authorized review session. Email, SMS, Slack, webhooks, push notifications, scheduled runs and other external delivery are excluded. The model cannot create or change alert classes and cannot place orders or write inventory.
+
+A diagnostic evaluation trace may show timestamped request, tool, permission, evidence, validation and final-state events. Keep it to safe metadata and bounded arguments; do not retain raw prompts, source free text, full records, credentials or hidden model reasoning. Trace evidence supplements the human report and does not establish live-source accuracy.
