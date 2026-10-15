@@ -10,19 +10,23 @@ One configured store: 1618. Stock and usage are synthetic; the CVS location is c
 
 ## Required local evidence
 
-- Store ID, synthetic marker, policy version, unique item ID, product label, validated segmented package NDC, dispensing unit, usable unallocated quantity, snapshot timestamp with timezone, and dated aggregate usage.
+- Store ID, synthetic marker, policy version, unique item ID, product label, validated segmented package NDC, dispensing unit, usable unallocated quantity, snapshot timestamp with timezone, and dated aggregate usage. Dosage strength is `AMBIGUOUS_ITEM` when the source uses strength and a row’s value is missing, blank, or not a string (withhold days of supply; MANUAL_REVIEW — never MAINTAIN on that incomplete identity). A source that omits strength on every row (legacy fixture/catalog/DB) is unchanged until POLICY requires strength everywhere.
 - Snapshot age must be between 0 and 24 hours inclusive relative to the run timestamp (SYNTHETIC-v0 prototype default, not operational pharmacy policy). Future timestamps, absent timezone, or older snapshots require manual review. The 14-day usage window uses America/New_York calendar dates, not 24-hour arithmetic.
 - Use America/New_York calendar days. Require each of the last 14 completed calendar days, once each; missing dates are unknown, never zero. Daily consumption and stock must be finite nonnegative numbers in the same unit. No inferred package-to-unit conversion.
 - Usable quantity excludes reservations, expired, quarantined, and compromised units. The source supplies the usable value; if its meaning is unclear, require manual review.
-- Wrong-store records, duplicates/conflicting item IDs, unsupported policy versions, ambiguous NDCs, missing fields, and invalid units prevent affected recommendations. An unavailable source prevents a complete report; report its failure, never all-clear.
+- Wrong-store records, unsupported policy versions, ambiguous NDCs, missing quantity/usage fields, and invalid units prevent affected recommendations. An unavailable source prevents a complete report; report its failure, never all-clear.
+
+Malformed item identity rejects the source. A missing, non-opaque, or duplicate `item_id` fails inventory intake (`inspect_payload` → `INVALID_TOOL_RESULT`). The harness does not list neighbor rows or call FDA. The failed-source report cites `row` as a 1-based position in the source `items` list (the first element is `row: 1`; `row: 2` is the second element) and the field name only; it does not echo the untrusted value. Duplicate IDs list every colliding row. Multiple identity faults are all listed in one report; the locator does not stop at the first.
+
+Invalid package NDC, dispensing unit, usable quantity, usage window, and an unsafe product label on one item remain row-level. Neighbors stay listed. A hidden-character label is excluded from trusted context and does not wipe other rows. `inspect_item` still records `INVALID_ITEM_REFERENCE` for direct validation; the guarded run never reaches that check for a missing ID.
 
 ## Calculation and thresholds
 
 Average daily usage = sum of 14 complete daily totals / 14.
 
-For strictly positive average usage, days of supply = usable × 14 / total (equivalent to usable / average). Classify the exact unrounded value; display two decimals.
+For strictly positive average usage, days of supply = usable × 14 / total (equivalent to usable / average). Classify the exact unrounded value. Display rounding is round half to even, applied to the exact decimal quotient (`Decimal` `ROUND_HALF_EVEN`), never to a binary float. Half-up is not used; the two rules only differ at a `.xx5` remainder.
 
-The 2-day and 5-day bins match the PRD Eval Card exact-2 and exact-5 boundaries. They are not lead-time or per-SKU pharmacy policy; authorized staff must replace them before live use.
+The 2-day CRITICAL and 5-day LOW bins are SYNTHETIC-v0 placeholders until lead-time or delivery-cadence data exists. They currently match the PRD Eval Card exact-2 and exact-5 cases so the implementation can be checked; that is provenance, not a rationale for those numbers. The “100% recall against policy-derived labels” metric verifies that the code applies these rules. It does not show that 2 and 5 days are useful operational thresholds. Authorized staff must replace them before live use.
 
 | Condition | Local class | Recommendation |
 | :--- | :--- | :--- |
@@ -30,7 +34,7 @@ The 2-day and 5-day bins match the PRD Eval Card exact-2 and exact-5 boundaries.
 | Days of supply <= 2 | CRITICAL | REVIEW |
 | 2 < days of supply <= 5 | LOW | REVIEW |
 | Days of supply > 5 | ABOVE_THRESHOLD | MAINTAIN existing review approach; not an order endorsement |
-| Complete valid history with zero usage and positive stock | UNKNOWN, duration not estimable | MANUAL_REVIEW consumption basis |
+| Complete valid history with zero usage and positive stock | UNKNOWN, duration not estimable | MANUAL_REVIEW consumption basis. The verified usable quantity stays on the human report and in TrustedFact; only days of supply are withheld. |
 | Verified zero stock with zero or missing usage | CRITICAL stock fact; duration unknown | MANUAL_REVIEW; no replenishment quantity inference |
 | Missing/invalid required local evidence | UNKNOWN unless a separate verified zero-stock fact is available | MANUAL_REVIEW; withhold unsupported fields |
 
@@ -44,7 +48,13 @@ Request timeout: 10 seconds per request; at most one bounded transient retry, re
 
 States: MATCHED, NO_MATCH, UNAVAILABLE, PARTIAL, STALE, or NEEDS_REVIEW for ambiguous/conflicting identity or response facts. NO_MATCH does not guarantee availability. An FDA error does not imply no shortage.
 
-SYNTHETIC-v0 prototype defaults (not PRD-approved operational pharmacy rules): a dataset update date older than 2 calendar days relative to the run is flagged as stale. A retrieval made during the current run is treated as fresh even if the adapter's wall-clock retrieved_at is after a frozen eval timestamp. Missing metadata prevents a freshness assurance. Display each record update_date without inventing an expiry rule: an old record can describe an ongoing shortage, so age alone never resolves it. Missing or conflicting record dates require external-context review.
+SYNTHETIC-v0 prototype defaults (not research-based operational pharmacy rules):
+
+- Inventory snapshot: age 0–24 hours inclusive relative to the run (see Required local evidence).
+- FDA retrieval: older than 24 hours would be stale. A retrieval made during the current run is treated as fresh so a frozen eval clock is not compared to the adapter's wall-clock `retrieved_at`.
+- FDA dataset calendar date: older than 2 America/New_York calendar days relative to the run is STALE.
+
+Missing metadata prevents a freshness assurance. Display each record update_date without inventing an expiry rule: an old record can describe an ongoing shortage, so age alone never resolves it. Missing or conflicting record dates require external-context review.
 
 The harness lists every exact-match record. Adapter MATCH means at least one exact package_ndc hit; the harness further labels NEEDS_REVIEW when those records disagree on identity, status, availability, or update_date. Summary status/availability/update_date are shown only when the listed records agree; they never pick a winner from a conflict. A Current/Unavailable row still adds a separate external-risk REVIEW without changing the local class.
 

@@ -1,14 +1,15 @@
 import io
 import json
 import unittest
+import urllib.error
 from unittest.mock import patch
 
 from src.injection_prevention.output_guard import expected_report
 from src.pharmacy_harness.__main__ import main
 from src.pharmacy_tools.instructions import SYSTEM_PROMPT
 from src.pharmacy_harness.loop import (
-    TURN_WRAPPER, complete_from_env, copying_complete, http_complete, parse_proposal,
-    wrapped_system_prompt,
+    ANTHROPIC_MESSAGES_URL, TURN_WRAPPER, anthropic_complete, complete_from_env,
+    copying_complete, http_complete, parse_proposal, wrapped_system_prompt,
 )
 from src.pharmacy_harness.offline import EVAL_RUN_AT, offline_fda_http_get
 from src.pharmacy_harness.run import run_review as _run_review
@@ -68,12 +69,33 @@ class HarnessLoopTests(unittest.TestCase):
         self.assertEqual(report["model_turn"]["state"], "SKIPPED")
         self.assertEqual(report["safety_report"]["schema_version"], "report-v1")
 
-    def test_raising_complete_is_rejected(self):
+    def test_raising_complete_is_model_unavailable(self):
         def boom(system_prompt, context):
             raise TimeoutError("model timeout")
 
         report = run_review(run_at=EVAL_RUN_AT, fda_http_get=offline_fda_http_get, complete=boom)
-        self.assertEqual(report["model_turn"]["state"], "REJECTED")
+        self.assertEqual(report["model_turn"]["state"], "MODEL_UNAVAILABLE")
+        self.assertEqual(report["model_turn"]["reason_code"], "MODEL_TIMEOUT")
+        self.assertEqual(report["run_state"], "MANUAL_REVIEW")
+        self.assertNotIn("OUTPUT_REJECTED", report["safety_report"]["warning_codes"])
+        human = next(row for row in report["items"] if row["item_id"] == "item-001")
+        self.assertEqual(human["usable_quantity"], 80)
+
+    def test_auth_error_is_model_unavailable_not_rejected(self):
+        def unauthorized(system_prompt, context):
+            del system_prompt, context
+            raise urllib.error.HTTPError(
+                "https://api.anthropic.com/v1/messages", 401, "Unauthorized",
+                hdrs=None, fp=None,
+            )
+
+        report = run_review(run_at=EVAL_RUN_AT, fda_http_get=offline_fda_http_get,
+                            complete=unauthorized)
+        self.assertEqual(report["model_turn"]["state"], "MODEL_UNAVAILABLE")
+        self.assertEqual(report["model_turn"]["reason_code"], "MODEL_AUTH_FAILED")
+        self.assertNotEqual(report["model_turn"]["state"], "REJECTED")
+        self.assertNotIn("OUTPUT_REJECTED", report["safety_report"]["warning_codes"])
+        self.assertIs(report["order_placed"], False)
 
     def test_model_prompt_wraps_brahim_instructions_without_editing_them(self):
         seen = []
@@ -93,6 +115,7 @@ class HarnessLoopTests(unittest.TestCase):
         self.assertIsNone(parse_proposal("not json"))
         self.assertIsNone(parse_proposal("[1]"))
         self.assertEqual(parse_proposal('{"a": 1}'), {"a": 1})
+        self.assertEqual(parse_proposal('```json\n{"a": 1}\n```'), {"a": 1})
 
     def test_http_complete_reads_message_content(self):
         def urlopen(request, timeout):
@@ -118,10 +141,36 @@ class HarnessLoopTests(unittest.TestCase):
                              key="secret", name="demo", urlopen=urlopen)
         self.assertEqual(text, '{"schema_version":"report-v1"}')
 
-    def test_complete_from_env_requires_url(self):
+    def test_complete_from_env_requires_url_or_anthropic_key(self):
         self.assertIsNone(complete_from_env(environ={}))
         built = complete_from_env(environ={"PHARMACY_MODEL_URL": "https://example.invalid/v1"})
         self.assertTrue(callable(built))
+        claude = complete_from_env(environ={"ANTHROPIC_API_KEY": "synthetic-key"})
+        self.assertTrue(callable(claude))
+
+    def test_anthropic_complete_reads_text_block(self):
+        def urlopen(request, timeout):
+            self.assertEqual(request.full_url, ANTHROPIC_MESSAGES_URL)
+            self.assertEqual(timeout, 60)
+            self.assertEqual(request.get_header("X-api-key"), "synthetic-key")
+
+            class Response:
+                def read(self):
+                    return json.dumps({
+                        "content": [{"type": "text", "text": '{"schema_version":"report-v1"}'}],
+                    }).encode()
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *args):
+                    return False
+
+            return Response()
+
+        text = anthropic_complete("sys", {"schema_version": "prevention-v1"},
+                                  key="synthetic-key", name="claude-haiku-5-5", urlopen=urlopen)
+        self.assertEqual(text, '{"schema_version":"report-v1"}')
 
 
 class HarnessModelCliTests(unittest.TestCase):
@@ -132,12 +181,23 @@ class HarnessModelCliTests(unittest.TestCase):
                 main(["--offline", "--model-copy"])
         self.assertIs(mocked.call_args.kwargs["complete"], copying_complete)
 
-    def test_model_without_url_errors(self):
+    def test_model_without_url_or_key_errors(self):
         with patch("src.pharmacy_harness.loop.os.environ", {}):
-            with patch("sys.stderr", io.StringIO()):
-                with self.assertRaises(SystemExit) as raised:
-                    main(["--model"])
+            with patch("src.pharmacy_harness.loop._dotenv_values", return_value={}):
+                with patch("sys.stderr", io.StringIO()):
+                    with self.assertRaises(SystemExit) as raised:
+                        main(["--model"])
         self.assertEqual(raised.exception.code, 2)
+
+    def test_model_uses_legacy_fixture(self):
+        fake = run_review(run_at=EVAL_RUN_AT, fda_http_get=offline_fda_http_get)
+        complete = object()
+        with patch("src.pharmacy_harness.__main__.complete_from_env", return_value=complete):
+            with patch("src.pharmacy_harness.__main__.run_review", return_value=fake) as mocked:
+                with patch("sys.stdout", io.StringIO()):
+                    main(["--offline", "--model"])
+        self.assertIs(mocked.call_args.kwargs["complete"], complete)
+        self.assertEqual(mocked.call_args.kwargs["inventory_path"], LEGACY_FIXTURE_PATH)
 
 
 if __name__ == "__main__":

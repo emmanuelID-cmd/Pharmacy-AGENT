@@ -214,10 +214,10 @@ def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, i
             outcome = run_model_turn(context, complete)
             safety = outcome.report
             model_turn = {
-                "state": "ACCEPTED" if outcome.accepted else "REJECTED",
+                "state": outcome.state,
                 "reason_code": outcome.reason_code,
             }
-            if not outcome.accepted:
+            if outcome.state != "ACCEPTED":
                 run_state = "MANUAL_REVIEW"
         warning_codes = list(safety["warning_codes"])
     except Exception:
@@ -257,8 +257,18 @@ def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, i
     }
 
 
-def failed_source_report(*, run_at, inventory_dispatch, fda_source="LIVE"):
+def failed_source_report(*, run_at, inventory_dispatch, fda_source="LIVE", source_faults=()):
     warning_codes = ["MANUAL_REVIEW_REQUIRED"]
+    locators = []
+    for fault in source_faults:
+        if type(fault) is not dict:
+            continue
+        row = fault.get("row")
+        field = fault.get("field")
+        reason = fault.get("reason")
+        if type(row) is not int or type(field) is not str or type(reason) is not str:
+            continue
+        locators.append({"row": row, "field": field, "reason": reason})
     return {
         "schema_version": "harness-report-v1",
         "data_mode": "SYNTHETIC",
@@ -272,6 +282,7 @@ def failed_source_report(*, run_at, inventory_dispatch, fda_source="LIVE"):
         "source_state": inventory_dispatch.state,
         "source_reason": inventory_dispatch.reason_code,
         "source_reason_codes": [inventory_dispatch.reason_code],
+        "source_faults": locators,
         "items": [],
         "warning_codes": warning_codes,
         "warnings": render_warnings(warning_codes),
