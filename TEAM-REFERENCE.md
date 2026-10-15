@@ -10,6 +10,13 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 14, 2026 local hosting correction: Vercel reported a requirements include
+parse failure at root position 73. Root requirements now list the same 28 web pins
+inline; dependency versions and runtime behavior are unchanged. Hosted environment
+names, reviewer access, hostname defaults and unused FDA/Supabase settings are
+documented. This correction is prepared for publication; a Vercel build result
+must be verified after push. The separate local tester correction remains unstaged.
+
 Local UI follow-up: user requested removal of the redundant Back control and
 the complete 150-row catalog at the bottom of Home. Product columns, stock and
 14 daily usage values join by exact package NDC for escaped human display.
