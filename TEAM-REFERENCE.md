@@ -16,8 +16,8 @@ methods. Early parser errors now receive HTTP framing before the safe JSON.
 The new regression failed before correction and passes afterward. Full local
 suite: 251 passing; isolated combined harness/main suite: 266 passing; selected
 qualification: 85/85 contained with zero misses/false positives. Native macOS
-execution still needs teammate confirmation. October 15 cleanup prepares this
-small compatibility correction for publication, separately from hosting metadata.
+execution still needs teammate confirmation. October 15 cleanup publishes this
+small compatibility correction in PR #21, separately from hosting metadata.
 
 October 14, 2026 local hosting correction: Vercel reported a requirements include
 parse failure at root position 73. Root requirements now list the same 28 web pins
@@ -127,6 +127,14 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## 2026-10-15T12:01:28-04:00
+
+- Verified cleanup push on `feature/supabase-inventory-schema`: `600f5bef13bd7bd81a7f7fd6b0a9b3a841564cce..c7b8cb27450d20b95a74bed5696e7ef677f9eefd`.
+- Separate commits close the hosting publication receipt and fix the local tester's early HTTP parser error framing, with a synthetic socket regression, compatibility review and handoff. The branch first fast-forwarded to merged main without changing pending file bytes.
+- Reviewed endpoint: `f063ebf2dba945fd758c71e8771913b937b5c913`; final empty review marker: `c7b8cb27450d20b95a74bed5696e7ef677f9eefd`.
+- Sequential security checks passed: 10 focused tester methods, then 251 full-suite methods; 85 qualification fixtures contained, 55 unsafe detected, 30 benign accepted, zero misses/false positives. Native macOS confirmation remains pending.
+- PR [#21](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/21) targets main and its build check passed. PR #16 conflicts only in TEAM-REFERENCE.md; #18 has no merge conflict but external messaging scope remains separate; new test-only PR #20 includes expected failures. No PR was merged by this cleanup.
 
 ## 2026-10-14T23:09:31-04:00
 
