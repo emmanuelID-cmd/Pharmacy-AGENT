@@ -127,6 +127,12 @@ New read_store_inventory_database returns 20 rows through the real session poole
 - Exact hosting-only snapshot: 250 passing tests on Python 3.13.15. Qualification: 85 contained, 55 unsafe detected, 30 benign accepted, zero misses/false positives. Vercel preview build passed; unauthenticated access redirects to Vercel login, so application runtime and secrets remain unverified.
 - PR [#19](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/19) targets main; no merge or model call occurred.
 
+## 2026-10-15T14:12:31-04:00
+
+- Verified feature/pharmacy-harness push 41d3cff0a783984d68ff77e07f6b066730f13b54..95b7825c68ca36dd9d10ba034ffa200fa38b1fe1.
+- Softened strength to source-aware AMBIGUOUS_ITEM (PR #20 Rule B). No main merge; PR #16 remains the review.
+- tests.test_harness_strength (+ related): 44 OK.
+
 ## 2026-10-14T14:48:07-04:00
 
 - Verified feature/pharmacy-harness push dc9c77807f632b0972c8896ebdfc6f54ecda177b..7a37b2aec5742320596c21e6995a321917201517.
