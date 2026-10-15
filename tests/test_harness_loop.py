@@ -172,6 +172,33 @@ class HarnessLoopTests(unittest.TestCase):
                                   key="synthetic-key", name="claude-haiku-5-5", urlopen=urlopen)
         self.assertEqual(text, '{"schema_version":"report-v1"}')
 
+    def test_anthropic_complete_omits_temperature(self):
+        # Haiku 5.5 rejects temperature; keep it out of the Anthropic body.
+        seen = []
+
+        def urlopen(request, timeout):
+            del timeout
+            seen.append(json.loads(request.data.decode()))
+
+            class Response:
+                def read(self):
+                    return json.dumps({
+                        "content": [{"type": "text", "text": "{}"}],
+                    }).encode()
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, *args):
+                    return False
+
+            return Response()
+
+        anthropic_complete("sys", {"schema_version": "prevention-v1"},
+                           key="synthetic-key", name="claude-haiku-5-5", urlopen=urlopen)
+        self.assertEqual(len(seen), 1)
+        self.assertNotIn("temperature", seen[0])
+
 
 class HarnessModelCliTests(unittest.TestCase):
     def test_model_copy_injects_copier(self):
