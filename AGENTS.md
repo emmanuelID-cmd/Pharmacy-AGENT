@@ -20,6 +20,26 @@ Use the Team Reference skill and maintain `TEAM-REFERENCE.md` inside this projec
 
 Follow the external Git approval gates, Conventional Commits, and collaboration body sections: What changed, Why, Collaboration, Boundaries, Validation. Propose branch names before creation. Use pull requests for shared changes; merging into main requires approval and required checks. Preview changes before committing. Never stage unrelated work or secrets. Repository creation does not grant teammate invitations or alter GitHub access permissions.
 
+## Pharmacy Branch Ownership
+
+The active long-lived branch set for this project is:
+
+| Branch | Owner / use |
+|---|---|
+| `main` | Integrated project source of truth |
+| `feature/supabase-migration` | Supabase-only work; do not work on Supabase changes from another branch. If a Supabase task begins on another branch, stop and tell the user to switch to `feature/supabase-migration`. |
+| `feature/pharmacy-harness` | Kerrian Gordon's harness lane |
+| `feature/pharmacy-agent-instructions` | Brahim Maouloud's agent-instructions and tooling lane |
+| `feature/pharmacy-injection-risk-prevention` | Emmanuel De Jesus's injection-risk-prevention lane |
+
+For team work, each collaborator stays on their assigned long-lived lane. A
+separate feature branch may be used when a discrete feature needs isolation;
+merge its completed work into `main`, then fast-forward the related lane branch
+only when it has no unique commits. Before deleting any branch, verify a clean
+tree, merged history, no conflicts, and no recent branch activity, and ask the
+user for explicit deletion approval. When one person works alone, keep the same
+merge, fast-forward, and deletion checks but do not gate work by teammate lane.
+
 ## Approved responsibilities and Phase 6 boundary
 
 | Member | Part | Verified contribution/status |
