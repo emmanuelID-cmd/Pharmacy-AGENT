@@ -10,6 +10,14 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 14, 2026 local hosting correction: Vercel reported a requirements include
+parse failure at root position 73. Root requirements now list the same 28 web pins
+inline; dependency versions and runtime behavior are unchanged. Hosted environment
+names, reviewer access, hostname defaults and unused FDA/Supabase settings are
+documented and published in PR #19. Its first preview build passed; application
+runtime verification remains behind Vercel's login protection. The separate local
+tester correction remains unstaged.
+
 Local UI follow-up: user requested removal of the redundant Back control and
 the complete 150-row catalog at the bottom of Home. Product columns, stock and
 14 daily usage values join by exact package NDC for escaped human display.
@@ -110,6 +118,14 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## 2026-10-14T23:06:19-04:00
+
+- Verified `feature/supabase-inventory-schema` push: `e2588675445a1fb3a20e1188fda47c5f217e8658..418aae857c9f59fd95deacf93212e5217be8fa2e`.
+- Carried already-merged main evaluation files unchanged, then published the inline 28-pin Vercel requirements correction, hosting configuration guide and hosting handoff. The separate local tester fix was excluded.
+- Reviewed endpoint: `5335fc59a9f886d0c998d3533a9c246690251adc`; final review marker: `418aae857c9f59fd95deacf93212e5217be8fa2e`.
+- Exact hosting-only snapshot: 250 passing tests on Python 3.13.15. Qualification: 85 contained, 55 unsafe detected, 30 benign accepted, zero misses/false positives. Vercel preview build passed; unauthenticated access redirects to Vercel login, so application runtime and secrets remain unverified.
+- PR [#19](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/19) targets main; no merge or model call occurred.
 
 ## 2026-10-14T00:08:43-04:00
 
