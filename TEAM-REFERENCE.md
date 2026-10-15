@@ -10,6 +10,15 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 14, 2026 local tester compatibility follow-up: reproduced the reported
+body-only BadStatusLine using the published CPython 3.13.5 and 3.14.6 parser
+methods. Early parser errors now receive HTTP framing before the safe JSON.
+The new regression failed before correction and passes afterward. Full local
+suite: 251 passing; isolated combined harness/main suite: 266 passing; selected
+qualification: 85/85 contained with zero misses/false positives. Native macOS
+execution still needs teammate confirmation. October 15 cleanup publishes this
+small compatibility correction in PR #21, separately from hosting metadata.
+
 October 14, 2026 local hosting correction: Vercel reported a requirements include
 parse failure at root position 73. Root requirements now list the same 28 web pins
 inline; dependency versions and runtime behavior are unchanged. Hosted environment
@@ -130,6 +139,20 @@ New read_store_inventory_database returns 20 rows through the real session poole
 - Verified main merge of PR #16: `895daa2..a3ddf71` (merge commit `a3ddf71`).
 - Rebased `feature/pharmacy-harness` onto current main first (conflicts in TEAM-REFERENCE and strength tests resolved; Rule B implementation kept, `@expectedFailure` dropped).
 - Harness: identity faults, MODEL_UNAVAILABLE, freshness proof, source-aware AMBIGUOUS_ITEM. Strength tests: 60 related OK before push.
+
+## 2026-10-15T12:01:28-04:00
+
+- Verified cleanup push on `feature/supabase-inventory-schema`: `600f5bef13bd7bd81a7f7fd6b0a9b3a841564cce..c7b8cb27450d20b95a74bed5696e7ef677f9eefd`.
+- Separate commits close the hosting publication receipt and fix the local tester's early HTTP parser error framing, with a synthetic socket regression, compatibility review and handoff. The branch first fast-forwarded to merged main without changing pending file bytes.
+- Reviewed endpoint: `f063ebf2dba945fd758c71e8771913b937b5c913`; final empty review marker: `c7b8cb27450d20b95a74bed5696e7ef677f9eefd`.
+- Sequential security checks passed: 10 focused tester methods, then 251 full-suite methods; 85 qualification fixtures contained, 55 unsafe detected, 30 benign accepted, zero misses/false positives. Native macOS confirmation remains pending.
+- PR [#21](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/21) targets main and its build check passed. PR #16 conflicts only in TEAM-REFERENCE.md; #18 has no merge conflict but external messaging scope remains separate; new test-only PR #20 includes expected failures. No PR was merged by this cleanup.
+
+## 2026-10-14T23:09:31-04:00
+
+- Verified hosting receipt push: `418aae857c9f59fd95deacf93212e5217be8fa2e..600f5bef13bd7bd81a7f7fd6b0a9b3a841564cce` on `feature/supabase-inventory-schema`.
+- Published the documentation-only build receipt and its empty review marker; the application tree is unchanged from the previously successful preview. The final-tip Vercel build subsequently passed.
+- Reviewed endpoint: `23a232cad5f63abfd977295962cb62fa6a3f9b51`. PR #19 was subsequently merged as `7e5b4e8f5dc898667c59cb87e0b939962ede1075`; tester publication is separate.
 
 ## 2026-10-14T23:06:19-04:00
 

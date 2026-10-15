@@ -73,6 +73,10 @@ class TesterHandler(BaseHTTPRequestHandler):
             pass  # Rejected input stays rejected if the peer closes or stalls.
 
     def send_error(self,code,message=None,explain=None):
+        # Older parsers can reject before replacing the HTTP/0.9 default.
+        # Frame this rejection as HTTP/1.x instead of emitting only JSON.
+        if self.request_version == 'HTTP/0.9':
+            self.request_version = self.protocol_version
         self.error_json(code,'HTTP_REQUEST_REJECTED')
 
     def boundary_ok(self):
