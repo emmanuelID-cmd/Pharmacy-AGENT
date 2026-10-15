@@ -88,7 +88,8 @@ class HarnessValidationTests(unittest.TestCase):
         self.assertIn("INVALID_ITEM_REFERENCE", evidence.reason_codes)
         self.assertIsNone(evidence.item_id)
 
-    def test_missing_strength_is_ambiguous_not_maintain(self):
+    def test_missing_strength_is_ambiguous_when_source_reports_strength(self):
+        # Fixture rows carry strength; dropping it on one row must fail closed.
         payload = copy.deepcopy(fixture())
         snapshot = inspect_snapshot(payload, run_at=EVAL_RUN)
         row = next(item for item in snapshot.items if item["item_id"] == "item-001")
@@ -109,6 +110,16 @@ class HarnessValidationTests(unittest.TestCase):
         evidence = inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=frozenset())
         self.assertFalse(evidence.identity_ok)
         self.assertIn("AMBIGUOUS_ITEM", evidence.reason_codes)
+
+    def test_source_without_strength_keys_is_unchanged(self):
+        payload = copy.deepcopy(fixture())
+        for item in payload["items"]:
+            item.pop("strength", None)
+        snapshot = inspect_snapshot(payload, run_at=EVAL_RUN)
+        row = next(item for item in snapshot.items if item["item_id"] == "item-001")
+        evidence = inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=frozenset())
+        self.assertNotIn("AMBIGUOUS_ITEM", evidence.reason_codes)
+        self.assertTrue(evidence.identity_ok)
 
     def test_identity_source_faults_cite_row_and_field_only(self):
         faults = locate_identity_source_faults([

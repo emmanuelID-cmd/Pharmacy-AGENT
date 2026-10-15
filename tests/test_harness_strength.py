@@ -1,19 +1,10 @@
-"""Dosage strength identity check (handoff to the harness owner).
+"""Dosage strength identity check (Rule B / PR #20).
 
-PRD-Mod, "Consolidated exception contract": ambiguous strength/form/package/unit ->
-AMBIGUOUS_ITEM, keep items separate, withhold the affected calculation. Today no harness
-code reads `strength`: the live trace docs/eval/traces/case1_missing_strength.trace.json
-shows item-001 (strength removed) reported as ABOVE_THRESHOLD / MAINTAIN.
-
-Proposed rule, v1 scope only (validation; no order quantities, no external send):
-1. A `strength` field that is present but empty or not a string is ambiguous.
-2. When the source gives `strength` for some rows, a row without it is ambiguous.
-3. A source that gives `strength` for no row (today's 20-row fixture and 150-item
-   catalog) is unchanged until POLICY/PRD decide strength is required everywhere.
-
-Tests marked expectedFailure describe the missing behavior: they fail today and pass once
-the rule is implemented. Remove the decorator then (unittest reports an unexpected success
-as a failure, so the suite turns red until it is removed).
+PRD-Mod: ambiguous strength/form/package/unit -> AMBIGUOUS_ITEM, withhold the
+affected calculation. v1 rule:
+1. strength present but empty or not a string is ambiguous.
+2. When the source gives strength for some rows, a row without it is ambiguous.
+3. A source that gives strength for no row is unchanged until POLICY requires it.
 """
 import copy
 import json
@@ -36,8 +27,15 @@ def item_reasons(payload, item_id):
     return inspect_item(row, run_at=EVAL_RUN, snapshot=snapshot, duplicate_ids=duplicates)
 
 
+def without_any_strength(payload=None):
+    payload = copy.deepcopy(payload or read_store_inventory(1618, path=LEGACY_FIXTURE_PATH))
+    for row in payload["items"]:
+        row.pop("strength", None)
+    return payload
+
+
 def with_strength(value, item_id="item-003"):
-    payload = copy.deepcopy(read_store_inventory(1618, path=LEGACY_FIXTURE_PATH))
+    payload = without_any_strength()
     for row in payload["items"]:
         if row["item_id"] == item_id:
             row["strength"] = value
@@ -49,50 +47,42 @@ def report_row(report, item_id):
 
 
 class HarnessStrengthTests(unittest.TestCase):
-    # Passes today: guards against requiring strength before POLICY/PRD say so.
     def test_source_without_any_strength_is_unchanged(self):
-        evidence = item_reasons(read_store_inventory(1618, path=LEGACY_FIXTURE_PATH), "item-003")
+        evidence = item_reasons(without_any_strength(), "item-003")
         self.assertNotIn("AMBIGUOUS_ITEM", evidence.reason_codes)
         self.assertTrue(evidence.identity_ok)
 
-    # Passes today: a valid strength must never be flagged.
     def test_valid_strength_is_not_ambiguous(self):
         evidence = item_reasons(with_strength("10 mg"), "item-003")
         self.assertNotIn("AMBIGUOUS_ITEM", evidence.reason_codes)
         self.assertTrue(evidence.identity_ok)
 
-    @unittest.expectedFailure
     def test_empty_strength_is_ambiguous(self):
         evidence = item_reasons(with_strength("   "), "item-003")
         self.assertIn("AMBIGUOUS_ITEM", evidence.reason_codes)
         self.assertFalse(evidence.identity_ok)
 
-    @unittest.expectedFailure
     def test_non_text_strength_is_ambiguous(self):
         evidence = item_reasons(with_strength(10), "item-003")
         self.assertIn("AMBIGUOUS_ITEM", evidence.reason_codes)
         self.assertFalse(evidence.identity_ok)
 
-    @unittest.expectedFailure
     def test_row_missing_strength_in_a_source_that_has_it_is_ambiguous(self):
         payload = json.loads(CASE_PATH.read_text())
-        self.assertIn("strength", payload["items"][1])  # the source does give strength
-        self.assertNotIn("strength", payload["items"][0])  # item-001 lacks it
+        self.assertIn("strength", payload["items"][1])
+        self.assertNotIn("strength", payload["items"][0])
         evidence = item_reasons(payload, "item-001")
         self.assertIn("AMBIGUOUS_ITEM", evidence.reason_codes)
         self.assertFalse(evidence.identity_ok)
         self.assertNotIn("AMBIGUOUS_ITEM", item_reasons(payload, "item-002").reason_codes)
 
-    @unittest.expectedFailure
     def test_ambiguous_item_withholds_days_and_requires_manual_review_end_to_end(self):
-        # Same input as the live trace: today item-001 comes out as 6.22 days / MAINTAIN.
         report = run_review(run_at=EVAL_RUN, inventory_path=CASE_PATH, fda_http_get=stub_http())
         row = report_row(report, "item-001")
         self.assertIn("AMBIGUOUS_ITEM", row["reason_codes"])
         self.assertIsNone(row["days_of_supply"])
         self.assertEqual(row["local_action"], "MANUAL_REVIEW")
         self.assertEqual(report["run_state"], "MANUAL_REVIEW")
-        # Unaffected rows keep their verified result.
         self.assertEqual(report_row(report, "item-003")["local_class"], "CRITICAL")
 
 

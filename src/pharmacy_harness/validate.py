@@ -212,15 +212,26 @@ def inspect_item(row, *, run_at, snapshot, duplicate_ids):
         dispensing_unit = None
         reasons.append("INVALID_DISPENSING_UNIT")
 
-    # PRD AMBIGUOUS_ITEM: strength is required identity. Missing/blank/non-string
-    # withholds calculation — never MAINTAIN on an incomplete package identity.
-    raw_strength = row.get("strength") if "strength" in row else None
-    if type(raw_strength) is not str or not raw_strength.strip():
+    # PRD AMBIGUOUS_ITEM (v1): only when the source uses strength.
+    # - present but empty / non-string → ambiguous
+    # - some rows have strength, this row lacks the key → ambiguous
+    # - no row has strength (legacy fixture/catalog/DB) → unchanged
+    source_reports_strength = any(
+        type(other) is dict and "strength" in other for other in snapshot.items
+    )
+    strength_ok = True
+    if "strength" in row:
+        raw_strength = row.get("strength")
+        if type(raw_strength) is not str or not raw_strength.strip():
+            reasons.append("AMBIGUOUS_ITEM")
+            strength_ok = False
+    elif source_reports_strength:
         reasons.append("AMBIGUOUS_ITEM")
+        strength_ok = False
 
     identity_ok = (
         item_id is not None and package_ndc is not None and dispensing_unit is not None
-        and type(raw_strength) is str and bool(raw_strength.strip())
+        and strength_ok
     )
     if item_id is not None and item_id in duplicate_ids:
         identity_ok = False
