@@ -63,3 +63,19 @@ The real reliability gaps, in order:
 1. Repeat the live run several times per model (n ≥ 5) and record the pass rate; only 1 of 3 free models passed once.
 2. Run a live prompt-injection case (e.g. instruction text inside an FDA or inventory field) through the model loop.
 3. Run the 150-item catalog live (`--catalog`).
+
+## Update 2026-10-15: dosage strength fix verified
+
+Kerrian's harness change (PR #16, `AMBIGUOUS_ITEM` for strength) with the test-first spec from PR #20.
+
+1. **Tests flip:** all 6 tests in `tests/test_harness_strength.py` pass, with no `expectedFailure` markers left.
+2. **Same live input, different result** (`case1_missing_strength.json`, Nemotron):
+
+   | | days | class | action | reason codes |
+   |---|---|---|---|---|
+   | Before (`case1_missing_strength.trace.json`) | 6.22 | ABOVE_THRESHOLD | MAINTAIN | none |
+   | After (`case1_missing_strength.after-fix.trace.json`) | unavailable | UNKNOWN | MANUAL_REVIEW | `AMBIGUOUS_ITEM` |
+
+3. **Nothing else moved:** the normal 20-row fixture still gives 4 CRITICAL / 5 LOW / 7 ABOVE_THRESHOLD / 4 UNKNOWN with 0 `AMBIGUOUS_ITEM`; the 150-item catalog has 0 `AMBIGUOUS_ITEM`; the full suite passes except the known `test_local_tester` error (PR #21).
+
+**Honest limit:** both live "after" runs hit `RUN_DEADLINE_EXCEEDED` on the final model turn (the free model is slow; the normal run took 91 s of the 120 s budget). The harness report above is complete, but the model's copy of it was not accepted in those runs. This is a reliability issue (free-model latency), not the fix.
