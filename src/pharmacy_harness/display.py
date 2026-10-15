@@ -89,6 +89,12 @@ def format_manager_report(report):
     elif turn.get("state") == "REJECTED":
         reason = turn.get("reason_code") or "OUTPUT_EVIDENCE_MISMATCH"
         lines.append(f"Model turn: REJECTED ({reason}). Using verified facts only.")
+    elif turn.get("state") == "MODEL_UNAVAILABLE":
+        reason = turn.get("reason_code") or "MODEL_TRANSPORT_FAILED"
+        lines.append(
+            f"Model turn: MODEL_UNAVAILABLE ({reason}). "
+            "No live model answer; using verified facts only."
+        )
     elif turn.get("state") == "SKIPPED":
         lines.append("Model turn: skipped (deterministic report only).")
     if report.get("source_reason"):
@@ -101,6 +107,16 @@ def format_manager_report(report):
     if not items and report.get("run_state") == "MANUAL_REVIEW":
         reason = report.get("source_reason") or "source unavailable"
         lines.append(f"  Entire source. {reason}. No stock condition is claimed.")
+        for fault in report.get("source_faults") or ():
+            if type(fault) is not dict:
+                continue
+            row = fault.get("row")
+            field = fault.get("field")
+            code = fault.get("reason")
+            if type(row) is not int or type(field) is not str:
+                continue
+            extra = f" ({code})" if type(code) is str else ""
+            lines.append(f"  row {row}, {field}{extra}")
     elif not review_rows:
         lines.append("  None.")
     else:

@@ -2,6 +2,7 @@ import copy
 import json
 import tempfile
 import unittest
+from datetime import datetime
 
 from src.pharmacy_harness.report import assess_fda
 from src.pharmacy_harness.run import run_review
@@ -33,9 +34,127 @@ class HarnessInvariantTests(unittest.TestCase):
         report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http(), inventory_path=LEGACY_FIXTURE_PATH)
         source_ids = [row["item_id"] for row in payload["items"]]
         human_ids = [row["item_id"] for row in report["items"]]
+        self.assertEqual(len(report["items"]), len(payload["items"]))
         self.assertEqual(len(human_ids), len(source_ids))
         self.assertEqual(len(human_ids), len(set(human_ids)))
         self.assertEqual(set(human_ids), set(source_ids))
+
+    def _clone_item_001(self):
+        base = read_store_inventory(1618, path=LEGACY_FIXTURE_PATH)
+        return copy.deepcopy(next(row for row in base["items"] if row["item_id"] == "item-001"))
+
+    def _named(self, item_id):
+        row = self._clone_item_001()
+        row["item_id"] = item_id
+        return row
+
+    def _payload(self, items):
+        return {
+            "store_id": 1618, "synthetic": True,
+            "snapshot_reference": "synthetic-snapshot-2026-10-07",
+            "snapshot_timestamp": "2026-10-07T09:00:00-04:00",
+            "policy_version": "SYNTHETIC-v0",
+            "items": items,
+        }
+
+    def _two_row_payload(self, second):
+        return self._payload([self._clone_item_001(), second])
+
+    def test_missing_item_id_fails_the_inventory_source(self):
+        """A missing ID is a source-contract failure, not a silently dropped row."""
+        missing = self._clone_item_001()
+        del missing["item_id"]
+        # Bad row is third so a 0-based locator would report 2, not 3.
+        payload = self._payload([self._clone_item_001(), self._named("item-keep-b"), missing])
+        calls = []
+
+        def http_get(url, timeout):
+            calls.append(url)
+            return NOT_FOUND
+
+        report = run_review(run_at=EVAL_RUN, inventory_path=write_payload(payload),
+                            fda_http_get=http_get)
+        self.assertEqual(report["items"], [])
+        self.assertEqual(report["run_state"], "MANUAL_REVIEW")
+        self.assertEqual(report["source_state"], "MANUAL_REVIEW")
+        self.assertEqual(report["source_reason"], "INVALID_TOOL_RESULT")
+        self.assertIn("MANUAL_REVIEW_REQUIRED", report["warning_codes"])
+        self.assertEqual(report["source_faults"], [
+            {"row": 3, "field": "item_id", "reason": "MISSING_ITEM_ID"},
+        ])
+        self.assertIs(report["order_placed"], False)
+        self.assertIs(report["inventory_changed"], False)
+        self.assertEqual(calls, [])
+        self.assertEqual(report["model_turn"]["state"], "NOT_REACHED")
+
+    def test_duplicate_item_ids_name_both_rows(self):
+        payload = self._payload([
+            self._clone_item_001(),
+            self._named("item-keep-b"),
+            self._named("item-001"),
+        ])
+        report = run_review(run_at=EVAL_RUN, inventory_path=write_payload(payload),
+                            fda_http_get=eval_http())
+        self.assertEqual(report["source_reason"], "INVALID_TOOL_RESULT")
+        self.assertEqual(report["source_faults"], [
+            {"row": 1, "field": "item_id", "reason": "DUPLICATE_ITEM_ID"},
+            {"row": 3, "field": "item_id", "reason": "DUPLICATE_ITEM_ID"},
+        ])
+        self.assertEqual(report["items"], [])
+
+    def test_source_faults_list_every_identity_fault(self):
+        missing = self._clone_item_001()
+        del missing["item_id"]
+        spaced = self._named("item 004")
+        payload = self._payload([
+            self._clone_item_001(),
+            missing,
+            self._named("item-keep-b"),
+            spaced,
+        ])
+        report = run_review(run_at=EVAL_RUN, inventory_path=write_payload(payload),
+                            fda_http_get=eval_http())
+        self.assertEqual(report["source_faults"], [
+            {"row": 2, "field": "item_id", "reason": "MISSING_ITEM_ID"},
+            {"row": 4, "field": "item_id", "reason": "INVALID_ITEM_REFERENCE"},
+        ])
+
+    def test_invalid_ndc_on_one_row_does_not_wipe_the_neighbor(self):
+        second = self._clone_item_001()
+        second["item_id"] = "item-bad-ndc"
+        second["package_ndc"] = "not-an-ndc"
+        payload = self._two_row_payload(second)
+        report = run_review(run_at=EVAL_RUN, inventory_path=write_payload(payload),
+                            fda_http_get=eval_http())
+        self.assertEqual(len(report["items"]), 2)
+        by_id = {row["item_id"]: row for row in report["items"]}
+        self.assertEqual(by_id["item-001"]["local_class"], "ABOVE_THRESHOLD")
+        self.assertEqual(by_id["item-bad-ndc"]["local_action"], "MANUAL_REVIEW")
+        self.assertIn("INVALID_PACKAGE_NDC", by_id["item-bad-ndc"]["reason_codes"])
+
+    def test_bad_unit_on_one_row_does_not_wipe_the_neighbor(self):
+        second = self._clone_item_001()
+        second["item_id"] = "item-bad-unit"
+        second["dispensing_unit"] = "mg"
+        payload = self._two_row_payload(second)
+        report = run_review(run_at=EVAL_RUN, inventory_path=write_payload(payload),
+                            fda_http_get=eval_http())
+        self.assertEqual(len(report["items"]), 2)
+        by_id = {row["item_id"]: row for row in report["items"]}
+        self.assertEqual(by_id["item-001"]["local_action"], "MAINTAIN")
+        self.assertIn("INVALID_DISPENSING_UNIT", by_id["item-bad-unit"]["reason_codes"])
+
+    def test_hidden_label_on_one_row_does_not_wipe_the_neighbor(self):
+        second = self._clone_item_001()
+        second["item_id"] = "item-hidden"
+        second["product_label"] = "A\u200BB"
+        payload = self._two_row_payload(second)
+        report = run_review(run_at=EVAL_RUN, inventory_path=write_payload(payload),
+                            fda_http_get=eval_http())
+        self.assertEqual(len(report["items"]), 2)
+        by_id = {row["item_id"]: row for row in report["items"]}
+        self.assertEqual(by_id["item-001"]["local_class"], "ABOVE_THRESHOLD")
+        self.assertEqual(by_id["item-hidden"]["days_of_supply_display"], "6.22")
 
     def test_outputs_agree_except_documented_critical_unknown_mapping(self):
         report = run_review(run_at=EVAL_RUN, fda_http_get=eval_http(), inventory_path=LEGACY_FIXTURE_PATH)
@@ -103,7 +222,10 @@ class HarnessInvariantTests(unittest.TestCase):
                 "dataset_updated": "2026-10-06",
             },
         }
-        view = assess_fda(payload, run_at=parse_run_at(EVAL_RUN))
+        retrieved_at = datetime.fromisoformat(payload["meta"]["retrieved_at"])
+        run_at = parse_run_at(EVAL_RUN)
+        self.assertGreater(retrieved_at, run_at)
+        view = assess_fda(payload, run_at=run_at)
         self.assertEqual(view["state"], "MATCH")
         self.assertTrue(view["external_risk"])
 

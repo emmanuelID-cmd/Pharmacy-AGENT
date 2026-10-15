@@ -128,6 +128,12 @@ New read_store_inventory_database returns 20 rows through the real session poole
 
 # Date and Timestamp of Push
 
+## 2026-10-15T14:18:38-04:00
+
+- Verified main merge of PR #16: `895daa2..a3ddf71` (merge commit `a3ddf71`).
+- Rebased `feature/pharmacy-harness` onto current main first (conflicts in TEAM-REFERENCE and strength tests resolved; Rule B implementation kept, `@expectedFailure` dropped).
+- Harness: identity faults, MODEL_UNAVAILABLE, freshness proof, source-aware AMBIGUOUS_ITEM. Strength tests: 60 related OK before push.
+
 ## 2026-10-15T12:01:28-04:00
 
 - Verified cleanup push on `feature/supabase-inventory-schema`: `600f5bef13bd7bd81a7f7fd6b0a9b3a841564cce..c7b8cb27450d20b95a74bed5696e7ef677f9eefd`.
@@ -149,6 +155,43 @@ New read_store_inventory_database returns 20 rows through the real session poole
 - Reviewed endpoint: `5335fc59a9f886d0c998d3533a9c246690251adc`; final review marker: `418aae857c9f59fd95deacf93212e5217be8fa2e`.
 - Exact hosting-only snapshot: 250 passing tests on Python 3.13.15. Qualification: 85 contained, 55 unsafe detected, 30 benign accepted, zero misses/false positives. Vercel preview build passed; unauthenticated access redirects to Vercel login, so application runtime and secrets remain unverified.
 - PR [#19](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/19) targets main; no merge or model call occurred.
+
+## 2026-10-15T14:12:31-04:00
+
+- Verified feature/pharmacy-harness push 41d3cff0a783984d68ff77e07f6b066730f13b54..95b7825c68ca36dd9d10ba034ffa200fa38b1fe1.
+- Softened strength to source-aware AMBIGUOUS_ITEM (PR #20 Rule B). No main merge; PR #16 remains the review.
+- tests.test_harness_strength (+ related): 44 OK.
+
+## 2026-10-14T14:48:07-04:00
+
+- Verified feature/pharmacy-harness push dc9c77807f632b0972c8896ebdfc6f54ecda177b..7a37b2aec5742320596c21e6995a321917201517.
+- Missing/blank strength is AMBIGUOUS_ITEM (never MAINTAIN). Fixtures include strength. Addresses PR #17 eval finding. No main merge; PR #16 remains the review.
+- Harness validation/calculate/freshness/eval/invariants/run: 67 OK.
+
+## 2026-10-14T11:14:34-04:00
+
+- Verified user-requested PR #16 rebase publication on `feature/pharmacy-harness`: `e67990d753c5cff8cab03818b52ed2b550f2d577..5d9bb719ccc74680c326661900fcdb44d8d655be` (history rewrite guarded by the exact old-tip lease).
+- Rebase review range: `e57d07f40d9a14c6ac17363cf09c7b412d7eeda5..637e3bb8f69d7732ed86486327c5653053b86886`. All eight original author identities, dates and messages are preserved; both push ledgers survive.
+- Rebased tree: 265 tests pass; qualification 85/85 contained, 55 unsafe detected, 30 benign accepted, zero misses/false positives. The six pending local fixes were excluded and retained byte-for-byte.
+- Rebase only: no main merge, provider switch, data restamping or native Mac tester fix. Credential-alias precedence and live CLI fixture selection remain separate follow-ups.
+
+## 2026-10-14T04:07:31-04:00
+
+- Verified feature/pharmacy-harness push be3105940115404f8832c5f5c92bdad023ecfdc3..4c0b6a8607dba0d37325da787f0661c19df1837d.
+- Fresh-vs-stale `run_review` trust proof: 4.00 days when fresh; stale snapshot withholds days from human and model safety copy. No main merge. Draft PR #13 remains the review.
+- tests.test_harness_freshness: 2 OK.
+
+## 2026-10-14T03:26:39-04:00
+
+- Verified feature/pharmacy-harness push cd07d0de0db5ae1aa673b99f8cd49a4e5ef947d8..3442f26d7b2e65cacfbcea36e5961b768b12e3e2.
+- Live `--model` supports Anthropic Messages or PHARMACY_MODEL_URL; auth/timeout/transport are MODEL_UNAVAILABLE, not REJECTED. No live ACCEPTED/REJECTED turn proven without a Console/gateway key. No main merge. Draft PR #13 remains the review.
+- Harness loop/CLI tests: 24 OK.
+
+## 2026-10-14T01:31:04-04:00
+
+- Verified feature/pharmacy-harness push e2031dfbd8b2443529a0a9f7e09c12b5dfc66d02..3247fce4d768b9adc54bfbd66829cd2cff60b924.
+- Identity source faults cite 1-based row and field; POLICY/PRD name rounding, zero-usage quantity, staleness defaults, and eval scope. FDA retrieved_at after the frozen clock is asserted. No main merge. Draft PR #13 remains the review.
+- Harness tests: 84 OK.
 
 ## 2026-10-14T00:08:43-04:00
 

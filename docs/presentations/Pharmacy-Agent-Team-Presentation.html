@@ -226,12 +226,12 @@
 <tr><td>Wrong store or package NDC</td><td>Rejected before dispatch</td></tr>
 <tr><td>Supply set to 999, warning hidden</td><td>Proposal rejected; safe fallback shown</td></tr>
 </table>
-<p style="font-size:26px;color:#4A5568;line-height:1.4">A passing fixture is not proof that every future attack will be detected.</p>
+<p style="font-size:26px;color:#4A5568;line-height:1.4">A passing fixture is not proof that every future attack will be detected. These evals test code and guards, not how a model reacts to injected text.</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6A7385">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  8 / 10</p>
-<aside>Voici les attaques testées par Emmanuel et ce qui s'est passé : caractères cachés, faux rôles, JSON cassé, commandes interdites, mauvais magasin, et un modèle qui change le stock à 999. À chaque fois, c'est refusé ou remplacé par un résultat sûr. Emmanuel reste honnête : réussir ces tests ne prouve pas que toutes les attaques futures seront détectées.</aside>
+<aside>Voici les attaques testées par Emmanuel et ce qui s'est passé : caractères cachés, faux rôles, JSON cassé, commandes interdites, mauvais magasin, et un modèle qui change le stock à 999. À chaque fois, c'est refusé ou remplacé par un résultat sûr. Emmanuel reste honnête : réussir ces tests ne prouve pas que toutes les attaques futures seront détectées. Ces evals testent le code et les gardes, pas la réaction d'un modèle à du texte injecté.</aside>
 </section>
 </div>
-<div class="notes">Voici les attaques testées par Emmanuel et ce qui s'est passé : caractères cachés, faux rôles, JSON cassé, commandes interdites, mauvais magasin, et un modèle qui change le stock à 999. À chaque fois, c'est refusé ou remplacé par un résultat sûr. Emmanuel reste honnête : réussir ces tests ne prouve pas que toutes les attaques futures seront détectées.</div>
+<div class="notes">Voici les attaques testées par Emmanuel et ce qui s'est passé : caractères cachés, faux rôles, JSON cassé, commandes interdites, mauvais magasin, et un modèle qui change le stock à 999. À chaque fois, c'est refusé ou remplacé par un résultat sûr. Emmanuel reste honnête : réussir ces tests ne prouve pas que toutes les attaques futures seront détectées. Ces evals testent le code et les gardes, pas la réaction d'un modèle à du texte injecté.</div>
 <div class="frame">
 <section id="evidence" data-transition="fade" style="background:#14213d">
   <p id="e1-1hv0y78" style="position:absolute; bottom:64px; left:128px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#9aa5b8">Pharmacy-AGENT · Synthetic tests; human operational decisions · 9 / 10</p>
@@ -254,14 +254,14 @@
     </div>
   </div>
   <div id="pacfcf9b300edr2-05c78dfa" style="position:absolute; top:483px; left:128px; width:1664px; height:154px; display:flex; flex-direction:column; gap:14px">
-    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"></p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2">Evals prove harness code and guards. They do not prove how a model reacts to injected text until a live model turn exists.</p>
     <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"><span style="color:#f2a65a">01 </span>Connect harness facts, read tools and guards; test the model loop</p>
     <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"><span style="color:#f2a65a">02 </span>Run the three Eval Card cases end to end</p>
   </div>
-  <aside>Les preuves : 94 tests passent dans tout le projet. Sur les 85 cas de test d'Emmanuel, tous les résultats correspondent : 55 attaques détectées, 30 textes normaux acceptés, et aucune erreur. Ce sont des résultats sur les cas testés, pas une garantie contre toutes les attaques. Les prochaines étapes : connecter le harnais, les outils et les protections avec une vraie boucle de modèle, puis tester les trois cas de l'Eval Card de bout en bout.</aside>
+  <aside>Les preuves : 94 tests passent dans tout le projet. Sur les 85 cas de test d'Emmanuel, tous les résultats correspondent : 55 attaques détectées, 30 textes normaux acceptés, et aucune erreur. Ce sont des résultats sur les cas testés, pas une garantie contre toutes les attaques. Ils testent le code et les gardes, pas la réaction d'un modèle à du texte injecté. Les prochaines étapes : connecter le harnais, les outils et les protections avec une vraie boucle de modèle, puis tester les trois cas de l'Eval Card de bout en bout.</aside>
 </section>
 </div>
-<div class="notes">Les preuves : 94 tests passent dans tout le projet. Sur les 85 cas de test d'Emmanuel, tous les résultats correspondent : 55 attaques détectées, 30 textes normaux acceptés, et aucune erreur. Ce sont des résultats sur les cas testés, pas une garantie contre toutes les attaques. Les prochaines étapes : connecter le harnais, les outils et les protections avec une vraie boucle de modèle, puis tester les trois cas de l'Eval Card de bout en bout.</div>
+<div class="notes">Les preuves : 94 tests passent dans tout le projet. Sur les 85 cas de test d'Emmanuel, tous les résultats correspondent : 55 attaques détectées, 30 textes normaux acceptés, et aucune erreur. Ce sont des résultats sur les cas testés, pas une garantie contre toutes les attaques. Ils testent le code et les gardes, pas la réaction d'un modèle à du texte injecté. Les prochaines étapes : connecter le harnais, les outils et les protections avec une vraie boucle de modèle, puis tester les trois cas de l'Eval Card de bout en bout.</div>
 <div class="frame">
 <section id="conclusion" data-section="Conclusion: what we built, learned and do next" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
 <div style="display:flex;flex-direction:column;gap:16px">

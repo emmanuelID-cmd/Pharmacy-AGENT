@@ -156,8 +156,44 @@ def inspect_snapshot(payload, *, run_at):
                             reference, policy_version, tuple(reasons), item_rows)
 
 
+def locate_identity_source_faults(items):
+    """Return row/field locators for identity defects. Never include the untrusted value.
+
+    Positions are 1-based in the source items list (row 1 is the first element).
+    Used when intake rejects the payload so the reviewer is not left hunting.
+    """
+    if type(items) is not list:
+        return ()
+    faults = []
+    seen = {}
+    for index, row in enumerate(items):
+        position = index + 1
+        if type(row) is not dict:
+            faults.append({"row": position, "field": "item_id", "reason": "MALFORMED_ROW"})
+            continue
+        if "item_id" not in row or row.get("item_id") is None:
+            faults.append({"row": position, "field": "item_id", "reason": "MISSING_ITEM_ID"})
+            continue
+        item_id = row.get("item_id")
+        if type(item_id) is not str or ITEM_ID_PATTERN.fullmatch(item_id) is None:
+            faults.append({"row": position, "field": "item_id", "reason": "INVALID_ITEM_REFERENCE"})
+            continue
+        seen.setdefault(item_id, []).append(position)
+    for positions in seen.values():
+        if len(positions) > 1:
+            for position in positions:
+                faults.append({"row": position, "field": "item_id", "reason": "DUPLICATE_ITEM_ID"})
+    return tuple(sorted(faults, key=lambda fault: (fault["row"], fault["reason"])))
+
+
 def inspect_item(row, *, run_at, snapshot, duplicate_ids):
-    """Check one inventory row. Source-level codes stay on the snapshot, not copied here."""
+    """Check one inventory row. Source-level codes stay on the snapshot, not copied here.
+
+    INVALID_ITEM_REFERENCE still fires here for direct callers and defense-in-depth.
+    On the guarded run, a missing, non-opaque, or duplicate item_id fails intake
+    first (execute_guarded INVALID_TOOL_RESULT) and never reaches this check.
+    Invalid NDC, unit, quantity, and usage stay row-level on that path.
+    """
     reasons = []
     item_id = row.get("item_id") if type(row.get("item_id")) is str else None
     if item_id is None or ITEM_ID_PATTERN.fullmatch(item_id) is None:
@@ -176,7 +212,27 @@ def inspect_item(row, *, run_at, snapshot, duplicate_ids):
         dispensing_unit = None
         reasons.append("INVALID_DISPENSING_UNIT")
 
-    identity_ok = item_id is not None and package_ndc is not None and dispensing_unit is not None
+    # PRD AMBIGUOUS_ITEM (v1): only when the source uses strength.
+    # - present but empty / non-string → ambiguous
+    # - some rows have strength, this row lacks the key → ambiguous
+    # - no row has strength (legacy fixture/catalog/DB) → unchanged
+    source_reports_strength = any(
+        type(other) is dict and "strength" in other for other in snapshot.items
+    )
+    strength_ok = True
+    if "strength" in row:
+        raw_strength = row.get("strength")
+        if type(raw_strength) is not str or not raw_strength.strip():
+            reasons.append("AMBIGUOUS_ITEM")
+            strength_ok = False
+    elif source_reports_strength:
+        reasons.append("AMBIGUOUS_ITEM")
+        strength_ok = False
+
+    identity_ok = (
+        item_id is not None and package_ndc is not None and dispensing_unit is not None
+        and strength_ok
+    )
     if item_id is not None and item_id in duplicate_ids:
         identity_ok = False
     freshness_ok = (

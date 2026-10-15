@@ -1,1 +1,4210 @@
-{"store_id":1618,"synthetic":true,"snapshot_reference":"synthetic-snapshot-catalog-2026-10-07","snapshot_timestamp":"2026-10-07T09:00:00-04:00","policy_version":"SYNTHETIC-v0","catalog_source":"openFDA and NLM identities only; stock and usage synthetic","items":[{"item_id":"catalog-001","package_ndc":"76420-622-01","product_label":"kenalog","dosage_form":"KIT","dispensing_unit":"unit","usable_quantity":17,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-002","package_ndc":"76420-919-02","product_label":"Diclofenac Sodium","dosage_form":"SOLUTION","dispensing_unit":"mL","usable_quantity":34,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-003","package_ndc":"77771-399-01","product_label":"Fluconazole","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":51,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-004","package_ndc":"76420-230-01","product_label":"Bupivacaine Hydrochloride","dosage_form":"INJECTION, SOLUTION","dispensing_unit":"mL","usable_quantity":68,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-005","package_ndc":"76329-3013-5","product_label":"Lidocaine Hydrochloride","dosage_form":"JELLY","dispensing_unit":"unit","usable_quantity":85,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-006","package_ndc":"0615-8570-05","product_label":"Potassium Chloride","dosage_form":"TABLET, FILM COATED, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":102,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-007","package_ndc":"80425-0181-1","product_label":"Etodolac","dosage_form":"TABLET, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":119,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-008","package_ndc":"80425-0440-1","product_label":"Esomeprazole magnesium","dosage_form":"CAPSULE, DELAYED RELEASE","dispensing_unit":"capsule","usable_quantity":136,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-009","package_ndc":"0615-8511-39","product_label":"Pentoxifylline","dosage_form":"TABLET, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":153,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-010","package_ndc":"0615-8539-39","product_label":"PRAVASTATIN SODIUM","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":170,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-011","package_ndc":"82804-116-12","product_label":"HYDROCODONE BITARTRATE AND ACETAMINOPHEN","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":187,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-012","package_ndc":"82804-971-00","product_label":"AMLODIPINE BESYLATE","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":3,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-013","package_ndc":"83107-009-60","product_label":"sotalol hydrochloride","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":20,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-014","package_ndc":"83257-025-41","product_label":"ustekinumab","dosage_form":"INJECTION, SOLUTION","dispensing_unit":"mL","usable_quantity":37,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-015","package_ndc":"85509-1443-3","product_label":"Rabeprazole Sodium","dosage_form":"TABLET, DELAYED RELEASE","dispensing_unit":"tablet","usable_quantity":54,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-016","package_ndc":"85766-077-03","product_label":"Azithromycin","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":71,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-017","package_ndc":"0781-3152-95","product_label":"cisatracurium besylate","dosage_form":"INJECTION","dispensing_unit":"unit","usable_quantity":88,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-018","package_ndc":"0781-3486-95","product_label":"Iron Sucrose","dosage_form":"INJECTION","dispensing_unit":"unit","usable_quantity":105,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-019","package_ndc":"0781-5315-01","product_label":"Zolpidem tartrate","dosage_form":"TABLET, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":122,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-020","package_ndc":"87441-013-01","product_label":"ATORVASTATIN CALCIUM","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":139,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-021","package_ndc":"0904-6966-61","product_label":"Oxycodone","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":156,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-022","package_ndc":"0904-7016-04","product_label":"Bumetanide","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":173,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-023","package_ndc":"0904-7056-99","product_label":"Aspirin and Extended - Release Dipyridamole","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":190,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-024","package_ndc":"0990-7937-19","product_label":"dextrose","dosage_form":"INJECTION, SOLUTION","dispensing_unit":"mL","usable_quantity":6,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-025","package_ndc":"10014-002-07","product_label":"Nitrogen","dosage_form":"GAS","dispensing_unit":"unit","usable_quantity":23,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-026","package_ndc":"10019-670-10","product_label":"esmolol hydrochloride","dosage_form":"INJECTION","dispensing_unit":"unit","usable_quantity":40,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-027","package_ndc":"11086-030-10","product_label":"salicylic acid","dosage_form":"GEL","dispensing_unit":"unit","usable_quantity":57,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-028","package_ndc":"0093-3609-82","product_label":"Fluticasone Propionate and Salmeterol","dosage_form":"POWDER, METERED","dispensing_unit":"unit","usable_quantity":74,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-029","package_ndc":"16714-112-01","product_label":"Fluoxetine","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":91,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-030","package_ndc":"16714-798-01","product_label":"Sumatriptan Succinate","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":108,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-031","package_ndc":"0093-3239-40","product_label":"Buprenorphine","dosage_form":"PATCH, EXTENDED RELEASE","dispensing_unit":"unit","usable_quantity":125,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-032","package_ndc":"13668-284-01","product_label":"Carbamazepine","dosage_form":"TABLET, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":142,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-033","package_ndc":"13925-164-20","product_label":"Lidocaine Hydrochloride and Hydrocortisone Acetate","dosage_form":"GEL","dispensing_unit":"unit","usable_quantity":159,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-034","package_ndc":"16571-105-01","product_label":"Amitriptyline Hydrochloride","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":176,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-035","package_ndc":"17856-8631-1","product_label":"Atovaquone","dosage_form":"SUSPENSION","dispensing_unit":"mL","usable_quantity":193,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-036","package_ndc":"23155-724-01","product_label":"Labetalol Hydrochloride","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":9,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-037","package_ndc":"24208-503-07","product_label":"loteprednol etabonate","dosage_form":"GEL","dispensing_unit":"unit","usable_quantity":26,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-038","package_ndc":"24470-948-10","product_label":"salicylic acid","dosage_form":"SOLUTION","dispensing_unit":"mL","usable_quantity":43,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-039","package_ndc":"24979-238-07","product_label":"Lisinopril","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":60,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-040","package_ndc":"29300-128-01","product_label":"Hydrochlorothiazide","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":77,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-041","package_ndc":"25021-469-10","product_label":"Levothyroxine Sodium Anhydrous","dosage_form":"INJECTION, POWDER, LYOPHILIZED, FOR SOLUTION","dispensing_unit":"mL","usable_quantity":94,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-042","package_ndc":"27241-184-30","product_label":"Lamotrigine","dosage_form":"TABLET, ORALLY DISINTEGRATING","dispensing_unit":"tablet","usable_quantity":111,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-043","package_ndc":"31722-123-30","product_label":"venlafaxine","dosage_form":"TABLET, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":128,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-044","package_ndc":"31722-482-30","product_label":"buprenorphine and naloxone","dosage_form":"FILM, SOLUBLE","dispensing_unit":"unit","usable_quantity":145,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-045","package_ndc":"31722-834-30","product_label":"Entecavir","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":162,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-046","package_ndc":"33342-121-10","product_label":"Sildenafil","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":179,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-047","package_ndc":"33342-460-07","product_label":"Nebivolol","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":196,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-048","package_ndc":"0116-4075-01","product_label":"Chlorhexidine Gluconate 0.12% Oral Rinse","dosage_form":"LIQUID","dispensing_unit":"mL","usable_quantity":12,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-049","package_ndc":"0121-0727-16","product_label":"RANITIDINE","dosage_form":"SYRUP","dispensing_unit":"unit","usable_quantity":29,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-050","package_ndc":"0143-9398-10","product_label":"ertapenem sodium","dosage_form":"INJECTION, POWDER, LYOPHILIZED, FOR SOLUTION","dispensing_unit":"mL","usable_quantity":46,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-051","package_ndc":"0143-9326-10","product_label":"Milrinone Lactate","dosage_form":"INJECTION, SOLUTION","dispensing_unit":"mL","usable_quantity":63,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-052","package_ndc":"0143-9365-10","product_label":"LABETALOL HYDROCHLORIDE","dosage_form":"INJECTION","dispensing_unit":"unit","usable_quantity":80,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-053","package_ndc":"42291-471-01","product_label":"Carbidopa and levodopa","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":97,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-054","package_ndc":"42385-921-48","product_label":"Atazanavir","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":114,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-055","package_ndc":"42794-083-08","product_label":"ACITRETIN","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":131,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-056","package_ndc":"42806-799-01","product_label":"rifampin","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":148,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-057","package_ndc":"43063-328-12","product_label":"Carbamazepine","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":165,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-058","package_ndc":"43063-964-14","product_label":"Cefdinir","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":182,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-059","package_ndc":"43547-616-03","product_label":"Bisoprolol fumarate","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":199,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-060","package_ndc":"43353-315-16","product_label":"Torsemide","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":15,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-061","package_ndc":"43538-900-12","product_label":"fluocinolone acetonide","dosage_form":"CREAM","dispensing_unit":"unit","usable_quantity":32,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-062","package_ndc":"43598-520-01","product_label":"pomalidomide","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":49,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-063","package_ndc":"44567-510-01","product_label":"CISplatin","dosage_form":"INJECTION, SOLUTION","dispensing_unit":"mL","usable_quantity":66,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-064","package_ndc":"45802-046-11","product_label":"Gentamicin Sulfate","dosage_form":"OINTMENT","dispensing_unit":"unit","usable_quantity":83,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-065","package_ndc":"0187-5810-07","product_label":"bupropion hydrobromide","dosage_form":"TABLET, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":100,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-066","package_ndc":"47335-710-08","product_label":"Topiramate","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":117,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-067","package_ndc":"47918-902-18","product_label":"INSULIN HUMAN","dosage_form":"KIT","dispensing_unit":"unit","usable_quantity":134,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-068","package_ndc":"0009-7200-01","product_label":"pegvisomant","dosage_form":"KIT","dispensing_unit":"unit","usable_quantity":151,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-069","package_ndc":"50228-175-01","product_label":"bupropion hydrochloride","dosage_form":"TABLET, FILM COATED, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":168,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-070","package_ndc":"50242-617-01","product_label":"Baloxavir Marboxil","dosage_form":"GRANULE, FOR SUSPENSION","dispensing_unit":"mL","usable_quantity":185,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-071","package_ndc":"49653-003-01","product_label":"Oxygen","dosage_form":"GAS","dispensing_unit":"unit","usable_quantity":1,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-072","package_ndc":"50063-001-01","product_label":"Oxygen","dosage_form":"GAS","dispensing_unit":"unit","usable_quantity":18,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-073","package_ndc":"50090-1023-0","product_label":"zolpidem tartrate","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":35,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-074","package_ndc":"50090-2159-0","product_label":"Cefuroxime axetil","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":52,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-075","package_ndc":"50090-3474-0","product_label":"letrozole","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":69,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-076","package_ndc":"50090-4793-0","product_label":"Methocarbamol","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":86,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-077","package_ndc":"50090-5563-0","product_label":"LORAZEPAM","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":103,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-078","package_ndc":"50090-7174-0","product_label":"Nortriptyline Hydrochloride","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":120,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-079","package_ndc":"50090-6080-0","product_label":"Benzonatate","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":137,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-080","package_ndc":"50090-6491-0","product_label":"naloxone hydrochloride","dosage_form":"INJECTION, SOLUTION","dispensing_unit":"mL","usable_quantity":154,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-081","package_ndc":"50090-6833-1","product_label":"Labetalol Hydrochloride","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":171,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-082","package_ndc":"51655-565-26","product_label":"Glimepiride","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":188,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-083","package_ndc":"51662-1537-3","product_label":"VITAMIN K1, PHYTONADIONE","dosage_form":"INJECTION, EMULSION","dispensing_unit":"unit","usable_quantity":4,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-084","package_ndc":"50419-251-01","product_label":"riociguat","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":21,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-085","package_ndc":"50742-387-01","product_label":"estrogens, conjugated","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":38,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-086","package_ndc":"51051-002-01","product_label":"Nitrogen","dosage_form":"GAS","dispensing_unit":"unit","usable_quantity":55,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-087","package_ndc":"51407-680-03","product_label":"Rizatriptan Benzoate","dosage_form":"TABLET, ORALLY DISINTEGRATING","dispensing_unit":"tablet","usable_quantity":72,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-088","package_ndc":"51475-001-01","product_label":"Oxygen","dosage_form":"GAS","dispensing_unit":"unit","usable_quantity":89,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-089","package_ndc":"51655-096-87","product_label":"Prochlorperazine Maleate","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":106,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-090","package_ndc":"51407-147-01","product_label":"Isosorbide Dinitrate","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":123,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-091","package_ndc":"55111-158-01","product_label":"Omeprazole","dosage_form":"CAPSULE, DELAYED RELEASE","dispensing_unit":"capsule","usable_quantity":140,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-092","package_ndc":"55150-156-20","product_label":"Levofloxacin","dosage_form":"INJECTION, SOLUTION, CONCENTRATE","dispensing_unit":"mL","usable_quantity":157,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-093","package_ndc":"55150-443-01","product_label":"regadenoson","dosage_form":"INJECTION","dispensing_unit":"unit","usable_quantity":174,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-094","package_ndc":"55154-4154-0","product_label":"Divalproex Sodium","dosage_form":"TABLET, DELAYED RELEASE","dispensing_unit":"tablet","usable_quantity":191,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-095","package_ndc":"51801-006-30","product_label":"POTASSIUM BICARBONATE","dosage_form":"TABLET, EFFERVESCENT","dispensing_unit":"tablet","usable_quantity":7,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-096","package_ndc":"52343-557-03","product_label":"Clomiphene Citrtae","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":24,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-097","package_ndc":"52695-001-01","product_label":"Oxygen","dosage_form":"GAS","dispensing_unit":"unit","usable_quantity":41,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-098","package_ndc":"54092-547-01","product_label":"PRUCALOPRIDE","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":58,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-099","package_ndc":"55154-8340-0","product_label":"Lansoprazole","dosage_form":"TABLET, ORALLY DISINTEGRATING, DELAYED RELEASE","dispensing_unit":"tablet","usable_quantity":75,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-100","package_ndc":"57511-0003-1","product_label":"1.1% Sodium Fluoride Toothpaste","dosage_form":"GEL, DENTIFRICE","dispensing_unit":"unit","usable_quantity":92,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-101","package_ndc":"60505-3250-6","product_label":"Lamivudine","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":109,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-102","package_ndc":"60687-548-01","product_label":"Clozapine","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":126,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-103","package_ndc":"60687-862-21","product_label":"Ivabradine","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":143,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-104","package_ndc":"60760-692-30","product_label":"Hydrocodone Bitartrate and Acetaminophen","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":160,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-105","package_ndc":"58657-474-16","product_label":"SULFACETAMIDE SODIUM, SULFUR","dosage_form":"LIQUID","dispensing_unit":"mL","usable_quantity":177,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-106","package_ndc":"59088-475-07","product_label":"Lidocaine HCl","dosage_form":"GEL","dispensing_unit":"unit","usable_quantity":194,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-107","package_ndc":"59651-824-01","product_label":"CIMETIDINE","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":10,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-108","package_ndc":"59390-140-05","product_label":"Ofloxacin","dosage_form":"SOLUTION","dispensing_unit":"mL","usable_quantity":27,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-109","package_ndc":"59579-005-01","product_label":"Helium","dosage_form":"GAS","dispensing_unit":"unit","usable_quantity":44,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-110","package_ndc":"59651-380-01","product_label":"Zonisamide","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":61,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-111","package_ndc":"60429-020-01","product_label":"Ketoconazole","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":78,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-112","package_ndc":"62332-142-08","product_label":"Celecoxib","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":95,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-113","package_ndc":"62332-621-17","product_label":"Paclitaxel","dosage_form":"INJECTION","dispensing_unit":"unit","usable_quantity":112,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-114","package_ndc":"62559-220-01","product_label":"Oxcarbazepine","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":129,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-115","package_ndc":"60793-852-01","product_label":"levothyroxine sodium","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":146,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-116","package_ndc":"62007-215-64","product_label":"FLUORIDE TREATMENT","dosage_form":"RINSE","dispensing_unit":"unit","usable_quantity":163,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-117","package_ndc":"0264-7623-20","product_label":"DEXTROSE and SODIUM CHLORIDE","dosage_form":"INJECTION, SOLUTION","dispensing_unit":"mL","usable_quantity":180,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-118","package_ndc":"62135-521-90","product_label":"Nifedipine","dosage_form":"TABLET, FILM COATED, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":197,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-119","package_ndc":"62135-805-30","product_label":"PIOGLITAZONE HYDROCHLORIDE","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":13,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-120","package_ndc":"63629-1067-1","product_label":"SPIRONOLACTONE","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":30,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-121","package_ndc":"62935-306-40","product_label":"Leuprolide acetate","dosage_form":"INJECTION, SUSPENSION, EXTENDED RELEASE","dispensing_unit":"mL","usable_quantity":47,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-122","package_ndc":"63187-705-00","product_label":"acetaminophen, caffeine, dihydrocodeine bitartrate","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":64,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-123","package_ndc":"63187-292-03","product_label":"Colchicine","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":81,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-124","package_ndc":"63304-076-01","product_label":"Potassium Chloride","dosage_form":"TABLET, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":98,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-125","package_ndc":"63323-314-61","product_label":"VANCOMYCIN HYDROCHLORIDE","dosage_form":"INJECTION, POWDER, LYOPHILIZED, FOR SOLUTION","dispensing_unit":"mL","usable_quantity":115,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-126","package_ndc":"63323-664-16","product_label":"DIPHENHYDRAMINE HYDROCHLORIDE","dosage_form":"INJECTION, SOLUTION","dispensing_unit":"mL","usable_quantity":132,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-127","package_ndc":"64980-634-01","product_label":"Benzonatate","dosage_form":"CAPSULE","dispensing_unit":"capsule","usable_quantity":149,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-128","package_ndc":"65145-107-10","product_label":"Ropivacaine Hydrochloride","dosage_form":"INJECTION","dispensing_unit":"unit","usable_quantity":166,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-129","package_ndc":"63629-2184-1","product_label":"Doxylamine Succinate and Pyridoxine Hydrochloride, Delayed release Tablets 10 mg/10 mg","dosage_form":"TABLET, DELAYED RELEASE","dispensing_unit":"tablet","usable_quantity":183,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-130","package_ndc":"63629-3393-1","product_label":"simvastatin","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":200,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-131","package_ndc":"63629-8475-1","product_label":"bupropion hydrochloride","dosage_form":"TABLET, FILM COATED, EXTENDED RELEASE","dispensing_unit":"tablet","usable_quantity":16,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-132","package_ndc":"63629-8844-1","product_label":"neomycin sulfate, polymyxin b sulfate and hydrocortisone","dosage_form":"SUSPENSION","dispensing_unit":"mL","usable_quantity":33,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-133","package_ndc":"63850-0022-1","product_label":"Trihexyphenidyl Hydrochloride","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":50,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-134","package_ndc":"64380-446-01","product_label":"Acetaminophen and Codeine Phosphate","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":67,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-135","package_ndc":"64616-090-02","product_label":"Fem Glandular and Tissue Aid","dosage_form":"LIQUID","dispensing_unit":"mL","usable_quantity":84,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-136","package_ndc":"67046-1495-3","product_label":"Chlorthalidone","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":101,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-137","package_ndc":"67191-123-04","product_label":"Oxygen","dosage_form":"GAS","dispensing_unit":"unit","usable_quantity":118,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-138","package_ndc":"67296-2137-3","product_label":"Nabumetone","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":135,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-139","package_ndc":"67457-146-30","product_label":"thiamine hydrochloride, riboflavin 5 phosphate sodium, dexpanthenol and niacinamide","dosage_form":"INJECTION","dispensing_unit":"unit","usable_quantity":152,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-140","package_ndc":"65162-636-03","product_label":"Pantoprazole","dosage_form":"TABLET, DELAYED RELEASE","dispensing_unit":"tablet","usable_quantity":169,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-141","package_ndc":"65219-218-50","product_label":"SODIUM CHLORIDE","dosage_form":"INJECTION, SOLUTION","dispensing_unit":"mL","usable_quantity":186,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-142","package_ndc":"66267-982-00","product_label":"Cephalexin","dosage_form":"POWDER, FOR SUSPENSION","dispensing_unit":"mL","usable_quantity":2,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}},{"item_id":"catalog-143","package_ndc":"0053-0220-22","product_label":"etranacogene dezaparvovec","dosage_form":"KIT","dispensing_unit":"unit","usable_quantity":19,"daily_usage":{"window_end":"2026-10-06","units":[8,1,2,3,4,5,6,7,8,1,2,3,4,5]}},{"item_id":"catalog-144","package_ndc":"67046-0319-3","product_label":"Mirtazapine","dosage_form":"TABLET, FILM COATED","dispensing_unit":"tablet","usable_quantity":36,"daily_usage":{"window_end":"2026-10-06","units":[1,2,3,4,5,6,7,8,1,2,3,4,5,6]}},{"item_id":"catalog-145","package_ndc":"67877-434-01","product_label":"Aripiprazole","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":53,"daily_usage":{"window_end":"2026-10-06","units":[2,3,4,5,6,7,8,1,2,3,4,5,6,7]}},{"item_id":"catalog-146","package_ndc":"67877-890-88","product_label":"Mirabegron","dosage_form":"FOR SUSPENSION, EXTENDED RELEASE","dispensing_unit":"mL","usable_quantity":70,"daily_usage":{"window_end":"2026-10-06","units":[3,4,5,6,7,8,1,2,3,4,5,6,7,8]}},{"item_id":"catalog-147","package_ndc":"68071-3156-6","product_label":"Cefdinir","dosage_form":"POWDER, FOR SUSPENSION","dispensing_unit":"mL","usable_quantity":87,"daily_usage":{"window_end":"2026-10-06","units":[4,5,6,7,8,1,2,3,4,5,6,7,8,1]}},{"item_id":"catalog-148","package_ndc":"68071-2232-4","product_label":"zolpidem tartrate","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":104,"daily_usage":{"window_end":"2026-10-06","units":[5,6,7,8,1,2,3,4,5,6,7,8,1,2]}},{"item_id":"catalog-149","package_ndc":"68001-506-30","product_label":"PIPERACILLIN and TAZOBACTAM","dosage_form":"INJECTION, POWDER, FOR SOLUTION","dispensing_unit":"mL","usable_quantity":121,"daily_usage":{"window_end":"2026-10-06","units":[6,7,8,1,2,3,4,5,6,7,8,1,2,3]}},{"item_id":"catalog-150","package_ndc":"68071-3643-9","product_label":"venlafaxine","dosage_form":"TABLET","dispensing_unit":"tablet","usable_quantity":138,"daily_usage":{"window_end":"2026-10-06","units":[7,8,1,2,3,4,5,6,7,8,1,2,3,4]}}]}
+{
+ "store_id": 1618,
+ "synthetic": true,
+ "snapshot_reference": "synthetic-snapshot-catalog-2026-10-07",
+ "snapshot_timestamp": "2026-10-07T09:00:00-04:00",
+ "policy_version": "SYNTHETIC-v0",
+ "catalog_source": "openFDA and NLM identities only; stock and usage synthetic",
+ "items": [
+  {
+   "item_id": "catalog-001",
+   "package_ndc": "76420-622-01",
+   "product_label": "kenalog",
+   "dosage_form": "KIT",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 17,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-002",
+   "package_ndc": "76420-919-02",
+   "product_label": "Diclofenac Sodium",
+   "dosage_form": "SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 34,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-003",
+   "package_ndc": "77771-399-01",
+   "product_label": "Fluconazole",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 51,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-004",
+   "package_ndc": "76420-230-01",
+   "product_label": "Bupivacaine Hydrochloride",
+   "dosage_form": "INJECTION, SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 68,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-005",
+   "package_ndc": "76329-3013-5",
+   "product_label": "Lidocaine Hydrochloride",
+   "dosage_form": "JELLY",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 85,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-006",
+   "package_ndc": "0615-8570-05",
+   "product_label": "Potassium Chloride",
+   "dosage_form": "TABLET, FILM COATED, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 102,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-007",
+   "package_ndc": "80425-0181-1",
+   "product_label": "Etodolac",
+   "dosage_form": "TABLET, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 119,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-008",
+   "package_ndc": "80425-0440-1",
+   "product_label": "Esomeprazole magnesium",
+   "dosage_form": "CAPSULE, DELAYED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 136,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-009",
+   "package_ndc": "0615-8511-39",
+   "product_label": "Pentoxifylline",
+   "dosage_form": "TABLET, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 153,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-010",
+   "package_ndc": "0615-8539-39",
+   "product_label": "PRAVASTATIN SODIUM",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 170,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-011",
+   "package_ndc": "82804-116-12",
+   "product_label": "HYDROCODONE BITARTRATE AND ACETAMINOPHEN",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 187,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-012",
+   "package_ndc": "82804-971-00",
+   "product_label": "AMLODIPINE BESYLATE",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 3,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-013",
+   "package_ndc": "83107-009-60",
+   "product_label": "sotalol hydrochloride",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 20,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-014",
+   "package_ndc": "83257-025-41",
+   "product_label": "ustekinumab",
+   "dosage_form": "INJECTION, SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 37,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-015",
+   "package_ndc": "85509-1443-3",
+   "product_label": "Rabeprazole Sodium",
+   "dosage_form": "TABLET, DELAYED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 54,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-016",
+   "package_ndc": "85766-077-03",
+   "product_label": "Azithromycin",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 71,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-017",
+   "package_ndc": "0781-3152-95",
+   "product_label": "cisatracurium besylate",
+   "dosage_form": "INJECTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "unit",
+   "usable_quantity": 88,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-018",
+   "package_ndc": "0781-3486-95",
+   "product_label": "Iron Sucrose",
+   "dosage_form": "INJECTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "unit",
+   "usable_quantity": 105,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-019",
+   "package_ndc": "0781-5315-01",
+   "product_label": "Zolpidem tartrate",
+   "dosage_form": "TABLET, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 122,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-020",
+   "package_ndc": "87441-013-01",
+   "product_label": "ATORVASTATIN CALCIUM",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 139,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-021",
+   "package_ndc": "0904-6966-61",
+   "product_label": "Oxycodone",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 156,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-022",
+   "package_ndc": "0904-7016-04",
+   "product_label": "Bumetanide",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 173,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-023",
+   "package_ndc": "0904-7056-99",
+   "product_label": "Aspirin and Extended - Release Dipyridamole",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 190,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-024",
+   "package_ndc": "0990-7937-19",
+   "product_label": "dextrose",
+   "dosage_form": "INJECTION, SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 6,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-025",
+   "package_ndc": "10014-002-07",
+   "product_label": "Nitrogen",
+   "dosage_form": "GAS",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 23,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-026",
+   "package_ndc": "10019-670-10",
+   "product_label": "esmolol hydrochloride",
+   "dosage_form": "INJECTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "unit",
+   "usable_quantity": 40,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-027",
+   "package_ndc": "11086-030-10",
+   "product_label": "salicylic acid",
+   "dosage_form": "GEL",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 57,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-028",
+   "package_ndc": "0093-3609-82",
+   "product_label": "Fluticasone Propionate and Salmeterol",
+   "dosage_form": "POWDER, METERED",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 74,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-029",
+   "package_ndc": "16714-112-01",
+   "product_label": "Fluoxetine",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 91,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-030",
+   "package_ndc": "16714-798-01",
+   "product_label": "Sumatriptan Succinate",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 108,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-031",
+   "package_ndc": "0093-3239-40",
+   "product_label": "Buprenorphine",
+   "dosage_form": "PATCH, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 125,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-032",
+   "package_ndc": "13668-284-01",
+   "product_label": "Carbamazepine",
+   "dosage_form": "TABLET, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 142,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-033",
+   "package_ndc": "13925-164-20",
+   "product_label": "Lidocaine Hydrochloride and Hydrocortisone Acetate",
+   "dosage_form": "GEL",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 159,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-034",
+   "package_ndc": "16571-105-01",
+   "product_label": "Amitriptyline Hydrochloride",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 176,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-035",
+   "package_ndc": "17856-8631-1",
+   "product_label": "Atovaquone",
+   "dosage_form": "SUSPENSION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 193,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-036",
+   "package_ndc": "23155-724-01",
+   "product_label": "Labetalol Hydrochloride",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 9,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-037",
+   "package_ndc": "24208-503-07",
+   "product_label": "loteprednol etabonate",
+   "dosage_form": "GEL",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 26,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-038",
+   "package_ndc": "24470-948-10",
+   "product_label": "salicylic acid",
+   "dosage_form": "SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 43,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-039",
+   "package_ndc": "24979-238-07",
+   "product_label": "Lisinopril",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 60,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-040",
+   "package_ndc": "29300-128-01",
+   "product_label": "Hydrochlorothiazide",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 77,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-041",
+   "package_ndc": "25021-469-10",
+   "product_label": "Levothyroxine Sodium Anhydrous",
+   "dosage_form": "INJECTION, POWDER, LYOPHILIZED, FOR SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 94,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-042",
+   "package_ndc": "27241-184-30",
+   "product_label": "Lamotrigine",
+   "dosage_form": "TABLET, ORALLY DISINTEGRATING",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 111,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-043",
+   "package_ndc": "31722-123-30",
+   "product_label": "venlafaxine",
+   "dosage_form": "TABLET, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 128,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-044",
+   "package_ndc": "31722-482-30",
+   "product_label": "buprenorphine and naloxone",
+   "dosage_form": "FILM, SOLUBLE",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 145,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-045",
+   "package_ndc": "31722-834-30",
+   "product_label": "Entecavir",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 162,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-046",
+   "package_ndc": "33342-121-10",
+   "product_label": "Sildenafil",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 179,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-047",
+   "package_ndc": "33342-460-07",
+   "product_label": "Nebivolol",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 196,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-048",
+   "package_ndc": "0116-4075-01",
+   "product_label": "Chlorhexidine Gluconate 0.12% Oral Rinse",
+   "dosage_form": "LIQUID",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 12,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-049",
+   "package_ndc": "0121-0727-16",
+   "product_label": "RANITIDINE",
+   "dosage_form": "SYRUP",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 29,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-050",
+   "package_ndc": "0143-9398-10",
+   "product_label": "ertapenem sodium",
+   "dosage_form": "INJECTION, POWDER, LYOPHILIZED, FOR SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 46,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-051",
+   "package_ndc": "0143-9326-10",
+   "product_label": "Milrinone Lactate",
+   "dosage_form": "INJECTION, SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 63,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-052",
+   "package_ndc": "0143-9365-10",
+   "product_label": "LABETALOL HYDROCHLORIDE",
+   "dosage_form": "INJECTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "unit",
+   "usable_quantity": 80,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-053",
+   "package_ndc": "42291-471-01",
+   "product_label": "Carbidopa and levodopa",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 97,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-054",
+   "package_ndc": "42385-921-48",
+   "product_label": "Atazanavir",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 114,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-055",
+   "package_ndc": "42794-083-08",
+   "product_label": "ACITRETIN",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 131,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-056",
+   "package_ndc": "42806-799-01",
+   "product_label": "rifampin",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 148,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-057",
+   "package_ndc": "43063-328-12",
+   "product_label": "Carbamazepine",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 165,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-058",
+   "package_ndc": "43063-964-14",
+   "product_label": "Cefdinir",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 182,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-059",
+   "package_ndc": "43547-616-03",
+   "product_label": "Bisoprolol fumarate",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 199,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-060",
+   "package_ndc": "43353-315-16",
+   "product_label": "Torsemide",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 15,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-061",
+   "package_ndc": "43538-900-12",
+   "product_label": "fluocinolone acetonide",
+   "dosage_form": "CREAM",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 32,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-062",
+   "package_ndc": "43598-520-01",
+   "product_label": "pomalidomide",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 49,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-063",
+   "package_ndc": "44567-510-01",
+   "product_label": "CISplatin",
+   "dosage_form": "INJECTION, SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 66,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-064",
+   "package_ndc": "45802-046-11",
+   "product_label": "Gentamicin Sulfate",
+   "dosage_form": "OINTMENT",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 83,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-065",
+   "package_ndc": "0187-5810-07",
+   "product_label": "bupropion hydrobromide",
+   "dosage_form": "TABLET, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 100,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-066",
+   "package_ndc": "47335-710-08",
+   "product_label": "Topiramate",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 117,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-067",
+   "package_ndc": "47918-902-18",
+   "product_label": "INSULIN HUMAN",
+   "dosage_form": "KIT",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 134,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-068",
+   "package_ndc": "0009-7200-01",
+   "product_label": "pegvisomant",
+   "dosage_form": "KIT",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 151,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-069",
+   "package_ndc": "50228-175-01",
+   "product_label": "bupropion hydrochloride",
+   "dosage_form": "TABLET, FILM COATED, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 168,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-070",
+   "package_ndc": "50242-617-01",
+   "product_label": "Baloxavir Marboxil",
+   "dosage_form": "GRANULE, FOR SUSPENSION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 185,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-071",
+   "package_ndc": "49653-003-01",
+   "product_label": "Oxygen",
+   "dosage_form": "GAS",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 1,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-072",
+   "package_ndc": "50063-001-01",
+   "product_label": "Oxygen",
+   "dosage_form": "GAS",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 18,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-073",
+   "package_ndc": "50090-1023-0",
+   "product_label": "zolpidem tartrate",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 35,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-074",
+   "package_ndc": "50090-2159-0",
+   "product_label": "Cefuroxime axetil",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 52,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-075",
+   "package_ndc": "50090-3474-0",
+   "product_label": "letrozole",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 69,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-076",
+   "package_ndc": "50090-4793-0",
+   "product_label": "Methocarbamol",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 86,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-077",
+   "package_ndc": "50090-5563-0",
+   "product_label": "LORAZEPAM",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 103,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-078",
+   "package_ndc": "50090-7174-0",
+   "product_label": "Nortriptyline Hydrochloride",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 120,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-079",
+   "package_ndc": "50090-6080-0",
+   "product_label": "Benzonatate",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 137,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-080",
+   "package_ndc": "50090-6491-0",
+   "product_label": "naloxone hydrochloride",
+   "dosage_form": "INJECTION, SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 154,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-081",
+   "package_ndc": "50090-6833-1",
+   "product_label": "Labetalol Hydrochloride",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 171,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-082",
+   "package_ndc": "51655-565-26",
+   "product_label": "Glimepiride",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 188,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-083",
+   "package_ndc": "51662-1537-3",
+   "product_label": "VITAMIN K1, PHYTONADIONE",
+   "dosage_form": "INJECTION, EMULSION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "unit",
+   "usable_quantity": 4,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-084",
+   "package_ndc": "50419-251-01",
+   "product_label": "riociguat",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 21,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-085",
+   "package_ndc": "50742-387-01",
+   "product_label": "estrogens, conjugated",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 38,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-086",
+   "package_ndc": "51051-002-01",
+   "product_label": "Nitrogen",
+   "dosage_form": "GAS",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 55,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-087",
+   "package_ndc": "51407-680-03",
+   "product_label": "Rizatriptan Benzoate",
+   "dosage_form": "TABLET, ORALLY DISINTEGRATING",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 72,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-088",
+   "package_ndc": "51475-001-01",
+   "product_label": "Oxygen",
+   "dosage_form": "GAS",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 89,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-089",
+   "package_ndc": "51655-096-87",
+   "product_label": "Prochlorperazine Maleate",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 106,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-090",
+   "package_ndc": "51407-147-01",
+   "product_label": "Isosorbide Dinitrate",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 123,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-091",
+   "package_ndc": "55111-158-01",
+   "product_label": "Omeprazole",
+   "dosage_form": "CAPSULE, DELAYED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 140,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-092",
+   "package_ndc": "55150-156-20",
+   "product_label": "Levofloxacin",
+   "dosage_form": "INJECTION, SOLUTION, CONCENTRATE",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 157,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-093",
+   "package_ndc": "55150-443-01",
+   "product_label": "regadenoson",
+   "dosage_form": "INJECTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "unit",
+   "usable_quantity": 174,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-094",
+   "package_ndc": "55154-4154-0",
+   "product_label": "Divalproex Sodium",
+   "dosage_form": "TABLET, DELAYED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 191,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-095",
+   "package_ndc": "51801-006-30",
+   "product_label": "POTASSIUM BICARBONATE",
+   "dosage_form": "TABLET, EFFERVESCENT",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 7,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-096",
+   "package_ndc": "52343-557-03",
+   "product_label": "Clomiphene Citrtae",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 24,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-097",
+   "package_ndc": "52695-001-01",
+   "product_label": "Oxygen",
+   "dosage_form": "GAS",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 41,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-098",
+   "package_ndc": "54092-547-01",
+   "product_label": "PRUCALOPRIDE",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 58,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-099",
+   "package_ndc": "55154-8340-0",
+   "product_label": "Lansoprazole",
+   "dosage_form": "TABLET, ORALLY DISINTEGRATING, DELAYED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 75,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-100",
+   "package_ndc": "57511-0003-1",
+   "product_label": "1.1% Sodium Fluoride Toothpaste",
+   "dosage_form": "GEL, DENTIFRICE",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 92,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-101",
+   "package_ndc": "60505-3250-6",
+   "product_label": "Lamivudine",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 109,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-102",
+   "package_ndc": "60687-548-01",
+   "product_label": "Clozapine",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 126,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-103",
+   "package_ndc": "60687-862-21",
+   "product_label": "Ivabradine",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 143,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-104",
+   "package_ndc": "60760-692-30",
+   "product_label": "Hydrocodone Bitartrate and Acetaminophen",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 160,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-105",
+   "package_ndc": "58657-474-16",
+   "product_label": "SULFACETAMIDE SODIUM, SULFUR",
+   "dosage_form": "LIQUID",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 177,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-106",
+   "package_ndc": "59088-475-07",
+   "product_label": "Lidocaine HCl",
+   "dosage_form": "GEL",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 194,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-107",
+   "package_ndc": "59651-824-01",
+   "product_label": "CIMETIDINE",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 10,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-108",
+   "package_ndc": "59390-140-05",
+   "product_label": "Ofloxacin",
+   "dosage_form": "SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 27,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-109",
+   "package_ndc": "59579-005-01",
+   "product_label": "Helium",
+   "dosage_form": "GAS",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 44,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-110",
+   "package_ndc": "59651-380-01",
+   "product_label": "Zonisamide",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 61,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-111",
+   "package_ndc": "60429-020-01",
+   "product_label": "Ketoconazole",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 78,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-112",
+   "package_ndc": "62332-142-08",
+   "product_label": "Celecoxib",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 95,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-113",
+   "package_ndc": "62332-621-17",
+   "product_label": "Paclitaxel",
+   "dosage_form": "INJECTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "unit",
+   "usable_quantity": 112,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-114",
+   "package_ndc": "62559-220-01",
+   "product_label": "Oxcarbazepine",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 129,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-115",
+   "package_ndc": "60793-852-01",
+   "product_label": "levothyroxine sodium",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 146,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-116",
+   "package_ndc": "62007-215-64",
+   "product_label": "FLUORIDE TREATMENT",
+   "dosage_form": "RINSE",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 163,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-117",
+   "package_ndc": "0264-7623-20",
+   "product_label": "DEXTROSE and SODIUM CHLORIDE",
+   "dosage_form": "INJECTION, SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 180,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-118",
+   "package_ndc": "62135-521-90",
+   "product_label": "Nifedipine",
+   "dosage_form": "TABLET, FILM COATED, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 197,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-119",
+   "package_ndc": "62135-805-30",
+   "product_label": "PIOGLITAZONE HYDROCHLORIDE",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 13,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-120",
+   "package_ndc": "63629-1067-1",
+   "product_label": "SPIRONOLACTONE",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 30,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-121",
+   "package_ndc": "62935-306-40",
+   "product_label": "Leuprolide acetate",
+   "dosage_form": "INJECTION, SUSPENSION, EXTENDED RELEASE",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 47,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-122",
+   "package_ndc": "63187-705-00",
+   "product_label": "acetaminophen, caffeine, dihydrocodeine bitartrate",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 64,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-123",
+   "package_ndc": "63187-292-03",
+   "product_label": "Colchicine",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 81,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-124",
+   "package_ndc": "63304-076-01",
+   "product_label": "Potassium Chloride",
+   "dosage_form": "TABLET, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 98,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-125",
+   "package_ndc": "63323-314-61",
+   "product_label": "VANCOMYCIN HYDROCHLORIDE",
+   "dosage_form": "INJECTION, POWDER, LYOPHILIZED, FOR SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 115,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-126",
+   "package_ndc": "63323-664-16",
+   "product_label": "DIPHENHYDRAMINE HYDROCHLORIDE",
+   "dosage_form": "INJECTION, SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 132,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-127",
+   "package_ndc": "64980-634-01",
+   "product_label": "Benzonatate",
+   "dosage_form": "CAPSULE",
+   "strength": "10 mg",
+   "dispensing_unit": "capsule",
+   "usable_quantity": 149,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-128",
+   "package_ndc": "65145-107-10",
+   "product_label": "Ropivacaine Hydrochloride",
+   "dosage_form": "INJECTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "unit",
+   "usable_quantity": 166,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-129",
+   "package_ndc": "63629-2184-1",
+   "product_label": "Doxylamine Succinate and Pyridoxine Hydrochloride, Delayed release Tablets 10 mg/10 mg",
+   "dosage_form": "TABLET, DELAYED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 183,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-130",
+   "package_ndc": "63629-3393-1",
+   "product_label": "simvastatin",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 200,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-131",
+   "package_ndc": "63629-8475-1",
+   "product_label": "bupropion hydrochloride",
+   "dosage_form": "TABLET, FILM COATED, EXTENDED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 16,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-132",
+   "package_ndc": "63629-8844-1",
+   "product_label": "neomycin sulfate, polymyxin b sulfate and hydrocortisone",
+   "dosage_form": "SUSPENSION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 33,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-133",
+   "package_ndc": "63850-0022-1",
+   "product_label": "Trihexyphenidyl Hydrochloride",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 50,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-134",
+   "package_ndc": "64380-446-01",
+   "product_label": "Acetaminophen and Codeine Phosphate",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 67,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-135",
+   "package_ndc": "64616-090-02",
+   "product_label": "Fem Glandular and Tissue Aid",
+   "dosage_form": "LIQUID",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 84,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-136",
+   "package_ndc": "67046-1495-3",
+   "product_label": "Chlorthalidone",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 101,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-137",
+   "package_ndc": "67191-123-04",
+   "product_label": "Oxygen",
+   "dosage_form": "GAS",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 118,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-138",
+   "package_ndc": "67296-2137-3",
+   "product_label": "Nabumetone",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 135,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-139",
+   "package_ndc": "67457-146-30",
+   "product_label": "thiamine hydrochloride, riboflavin 5 phosphate sodium, dexpanthenol and niacinamide",
+   "dosage_form": "INJECTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "unit",
+   "usable_quantity": 152,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-140",
+   "package_ndc": "65162-636-03",
+   "product_label": "Pantoprazole",
+   "dosage_form": "TABLET, DELAYED RELEASE",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 169,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-141",
+   "package_ndc": "65219-218-50",
+   "product_label": "SODIUM CHLORIDE",
+   "dosage_form": "INJECTION, SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 186,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-142",
+   "package_ndc": "66267-982-00",
+   "product_label": "Cephalexin",
+   "dosage_form": "POWDER, FOR SUSPENSION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 2,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-143",
+   "package_ndc": "0053-0220-22",
+   "product_label": "etranacogene dezaparvovec",
+   "dosage_form": "KIT",
+   "strength": "10 mg",
+   "dispensing_unit": "unit",
+   "usable_quantity": 19,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-144",
+   "package_ndc": "67046-0319-3",
+   "product_label": "Mirtazapine",
+   "dosage_form": "TABLET, FILM COATED",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 36,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-145",
+   "package_ndc": "67877-434-01",
+   "product_label": "Aripiprazole",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 53,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-146",
+   "package_ndc": "67877-890-88",
+   "product_label": "Mirabegron",
+   "dosage_form": "FOR SUSPENSION, EXTENDED RELEASE",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 70,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-147",
+   "package_ndc": "68071-3156-6",
+   "product_label": "Cefdinir",
+   "dosage_form": "POWDER, FOR SUSPENSION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 87,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-148",
+   "package_ndc": "68071-2232-4",
+   "product_label": "zolpidem tartrate",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 104,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-149",
+   "package_ndc": "68001-506-30",
+   "product_label": "PIPERACILLIN and TAZOBACTAM",
+   "dosage_form": "INJECTION, POWDER, FOR SOLUTION",
+   "strength": "10 mg/mL",
+   "dispensing_unit": "mL",
+   "usable_quantity": 121,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3
+    ]
+   }
+  },
+  {
+   "item_id": "catalog-150",
+   "package_ndc": "68071-3643-9",
+   "product_label": "venlafaxine",
+   "dosage_form": "TABLET",
+   "strength": "10 mg",
+   "dispensing_unit": "tablet",
+   "usable_quantity": 138,
+   "daily_usage": {
+    "window_end": "2026-10-06",
+    "units": [
+     7,
+     8,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     1,
+     2,
+     3,
+     4
+    ]
+   }
+  }
+ ]
+}

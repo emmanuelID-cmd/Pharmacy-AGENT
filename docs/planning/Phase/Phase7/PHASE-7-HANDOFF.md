@@ -29,13 +29,13 @@ The CLI defaults to `2026-10-07T10:00:00-04:00` so the dated fixture is fresh. `
 2. Harness validates identity, units, freshness and the 14-day window, then calculates days of supply.
 3. `TrustedFact` objects are constructed in harness code and passed to `assemble_context`.
 4. `execute_guarded` FDA for each accepted package NDC on the same `RunBudget`.
-5. Human report lists every input row and every exact-match FDA record. Conflicting FDA records are `NEEDS_REVIEW`; they never change local class. `report-v1` is the prevention safety copy. `order_placed` and `inventory_changed` stay false.
+5. Human report lists every input row and every exact-match FDA record when inventory intake completes. A missing, non-opaque, or duplicate `item_id` rejects the source (`INVALID_TOOL_RESULT`); the failed-source report cites row position and field only and does not call FDA. Invalid NDC, unit, quantity, usage, and an unsafe label stay row-level. Conflicting FDA records are `NEEDS_REVIEW`; they never change local class. `report-v1` is the prevention safety copy. `order_placed` and `inventory_changed` stay false.
 
 TrustedFact cannot store CRITICAL with a missing duration. A verified zero-stock fact with no usage basis stays CRITICAL on the human report and maps to UNKNOWN in prevention context.
 
 ## Validation
 
-Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, output-guard fallback on a tampered `report-v1`, Decimal exact-2/exact-5 boundaries, source vs row isolation, shared-NDC reuse, the human/`report-v1` invariant, multi-record FDA agreement versus conflict/`NEEDS_REVIEW`, PARTIAL/malformed/package-mismatch survival through `run_review`, a Case 2 same-NDC overlay, and the manager-table CLI. Run the full unittest suite before handoff.
+Harness tests cover snapshot freshness, POLICY.md branches on the 20-row fixture, guarded dispatch, budget stop, Eval Card Cases 1–2, Case 3-shaped missing stock / incomplete window / FDA timeout, output-guard fallback on a tampered `report-v1`, Decimal exact-2/exact-5 boundaries, source vs row isolation, shared-NDC reuse, the human/`report-v1` invariant, multi-record FDA agreement versus conflict/`NEEDS_REVIEW`, PARTIAL/malformed/package-mismatch survival through `run_review`, a Case 2 same-NDC overlay, the manager-table CLI, a paired fresh-vs-stale `run_review` proof (80/(280/14)=4.00 when fresh; stale snapshot withholds days from the human report and model safety copy), and strength as `AMBIGUOUS_ITEM` when the source uses strength and a row is missing/blank/non-string (sources with no strength anywhere stay unchanged). Run the full unittest suite before handoff.
 
 These evals test harness arithmetic and prevention guards. They do not test how a language model reacts to injected text. A future model whose report must match `expected_report` exactly adds no independent judgment. Live FDA provenance, database grants, and operational pharmacy policy remain untested.
 

@@ -44,7 +44,8 @@ def main(argv=None):
     parser.add_argument(
         "--model",
         action="store_true",
-        help="One model turn against PHARMACY_MODEL_URL. Invented numbers are rejected.",
+        help="One live model turn. Uses PHARMACY_MODEL_URL or ANTHROPIC_API_KEY. "
+             "Invented numbers are rejected. Uses the 20-row evaluation fixture.",
     )
     parser.add_argument("--legacy-fixture", action="store_true",
                         help="Replay the original 20-row evaluation fixture.")
@@ -59,12 +60,12 @@ def main(argv=None):
     elif args.model:
         complete = complete_from_env()
         if complete is None:
-            parser.error("set PHARMACY_MODEL_URL for --model, or use --model-copy")
+            parser.error("set PHARMACY_MODEL_URL or ANTHROPIC_API_KEY for --model, or use --model-copy")
     run_at = None if args.now else (args.run_at or EVAL_RUN_AT)
     report = run_review(
         run_at=run_at,
         store_id=args.store_id,
-        inventory_path=LEGACY_FIXTURE_PATH if args.legacy_fixture else None,
+        inventory_path=LEGACY_FIXTURE_PATH if (args.legacy_fixture or args.model) else None,
         fda_http_get=offline_fda_http_get if args.offline else None,
         complete=complete,
     )
