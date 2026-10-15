@@ -119,6 +119,12 @@ New read_store_inventory_database returns 20 rows through the real session poole
 
 # Date and Timestamp of Push
 
+## 2026-10-15T15:43:40-04:00
+
+- Verified `fix/harness-omit-anthropic-temperature` push `745918a3af72ba5bf2b4e83083e8e08c120cda7b..b6d385a929dced551f16fc830d2ba6b9c2725eb5`.
+- Omit `temperature` on Anthropic Messages (Haiku 5.5 rejects it as deprecated). Live `--offline --model` ACCEPTED (copied report-v1). OpenRouter path still sends `temperature: 0`.
+- Harness tests: 92 OK. Full suite: 274 with 1 known Mac `BadStatusLine` in local_tester (Emmanuel lane). Qualification: 85/85, zero misses/false positives. No main merge.
+
 ## 2026-10-15T14:18:38-04:00
 
 - Verified main merge of PR #16: `895daa2..a3ddf71` (merge commit `a3ddf71`).
