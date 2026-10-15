@@ -84,3 +84,36 @@ APPROVE. Record faithful review/completion metadata and make the authorized loca
 ## Untested integration boundaries
 
 Real evidence authenticity, live harness/model, actual adapters/credentials/database grants, staff authentication/writes, deployment/TLS, secrets inventory and blocking-IO cancellation remain untested. Lexical signals can miss unfamiliar meaning; independent omission/permission/output controls remain required. 85 fixtures contain overlapping examples; they are not 85 distinct attacks or a universal detection rate.
+
+
+## October 14, 2026: Early HTTP parser error compatibility
+
+Kerrian supplied a BadStatusLine traceback on Python 3.13.5 and 3.14.6: the
+safe rejection JSON arrived without an HTTP status line. In those CPython
+versions, parse_request rejects HTTP/9.9 before replacing its HTTP/0.9 default;
+that state suppresses response status and headers. The local 3.13.15 parser
+assigns the parsed version earlier. The defect therefore depends on parser
+implementation, rather than macOS alone or the 3.14 minor-version family.
+
+REVIEWER confirmed the framing defect. The synthetic early-parser regression
+failed with the same body-only error before FIXER changed send_error to replace
+only the HTTP/0.9 fallback with the configured response protocol. Rejection
+status, fixed JSON, body limits, security headers and bounded drain remain.
+No detection patterns, tool permissions or provider credentials changed.
+
+SECURITY Round 1: all 10 local tester methods passed. Round 2: all 251 local
+unittest methods passed; qualification contained 85/85 fixtures, detected 55
+unsafe cases and accepted 30 benign cases, with 0 misses and 0 false positives.
+The isolated combined main/harness candidate passed 266 tests with this fix.
+The exact published 3.13.5 and 3.14.6 parse_request methods were exercised under
+the installed 3.13.15 runtime: both reproduced the failure before correction,
+and both now return 505/400 framed JSON and 200 for a valid control request.
+This method-level compatibility check is not native macOS execution. Ask the
+teammate to rerun the named regression on their Mac after receiving the fix.
+
+Sources: [CPython 3.13.5 server.py](https://github.com/python/cpython/blob/v3.13.5/Lib/http/server.py),
+[CPython 3.14.6 server.py](https://github.com/python/cpython/blob/v3.14.6/Lib/http/server.py).
+This compatibility correction remains separate from harness authentication
+configuration and hosting work. October 15 cleanup prepares its publication;
+verified push references belong in TEAM-REFERENCE.md. Native macOS confirmation
+remains outstanding.

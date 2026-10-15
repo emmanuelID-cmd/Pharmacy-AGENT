@@ -10,6 +10,15 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 14, 2026 local tester compatibility follow-up: reproduced the reported
+body-only BadStatusLine using the published CPython 3.13.5 and 3.14.6 parser
+methods. Early parser errors now receive HTTP framing before the safe JSON.
+The new regression failed before correction and passes afterward. Full local
+suite: 251 passing; isolated combined harness/main suite: 266 passing; selected
+qualification: 85/85 contained with zero misses/false positives. Native macOS
+execution still needs teammate confirmation. October 15 cleanup prepares this
+small compatibility correction for publication, separately from hosting metadata.
+
 October 14, 2026 local hosting correction: Vercel reported a requirements include
 parse failure at root position 73. Root requirements now list the same 28 web pins
 inline; dependency versions and runtime behavior are unchanged. Hosted environment

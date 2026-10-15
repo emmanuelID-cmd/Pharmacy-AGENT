@@ -4,7 +4,7 @@ import socket
 import threading
 import unittest
 from unittest.mock import patch
-from src.injection_prevention.local_tester import TesterServer
+from src.injection_prevention.local_tester import TesterHandler, TesterServer
 from src.injection_prevention.demo import SAMPLES
 
 
@@ -101,6 +101,32 @@ class LocalTesterTests(unittest.TestCase):
                 response.begin()
                 self.assertEqual(response.status, 505)
                 self.assertEqual(json.loads(response.read())['state'], 'MANUAL_REVIEW')
+            self.assertEqual(self.request('GET', '/api/samples')[0], 200)
+            unexpected_error.assert_not_called()
+
+    def test_early_parser_http09_default_still_frames_error_response(self):
+        # CPython 3.13.5 and 3.14.6 can reject before assigning the parsed
+        # version or headers. Reproduce that state on newer interpreters too.
+        with patch.object(self.server, 'handle_error') as unexpected_error:
+            for status in (400, 505):
+                def reject_before_headers(handler, code=status):
+                    handler.command = None
+                    handler.requestline = 'synthetic malformed request'
+                    handler.request_version = 'HTTP/0.9'
+                    handler.close_connection = True
+                    handler.send_error(code, 'synthetic raw detail')
+                    return False
+                with self.subTest(status=status), patch.object(TesterHandler, 'parse_request', reject_before_headers):
+                    with socket.create_connection(('127.0.0.1', self.server.server_port), timeout=2) as connection:
+                        connection.sendall(b'GET / HTTP/9.9\r\n\r\n')
+                        response = http.client.HTTPResponse(connection)
+                        response.begin()
+                        self.assertEqual(response.status, status)
+                        self.assertEqual(response.getheader('Content-Type'), 'application/json; charset=utf-8')
+                        body = response.read()
+                        self.assertEqual(int(response.getheader('Content-Length')), len(body))
+                        self.assertEqual(json.loads(body), {'state': 'MANUAL_REVIEW', 'reason_code': 'HTTP_REQUEST_REJECTED'})
+                        self.assertNotIn(b'synthetic raw detail', body)
             self.assertEqual(self.request('GET', '/api/samples')[0], 200)
             unexpected_error.assert_not_called()
 
