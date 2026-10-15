@@ -119,6 +119,12 @@ New read_store_inventory_database returns 20 rows through the real session poole
 
 # Date and Timestamp of Push
 
+## 2026-10-15T14:18:38-04:00
+
+- Verified main merge of PR #16: `895daa2..a3ddf71` (merge commit `a3ddf71`).
+- Rebased `feature/pharmacy-harness` onto current main first (conflicts in TEAM-REFERENCE and strength tests resolved; Rule B implementation kept, `@expectedFailure` dropped).
+- Harness: identity faults, MODEL_UNAVAILABLE, freshness proof, source-aware AMBIGUOUS_ITEM. Strength tests: 60 related OK before push.
+
 ## 2026-10-14T23:06:19-04:00
 
 - Verified `feature/supabase-inventory-schema` push: `e2588675445a1fb3a20e1188fda47c5f217e8658..418aae857c9f59fd95deacf93212e5217be8fa2e`.
