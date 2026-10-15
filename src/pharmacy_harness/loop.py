@@ -192,10 +192,10 @@ def anthropic_text(payload):
 def anthropic_complete(system_prompt, context, *, key, name, timeout=ANTHROPIC_TIMEOUT_SECONDS,
                        urlopen=urllib.request.urlopen):
     """One Anthropic Messages call. No tools. Caller supplies the key."""
+    # Haiku 5.5 rejects temperature (invalid_request_error: deprecated for this model).
     body = json.dumps({
         "model": name,
         "max_tokens": 8192,
-        "temperature": 0,
         "system": system_prompt,
         "messages": [{"role": "user", "content": json.dumps(context, allow_nan=False)}],
     }).encode()
