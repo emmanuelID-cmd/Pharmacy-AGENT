@@ -10,6 +10,34 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 15, 2026 PR and branch update: PR #18 was closed unmerged; Slack remains
+out of scope. PR #25 merged to `main` as `3acf3e4651dccb41a700237725c98af66d5533b1`
+at 17:53:28-04:00; PR #23 merged as `8bb7d1f335e96854fce8f369e3a3213b5e465483`
+at 17:54:21-04:00. The complete suite passed 275 tests on that final main tip.
+The five approved long-lived refs are present: `main`, `feature/supabase-migration`,
+`feature/pharmacy-harness`, `feature/pharmacy-agent-instructions`, and
+`feature/pharmacy-injection-risk-prevention`. The harness lane has recent activity
+at `3b11428dcbca2999d90c69d9780bb369ca3dc060` and was left untouched; its older
+ref was deleted during cleanup before the teammate recreated the lane. The other
+three lane refs were created at main `8bb7d1f`.
+
+Merged PR source refs `docs/strength-fix-evidence` and
+`feature/supabase-inventory-schema` remain on the remote pending a separate
+deletion approval. The five archived stale refs were first fast-forwarded to
+`ec78a09f30a6ce5f27e71c7872984844e2e5ec51` and then deleted:
+`docs/readme-essentials`, `feature/openrouter-loop-adapter`,
+`feature/pharmacy-harness`, `fix/harness-omit-anthropic-temperature`, and
+`test/harness-strength-check`. The branch archive bundle and restore manifest
+are local under `archives/`; bundle verification and isolated branch restore
+passed. After archive verification and a green 275-test main suite, the user
+authorized deletion of nine additional outdated refs; all were individually
+deleted and verified absent: `chore/pharmacy-agent-foundation`,
+`docs/team-presentation`, `feature/agent-instructions`,
+`feature/fda-shortage-adapter`, `feature/fda-smoke-test`,
+`feature/injection-risk-prevention`, `feature/pharmacy-agent-web-interface`,
+`feature/read-store-inventory`, and `feature/critical-slack-alert`. The last
+branch contained Slack alert code; its history remains in the archive.
+
 October 14, 2026 local tester compatibility follow-up: reproduced the reported
 body-only BadStatusLine using the published CPython 3.13.5 and 3.14.6 parser
 methods. Early parser errors now receive HTTP framing before the safe JSON.
@@ -127,6 +155,22 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## Unverified branch-creation time — checked 2026-10-15T18:01:09-04:00
+
+- Created `feature/supabase-migration`, `feature/pharmacy-agent-instructions`, and `feature/pharmacy-injection-risk-prevention` at the verified `main` tip `8bb7d1f335e96854fce8f369e3a3213b5e465483`; `git ls-remote` confirmed each ref.
+- Exact server-side creation timestamps were not available from the repository event feed. The timestamp above is the verification time, not a claimed push time.
+
+## Unverified ref-deletion time — checked 2026-10-15T17:10:57-04:00
+
+- Deleted and verified absence of the nine outdated refs listed in the October 15 branch cleanup handoff above, following explicit user authorization. No commit was created by these remote ref deletions.
+- Exact server-side deletion timestamps were not captured. The timestamp above is the verification time, not a claimed deletion time.
+
+## Unverified ref-operation time — checked 2026-10-15T17:00:04-04:00
+
+- Verified remote ref advances from `b6bbcb12e735c3cd105b1b6b9ed6a08d6f16c8fe`, `6515cbb5517f097504df776c7f0bf6fbd598094b`, `06b228166c6016e09b2f70a76038026fce93fa97`, `54de66bc04532afe7f5b23c0582ce68e2c7ba565`, and `ce9e1f93ebb917b63fd4906ec7d5695c8b6c833b` to main `ec78a09f30a6ce5f27e71c7872984844e2e5ec51`; each was a fast-forward.
+- The same five refs were deleted afterward. `git ls-remote` confirmed the resulting remote state. Their prior tips are preserved in the verified 2026-10-15 bundle.
+- Exact individual server push timestamps were not captured, and the public event feed did not provide these branch-only ref changes. The timestamp above is the verification time, not a claimed push time.
 
 ## 2026-10-15T16:36:30-04:00
 
