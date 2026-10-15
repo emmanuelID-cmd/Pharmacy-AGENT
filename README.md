@@ -2,6 +2,114 @@
 
 Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD development.
 
+## What the agent does
+
+A **read-only** AI agent that runs an inventory review for one pharmacy store and tells a human
+which medications need replenishment attention, and why.
+
+1. **Reads** the store's inventory snapshot: usable stock and 14 days of usage per medication
+   (synthetic data for store 1618).
+2. **Validates** the data: store, units, freshness, identity and complete usage. Any row with missing
+   or bad data goes to manual review instead of getting a guessed number.
+3. **Calculates** days of supply in deterministic code (not by the model), then classifies each item
+   as `CRITICAL` (≤ 2 days), `LOW` (≤ 5 days), `ABOVE_THRESHOLD`, or `UNKNOWN`.
+4. **Checks national shortage context** for each exact package NDC through the public openFDA Drug
+   Shortages API, labeled `MATCH`, `NO_MATCH`, `PARTIAL` or `UNAVAILABLE`. A timeout or no match never
+   means "no shortage".
+5. **Reports** a review list (critical items first, with calculation evidence, FDA dates and warnings)
+   that a model may only copy. Guards check every tool call and verify the final report field by field;
+   anything invented is replaced by the verified facts.
+
+The agent **recommends human review only** (`REVIEW`, `MAINTAIN` or `MANUAL_REVIEW`). An authorized
+person makes every operational decision outside the agent.
+
+## Who it is built for
+
+| | |
+|---|---|
+| **Industry** | Pharmaceuticals, retail pharmacy |
+| **Function** | Inventory logistics |
+| **Role (primary user)** | Pharmacy inventory manager or authorized pharmacy operations staff at one store |
+| **Secondary user** | Pharmacy supervisor reviewing the same report |
+| **Problem** | A stock count alone doesn't show *how soon* a medication will run low, so shortages are found too late |
+
+The prototype uses CVS Pharmacy store 1618 (81 Eighth Avenue, New York) as **context only**. This is
+not a CVS partnership, and no real CVS inventory is used.
+
+## How to run it
+
+Requirements: Python 3.13+ (tested on 3.13 and 3.14). From the repository root:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r requirements-web.txt -r requirements-harness.txt
+```
+
+On Windows, use `.venv\Scripts\python.exe` in place of `.venv/bin/python`.
+
+**1. Offline review, with no keys or network (fastest check):**
+
+```bash
+.venv/bin/python -B -m src.pharmacy_harness --offline
+```
+
+Prints the manager table for the synthetic catalog: classes, days of supply, FDA state and warnings.
+
+**2. Web application:**
+
+```bash
+.venv/bin/python -B -m uvicorn app:app --host 127.0.0.1 --port 8770 --no-access-log
+```
+
+Open http://127.0.0.1:8770. *Home*, *Tools*, *Harness*, *Demo*, *Injection Risk Test* and *Failure
+State* work without keys. The *Agent* tab runs the live model loop and needs `ANTHROPIC_API_KEY`
+(see [Workspace and configuration](#workspace-and-configuration)).
+
+**3. Full agent loop with a live model (observe → decide → act → feed back), using OpenRouter:**
+
+```bash
+export OPENROUTER_API_KEY=your-openrouter-key
+.venv/bin/python scripts/run_loop_openrouter.py --model nvidia/nemotron-3-super-120b-a12b:free
+```
+
+The run uses the 20-row evaluation fixture at its snapshot time. Expected result: 4 turns,
+`VERIFIED_STRUCTURED_OUTPUT`, and 4 CRITICAL / 5 LOW / 7 ABOVE_THRESHOLD / 4 UNKNOWN items. Add
+`--trace trace.json` to save every model input, tool result and output. Results and scores are in
+[docs/eval](docs/eval/live-loop-eval-2026-10-14.md).
+
+On macOS with Homebrew Python, if HTTPS fails with a certificate error, run:
+`export SSL_CERT_FILE=$(.venv/bin/python -c "import certifi; print(certifi.where())")`
+
+**4. Tests:**
+
+```bash
+.venv/bin/python -B -m unittest discover -s tests -q
+```
+
+Keys stay in environment variables or an ignored `.env` file. Never commit them: this repository is public.
+
+## Out of scope (explicitly excluded)
+
+The agent **never**:
+
+- places, submits or suggests **orders**, or calculates **order quantities**;
+- **writes** to inventory, changes policy, or releases reserved, expired or quarantined stock;
+- makes **clinical** decisions: no diagnosis, treatment, dispensing or patient prioritization;
+- uses **patient data** (no patient IDs, dosing instructions or addresses);
+- **sends** reports or messages outside the agent (no email, Slack, exports or scheduled reports);
+- uses **real CVS inventory**: all stock and usage values are synthetic;
+- treats FDA context as medical advice or as proof of local supply;
+- trains or fine-tunes a model.
+
+Also outside v1: chain-wide operations, shipping, cold chain, insurance and role administration.
+
+**Known gaps** (from our live testing, being fixed): dosage strength is not yet validated (PR #20),
+and one injection phrasing is not detected, although it is still contained.
+
+**Future work, not in this release:** a critical-stock Slack alert with a human "yes" checkpoint
+(PR #18) and a staff order-form workflow. Both need a team PRD decision first, because v1 excludes
+external sending and orders.
+
 ## Team
 
 | Member | Part | Verified contribution/status |
