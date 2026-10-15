@@ -201,6 +201,12 @@ New read_store_inventory_database returns 20 rows through the real session poole
 - Published the Sonnet runtime support, approved alert/reporting requirements, and PR #21 handoff receipt. The remote tip was confirmed with `git ls-remote`.
 - Validation: full unittest suite passed (275 tests); the reviewed baseline-to-endpoint diff passed `git diff --check`.
 
+## 2026-10-15T16:34:21-04:00
+
+- Verified `test/harness-anthropic-no-temperature` push `ec78a09f30a6ce5f27e71c7872984844e2e5ec51..b946da386848cdd97b33e911f0f9a9614422c4ad`.
+- Regression test: Anthropic Messages body omits `temperature` (Haiku 5.5). No main merge.
+- Full suite after tester merge (#21): 276 OK.
+
 ## 2026-10-15T15:57:53-04:00
 
 - Verified push to `feature/supabase-inventory-schema`: `c58c4e348971ec7f8dcd0ea59966d11f21ed7039..87e83c1a57f1d65094a33a268b5a08f0cf92f9de`.
