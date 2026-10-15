@@ -1,7 +1,7 @@
 # Web hosting preparation
 
 The original build prepared these files locally. A Vercel project now exists;
-the requirements-parser correction still needs a successful hosted rebuild.
+the verified preview-build result and remaining runtime checks are recorded below.
 
 ## Prepared files
 
@@ -41,8 +41,8 @@ The reported Vercel error at position 73 in the original root requirements file
 points exactly to `-r requirements-web.txt`. Both original files were valid UTF-8
 and pip parsed all 28 pins successfully; the supplied error does not identify the
 underlying Vercel include failure. The root file now repeats those same pins
-directly, with no dependency upgrades. A successful hosted rebuild still requires
-verification after publication; local pip parsing is not a Vercel build result.
+directly, with no dependency upgrades. Local pip parsing alone is not a Vercel
+build result; the verified hosted result is recorded below.
 
 In Vercel Project Settings / Environment Variables, configure the relevant
 Production and Preview environments:
@@ -82,6 +82,14 @@ configuration cannot cause requirements parsing errors. Supabase credentials are
 not required by the current fixture-backed Agent. Local environment files are
 excluded from the function bundle; never upload or commit their populated values.
 See [Vercel environment variables](https://vercel.com/docs/environment-variables).
+
+### Verified preview build - October 14, 2026
+
+PR #19 preview commit `418aae857c9f59fd95deacf93212e5217be8fa2e` received a
+successful Vercel build check. This verifies the requirements-parser workaround
+for that deployment. An unauthenticated request redirects to Vercel's login page,
+so application reviewer settings, provider authentication and live review behavior
+remain unverified on the host. No main merge or live model call is claimed.
 
 If the separate Supabase reader is later integrated, verify its review findings,
 credentials, pooler mode and total connection/statement deadlines against the
