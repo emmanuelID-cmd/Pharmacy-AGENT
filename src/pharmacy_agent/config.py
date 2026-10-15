@@ -7,6 +7,7 @@ from dotenv import dotenv_values
 
 ROOT = Path(__file__).resolve().parents[2]
 LATEST_HAIKU = "claude-haiku-5-5"
+SUPPORTED_MODEL_PREFIXES = ("claude-haiku-", "claude-sonnet-")
 CONFIG_NAMES = {
     "APP_ENV", "ANTHROPIC_API_KEY", "ANTHOPIC_API_KEY", "ANTHROPIC_MODEL",
     "PHARMACY_REVIEWER_USERNAME", "PHARMACY_REVIEWER_PASSWORD", "PHARMACY_ALLOWED_HOSTS",
@@ -27,8 +28,8 @@ class Settings:
     max_tokens: int = 24576
 
     def __post_init__(self):
-        if not self.model.startswith("claude-haiku-") or len(self.model) > 100:
-            raise ValueError("HAIKU_MODEL_REQUIRED")
+        if not self.model.startswith(SUPPORTED_MODEL_PREFIXES) or len(self.model) > 100:
+            raise ValueError("SUPPORTED_CLAUDE_MODEL_REQUIRED")
         if not 0 < self.run_seconds <= 120 or not 0 < self.model_seconds <= min(self.run_seconds, 90):
             raise ValueError("INVALID_AGENT_DEADLINE")
         if not 1 <= self.max_turns <= 6 or not 512 <= self.max_tokens <= 24576:

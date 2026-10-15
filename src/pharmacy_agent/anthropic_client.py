@@ -28,6 +28,24 @@ def preview_system_prompt():
             "supplied compact report JSON exactly, without prose, markdown or added whitespace.\n\n" + SYSTEM_PROMPT)
 
 
+def sonnet_tools(tools):
+    """Build strict Sonnet schemas; trusted runtime guards enforce batch limits."""
+    prepared = deepcopy(tools)
+    unsupported_schema_keys = ("minItems", "maxItems", "uniqueItems", "pattern")
+    for spec in prepared:
+        spec["strict"] = True
+        pending = [spec["input_schema"]]
+        while pending:
+            node = pending.pop()
+            if isinstance(node, dict):
+                for key in unsupported_schema_keys:
+                    node.pop(key, None)
+                pending.extend(value for value in node.values() if isinstance(value, (dict, list)))
+            elif isinstance(node, list):
+                pending.extend(node)
+    return prepared
+
+
 class ClaudeClient:
     def __init__(self, settings):
         self.settings = settings
@@ -35,11 +53,23 @@ class ClaudeClient:
     async def complete(self, *, messages, tools, choice, timeout):
         if not self.settings.api_key:
             raise ProviderUnavailable("PROVIDER_NOT_CONFIGURED")
+        is_sonnet = self.settings.model.startswith("claude-sonnet-")
+        thinking_type = "between_tools" if is_sonnet else "disabled"
         kwargs = dict(model=self.settings.model, max_tokens=min(self.settings.max_tokens, 4096) if tools else self.settings.max_tokens,
                       system=preview_system_prompt(), messages=deepcopy(messages),
-                      thinking={"type": "disabled"})
+                      thinking={"type": thinking_type})
+        if is_sonnet and not tools:
+            # The final turn copies a trusted report; low effort keeps the large
+            # exact-copy response within the configured model deadline.
+            kwargs["output_config"] = {"effort": "low"}
         if tools:
-            kwargs.update(tools=deepcopy(tools), tool_choice=choice)
+            if is_sonnet:
+                # Sonnet 5.5 rejects forced selection and several JSON Schema array
+                # constraints. Strict shapes remain; the runtime guard enforces
+                # NDC format, uniqueness, and batch size before any read dispatch.
+                kwargs.update(tools=sonnet_tools(tools), tool_choice={"type": "auto"})
+            else:
+                kwargs.update(tools=deepcopy(tools), tool_choice=choice)
         try:
             # Pin the provider host. Unrelated environment variables cannot redirect
             # the key; retries are zero because the outer run owns the deadline.

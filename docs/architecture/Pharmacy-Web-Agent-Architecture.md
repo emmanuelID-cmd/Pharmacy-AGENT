@@ -7,7 +7,7 @@ The original Digital PNG remains a design reference and is preserved byte-for-by
 flowchart LR
     User[Authorized reviewer] --> Web[Shared FastAPI pages]
     Web --> Intake[Bounded request and source checks]
-    Intake --> Claude[Claude Haiku 5.5]
+    Intake --> Claude[Configured Claude model; Haiku default]
     Claude --> Guard[Read allowlist and run budget]
     Guard --> Inventory[Fixed store inventory reader]
     Guard --> FDA[Fixed openFDA read adapter]
