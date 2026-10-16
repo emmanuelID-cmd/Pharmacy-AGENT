@@ -119,9 +119,14 @@ is not flagged by the detector, although it is still contained (it never reaches
 report). Fixed: an item with ambiguous or missing dosage strength now gets `AMBIGUOUS_ITEM` and manual
 review (PR #16, tests in PR #20).
 
-**Future work, not in this release:** a critical-stock Slack alert with a human "yes" checkpoint
-(PR #18) and a staff order-form workflow. Both need a team PRD decision first, because v1 excludes
-external sending and orders.
+**Requested next-demo extension, not implemented:** show a multi-step human replenishment review
+using synthetic data: report low/critical stock, calculate suggested quantities only from an
+approved fixture policy, prefill quantity fields in an unsaved order draft, let a human edit or
+reject lines and simulate the human submit, then show a closing inventory report that keeps
+unreceived orders separate from on-hand stock. Preview one manufacturer notice per submitted
+order for the start of the manufacturer's morning shift (6:00 AM local target), prioritizing
+CRITICAL before LOW inventory. No live order, database write, or external notice is part of this
+demo proposal; manufacturer timezone, after-shift handling, and delivery channel remain open.
 
 ## Team
 
