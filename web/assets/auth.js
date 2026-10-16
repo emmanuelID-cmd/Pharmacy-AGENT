@@ -42,6 +42,14 @@
     const form=get('reviewer-login-form'), signOut=get('reviewer-sign-out');
     if (form && !form.dataset.bound) {
       form.dataset.bound='true'; let busy=false;
+      const clearField = (id, valid) => {
+        const input=get(id); if (!valid) return;
+        input.setAttribute('aria-invalid','false');get(id+'-error').hidden=true;
+        const summary=get('login-errors');summary.querySelector('a[href="#'+id+'"]')?.closest('li').remove();
+        summary.hidden=!summary.querySelector('li');
+      };
+      get('login-email').addEventListener('input',()=>clearField('login-email',emailValid(get('login-email').value.trim())));
+      get('login-password').addEventListener('input',()=>clearField('login-password',get('login-password').value.length>0 && get('login-password').value.length<=1024));
       form.addEventListener('submit', async event => {
         event.preventDefault(); if (busy || form.dataset.configured !== 'true') return;
         const email=get('login-email'),password=get('login-password'),invalid=[];

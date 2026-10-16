@@ -31,6 +31,8 @@ async function fixture({configured=true,pending=false,rejected=false,destination
 }
 const invalid=await fixture();await invalid.submit();
 assert.equal(invalid.calls.length,0);assert.equal(invalid.get('login-errors').hidden,false);assert.equal(invalid.get('login-email').attributes['aria-invalid'],'true');
+invalid.get('login-email').value='reviewer@example.test';invalid.get('login-email').listeners.input();
+assert.equal(invalid.get('login-email').attributes['aria-invalid'],'false');assert.equal(invalid.get('login-password').attributes['aria-invalid'],'true');assert.equal(invalid.get('login-errors').hidden,false);
 const rejected=await fixture({rejected:true});rejected.valid();await rejected.submit();
 assert.match(rejected.get('login-status').textContent,/not accepted/);assert.equal(rejected.get('login-status').textContent.includes('native-private'),false);
 assert.equal(rejected.get('login-email').value,'reviewer@example.test');assert.equal(rejected.get('login-password').value,'');assert.equal(rejected.get('reviewer-sign-in').disabled,false);
