@@ -34,3 +34,6 @@ cryptography==50.0.2
 http-ece==1.2.1
 py-vapid==1.9.6
 pycparser==3.11
+# Restricted private demo database service; no Agent write grant.
+psycopg==3.3.6
+psycopg-binary==3.3.6

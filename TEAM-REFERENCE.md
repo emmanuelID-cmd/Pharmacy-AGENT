@@ -10,6 +10,16 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 16, 2026 two-phone storage prerequisite: after user approval, the existing Supabase
+lane was fast-forwarded from main's 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5 to the current
+demo head aef261217e6a9a293cc909ab58784e9552a05980, locally and remotely, with zero unique
+lane commits. Private pharmacy_demo schema and separate restricted login are deployed;
+two rollback security rounds, post-deployment access contract and real two-instance
+shared-state/replay checks pass. No inventory privileges or Agent tools changed.
+The ignored .env.demo contains the new server credential; hosted configuration and the
+pairing/delivery UI are still pending. Continue application integration on the existing
+demo branch/PR #30 after this isolated storage change is committed and published.
+
 October 16, 2026 browser-notification history consolidation: user confirmed that browser push
 with the order works and authorized squashing the notification attempts while continuing on
 `feature/order-workflow-demo` and existing PR #30. The nineteen commits after `880f05a3b6ae99fbed6b1e20c8873342812e8d86`
@@ -271,6 +281,12 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## 2026-10-16T15:25:09-04:00
+
+- Verified the prior ref-only fast-forward of existing feature/supabase-migration: `00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..aef261217e6a9a293cc909ab58784e9552a05980`.
+- User required the Supabase branch to be synchronized before demo storage changes; it had zero unique commits. This copied existing reviewed commits and introduced no new commit or branch.
+- This timestamp records remote verification, not an invented exact time for the earlier push. The shared-storage implementation will be published separately; do not treat this synchronization range as containing the new migration.
 
 ## 2026-10-16T15:07:11-04:00
 
