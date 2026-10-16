@@ -32,6 +32,7 @@
     try {
       return await bounded((async () => {
         const response = await fetch(path, {...options, signal: controller.signal});
+        window.handleAuthRequired?.(response);
         return {response, result: await response.json()};
       })());
     } finally {controller.abort();}

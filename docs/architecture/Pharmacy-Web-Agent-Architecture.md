@@ -221,3 +221,25 @@ records survive workers/restarts, expire after 24 hours and are removed on later
 room creation. No background purge or scheduling service is claimed. Original
 unpaired requests retain the existing process-local implementation; existing
 pairing cookies fail visibly rather than silently falling back.
+
+## Individual reviewer authentication
+
+With PHARMACY_AUTH_MODE=supabase, SupabaseReviewerAuth verifies email/password
+against the fixed project Auth endpoint and validates the exact token with /user.
+It ignores external metadata for authority and discards provider tokens/passwords.
+AuthStore issues a random opaque browser cookie backed by private RLS records
+under the separate pharmacy_web_auth_backend identity. The dedicated role can
+issue/read/revoke app sessions but cannot change reviewer membership, managed
+Auth tables, inventory or paired state. Provider-session/user foreign keys cascade
+deletion; each request checks enabled application membership and one-hour expiry.
+Other account changes require membership disable for immediate app exclusion.
+
+The web middleware gates protected pages/APIs; same-origin JSON login/logout are
+the only public auth mutations. Guest pages redirect through safe local return
+paths; expired API actions expose sign-in guidance while preserving current input.
+The familiar login page uses shared visual tokens and accessible field feedback.
+Explicit basic mode retains earlier access_check behavior; Supabase mode never
+falls back. Reviewer UUIDs are attached only by verified server sessions. Demo
+store instances bind room roles to that identity; login/logout retires this
+proven device's old subscription and clears its pairing cookie. This introduces
+no model capability, inventory write or real purchasing authority.

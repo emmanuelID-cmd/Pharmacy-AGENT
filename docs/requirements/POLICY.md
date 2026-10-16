@@ -160,3 +160,32 @@ background purge, SMS, purchase, stock adjustment or 6 AM schedule is implemente
 The existing unpaired demo stays process-local; an enrolled pair never silently
 falls back to that state or another recipient. Actual two-phone display/tap
 acceptance must be observed after deployment before it is claimed passed.
+
+## Approved individual reviewer login - October 16, 2026
+
+Supabase mode replaces the shared web gate with each approved teammate's existing
+email/password account. Provider verification precedes private membership/session
+issuance. Never trust submitted identity/role flags, decoded claims alone or
+user-editable metadata. No public signup, automatic invitation, account confirmation
+or password reset is authorized here. Brahim's account activation remains separate.
+
+A distinct restricted auth backend accesses only the private reviewer/session
+schema. It receives no inventory/demo grants, managed Auth table access or role
+administration. Passwords and Supabase tokens are transient only. Browser cookies
+contain random application-session secrets, never provider/database credentials;
+store only their hashes with verified identities and at-most-one-hour expiry.
+Require HTTPS outside isolated loopback development, HttpOnly/SameSite=Strict,
+protected APIs, explicit same-origin login/logout, JSON contracts and bounded IO.
+
+Every protected request checks enabled membership. Logout revokes the app session;
+upstream session/user deletion cascades its record. Other upstream account changes
+are not an instant revocation guarantee: disable private reviewer membership when
+immediate exclusion is required. Session expiry requires sign-in again; no token
+refresh or background expiry purge is claimed. Login/logout clears the old device
+notification registration and pairing cookie. Pending accepted pushes cannot be
+recalled. Paired access is also bound to the server-verified user UUID.
+
+Explicit basic mode preserves the historical prototype for transition; configured
+Supabase mode never falls back on failures. Display safe generic credential denial,
+field-level feedback, loading/offline/timeout recovery and sign-in-again guidance
+without secrets or account enumeration. Model/harness authority remains unchanged.

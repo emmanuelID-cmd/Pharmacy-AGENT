@@ -13,6 +13,7 @@
     DEMO_DEVICE_NOT_PAIRED_OR_EXPIRED: 'This pairing expired. End pairing here, then create or join a new one.',
     DEMO_DEVICE_NOT_PAIRED: 'This phone is not paired. Create or join a pairing first.',
     DEMO_PAIRING_ENDED: 'This pairing was ended. End pairing here to clear it, then create or join a new one.',
+    DEMO_REVIEWER_MISMATCH: 'This pairing belongs to a previous sign-in. End pairing here, then create or join a new one.',
     DEMO_ROLE_FORBIDDEN: 'This action belongs to the other paired phone.',
     DEMO_ORDER_NOT_FOUND: 'That submitted order is unavailable. Refresh the received-order list.',
     DEMO_BOTH_PHONES_NOT_READY: 'Pair both phones and enable notifications on each before submitting.',
@@ -27,6 +28,7 @@
     try {
       return await Promise.race([(async () => {
         const response = await fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body), signal: controller.signal});
+        window.handleAuthRequired?.(response);
         const result = await response.json();
         if (!response.ok) {const error = Error(); error.code = Object.hasOwn(messages, result.reason_code) ? result.reason_code : 'PAIR_REQUEST_UNCONFIRMED'; throw error;}
         return result;

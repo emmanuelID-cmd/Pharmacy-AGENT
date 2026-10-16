@@ -188,6 +188,17 @@ Subscriptions remain in the browser, not a database. The server uses its configu
 
 Journey 8 is the approved exception to Journey 7's original same-browser/no-persistence limits. Pairing records use the existing Supabase project through private server-side PostgreSQL access, not public Data API grants. The original inventory reader remains read-only. A demo receiving phone represents a manufacturer; no actual manufacturer account, purchasing interface or 6 AM scheduler is connected. See docs/database/DEMO-PAIRING.md and docs/planning/TWO-PHONE-DEMO.md.
 
+**Journey 9 - Individual approved-teammate login (approved October 16, 2026)**
+
+- [P0] Each approved teammate uses their existing Supabase email/password account through the application login page. Invalid, unconfirmed and unapproved identities are denied without exposing which credential/account check failed. Public signup and unfinished-account activation remain separately scoped.
+- [P0] Server verifies credentials and the exact provider token before issuing an opaque, HttpOnly, SameSite=Strict, Secure-on-HTTPS application session. Private session records contain hashes/verified UUIDs/timestamps only and expire within one hour. Browser responses and persistence contain no Supabase tokens, passwords or database credentials.
+- [P0] Protected pages/APIs check enabled membership and active application sessions. Logout invalidates the app session; upstream user/session deletion cascades it. Disable membership for immediate app exclusion when another upstream account change does not delete its session. No automatic refresh or instant-revocation claim beyond these checks.
+- [P0] New login/logout retires the old device's notification registration and pairing. Paired access also checks the verified user UUID. Re-pair after sign-in. Previously accepted pushes may still arrive; the unpaired worker-local synthetic demo remains shared.
+- [P0] Supabase mode fails closed, including missing configuration and provider/database outages; it never falls back to shared Basic credentials. Explicit basic mode remains a transitional prototype option. Inventory, model tools, human review and original fixed demo behavior stay unchanged.
+- [P1] Accessible field summaries, independent valid-field correction, bounded loading/offline/timeout states, safe same-origin return links and Sign out are provided. Live own-password acceptance follows implementation; no maintainer reads or sets teammate passwords in this work.
+
+See docs/database/REVIEWER-LOGIN.md. This is the Supabase/integration lane, not a harness change. The user explicitly deferred Brahim's account activation.
+
 **Remaining operational decisions:** actual replenishment policy and pack rules require authorized staff approval; live ordering service, durable order/outbox storage, real manufacturer timezone/channel/recipient, post-submit revisions/cancellations, operational delivery management and scheduled execution require separate work. Demo delivery acknowledgement is covered only by Journey 8. Supabase changes belong on feature/supabase-migration. Unpaired demo records remain process-local and clear on restart. Journey 8 paired records use private shared demo storage with a 24-hour lifetime; this is not an operational purchase-order system.
 
 ## 3a. Tools

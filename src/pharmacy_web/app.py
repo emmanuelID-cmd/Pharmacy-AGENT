@@ -6,13 +6,14 @@ from copy import deepcopy
 import hmac
 import ipaddress
 import json
+import re
 import time
 from typing import Literal
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, quote, parse_qs
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from starlette.exceptions import HTTPException
@@ -29,6 +30,7 @@ from .closing import ClosingDemo, ClosingError
 from .push import PushSender
 from .demo_store import COOKIE, PostgresDemoStore
 from .paired_demo import PairedDemo
+from .reviewer_auth import AuthError, SupabaseReviewerAuth, COOKIE as AUTH_COOKIE
 
 NAVIGATION = [
     {"key": "home", "label": "Home", "path": "/"},
@@ -53,6 +55,12 @@ FAILURES = {
 
 class StrictBody(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
+
+
+class SignInBody(StrictBody):
+    email: str = Field(min_length=3, max_length=254, pattern=r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+    password: str = Field(min_length=1, max_length=1024)
+    return_to: str = Field(default="/demo", max_length=256)
 
 
 class ReviewBody(StrictBody):
@@ -157,7 +165,7 @@ def access_check(request, settings):
                       {"WWW-Authenticate": 'Basic realm="Pharmacy-AGENT", charset="UTF-8"'})
 
 
-def create_app(settings=None, *, provider=None, agent_runner=None, push_transport=None, demo_store=None):
+def create_app(settings=None, *, provider=None, agent_runner=None, push_transport=None, demo_store=None, reviewer_auth=None):
     settings = settings or Settings.load()
     application = FastAPI(title="Pharmacy-AGENT", docs_url=None, redoc_url=None, openapi_url=None)
     application.state.settings = settings
@@ -170,34 +178,85 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
     application.state.closing_demo = ClosingDemo()
     application.state.push_sender = PushSender(settings, **({"transport": push_transport} if push_transport else {}))
     application.state.paired_demo = PairedDemo(demo_store or PostgresDemoStore(settings.demo_database_url), application.state.push_sender)
+    application.state.reviewer_auth = reviewer_auth or SupabaseReviewerAuth(settings)
+    application.state.login_attempts = OrderedDict()
     templates = Jinja2Templates(directory=str(ROOT / "web" / "templates"))
+
+    def return_path(value):
+        try: parsed = urlsplit(value)
+        except ValueError: return "/demo"
+        if parsed.scheme or parsed.netloc or parsed.path not in {nav["path"] for nav in NAVIGATION}:
+            return "/demo"
+        params = parse_qs(parsed.query)
+        order = params.get("order", [""])[0]
+        if parsed.path == "/demo" and len(order) == 17 and re.fullmatch(r"demo-[a-f0-9]{12}", order):
+            return "/demo?order=" + order + "#order-result"
+        return parsed.path
+
+    def paired_service(request):
+        service = application.state.paired_demo
+        if settings.auth_mode == "supabase":
+            return PairedDemo(service.store.for_reviewer(request.state.reviewer_id), service.sender)
+        return service
+
+    async def retire_browser(request):
+        cookie = request.cookies.get(COOKIE)
+        if cookie:
+            try:
+                await asyncio.to_thread(application.state.paired_demo.store.retire_device, cookie)
+            except ClosingError as error:
+                if error.status != 403:
+                    raise AuthError() from None
+
+    async def personal_access(request):
+        if (settings.hosted or not is_loopback(request)) and request.url.scheme != "https":
+            return safe_error("HTTPS_REQUIRED", 403)
+        public_get = request.method in {"GET", "HEAD"} and request.url.path in {"/login", "/assets/auth.js", "/assets/pharmacy.css", "/favicon.ico"}
+        public_post = request.method == "POST" and request.url.path in {"/api/auth/login", "/api/auth/logout"}
+        if public_get or public_post:
+            return None
+        auth = application.state.reviewer_auth
+        try:
+            if not auth.configured:
+                raise AuthError("AUTH_NOT_CONFIGURED")
+            request.state.reviewer_id = await asyncio.to_thread(auth.store.resolve, request.cookies.get(AUTH_COOKIE))
+        except AuthError as error:
+            if error.status == 401 and request.method == "GET" and request.url.path in {nav["path"] for nav in NAVIGATION}:
+                return RedirectResponse("/login?next=" + quote(return_path(request.url.path + "?" + request.url.query), safe=""), status_code=303)
+            return safe_error(error.code, error.status, {"X-Pharmacy-Authentication": "required"} if error.status == 401 else None)
+        return None
 
     @application.middleware("http")
     async def boundaries(request, call_next):
-        buckets = application.state.auth_failures
-        now = time.monotonic()
-        requester = request.client.host if request.client else "unknown"
-        # Scope lockout to the actual ASGI requester, never submitted headers.
-        failures = buckets.get(requester, deque(maxlen=5))
-        while failures and now - failures[0] >= 60:
-            failures.popleft()
-        # Bounded per-requester/per-worker control. Wider hosting still requires
-        # independently verified platform protection and trustworthy proxy behavior.
-        if len(failures) >= 5:
-            response = safe_error("REVIEWER_AUTH_RATE_LIMITED", 429, {"Retry-After": "60"})
+        if settings.auth_mode == "supabase":
+            response = await personal_access(request)
         else:
-            response = access_check(request, settings)
-            if response is not None and response.status_code == 401 and request.headers.get("authorization"):
-                failures.append(now)
-                buckets[requester] = failures
-                buckets.move_to_end(requester)
-                if len(buckets) > 128:
-                    buckets.popitem(last=False)
+            buckets = application.state.auth_failures
+            now = time.monotonic()
+            requester = request.client.host if request.client else "unknown"
+            # Scope lockout to the actual ASGI requester, never submitted headers.
+            failures = buckets.get(requester, deque(maxlen=5))
+            while failures and now - failures[0] >= 60:
+                failures.popleft()
+            # Bounded per-requester/per-worker control. Wider hosting still requires
+            # independently verified platform protection and trustworthy proxy behavior.
+            if len(failures) >= 5:
+                response = safe_error("REVIEWER_AUTH_RATE_LIMITED", 429, {"Retry-After": "60"})
+            else:
+                response = access_check(request, settings)
+                if response is not None and response.status_code == 401 and request.headers.get("authorization"):
+                    failures.append(now)
+                    buckets[requester] = failures
+                    buckets.move_to_end(requester)
+                    if len(buckets) > 128:
+                        buckets.popitem(last=False)
         if response is None and request.method not in {"GET", "HEAD", "POST"}:
             response = safe_error("METHOD_NOT_ALLOWED", 405)
         if response is None and request.method == "POST":
             origin = request.headers.get("origin")
-            if origin and (urlsplit(origin).scheme, urlsplit(origin).netloc) != (request.url.scheme, request.url.netloc):
+            if request.url.path in {"/api/auth/login", "/api/auth/logout"} and not origin:
+                response = safe_error("ORIGIN_REQUIRED", 403)
+            elif origin and (urlsplit(origin).scheme, urlsplit(origin).netloc) != (request.url.scheme, request.url.netloc):
                 response = safe_error("ORIGIN_NOT_ALLOWED", 403)
             elif request.headers.get("content-type", "").split(";", 1)[0].strip().lower() != "application/json":
                 response = safe_error("JSON_REQUIRED", 415)
@@ -249,7 +308,71 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
             "active_view": entry["key"], "navigation": NAVIGATION, "model": settings.model,
             "provider_configured": settings.provider_configured, "source_mode": "fixture", "store_id": 1618,
             "catalog": home_catalog() if entry["key"] == "home" else None,
+            "personal_login": settings.auth_mode == "supabase",
         })
+
+    @application.get("/login")
+    async def login_page(request: Request):
+        return templates.TemplateResponse(request=request, name="login.html", context={
+            "active_view": "login", "navigation": [], "return_to": return_path(request.query_params.get("next", "/demo")),
+            "auth_configured": settings.auth_mode == "supabase" and application.state.reviewer_auth.configured,
+            "personal_login": False,
+        })
+
+    @application.post("/api/auth/login")
+    async def sign_in(request: Request, body: SignInBody):
+        if settings.auth_mode != "supabase":
+            return safe_error("AUTH_NOT_CONFIGURED", 503)
+        # Separate bounded per-peer/account buckets, never trust forwarded IP headers.
+        peer = request.client.host if request.client else "unknown"
+        from hashlib import sha256
+        key = sha256((peer + "\0" + body.email.casefold()).encode()).hexdigest()
+        attempts = application.state.login_attempts
+        now = time.monotonic()
+        bucket = attempts.setdefault(key, deque(maxlen=5))
+        while bucket and now - bucket[0] >= 60:
+            bucket.popleft()
+        if len(bucket) >= 5:
+            return safe_error("AUTH_RATE_LIMITED", 429, {"Retry-After": "60"})
+        bucket.append(now); attempts.move_to_end(key)
+        while len(attempts) > 128: attempts.popitem(last=False)
+        auth = application.state.reviewer_auth
+        cookie = None
+        try:
+            cookie, seconds = await asyncio.to_thread(auth.sign_in, body.email, body.password)
+            await retire_browser(request)
+            previous = request.cookies.get(AUTH_COOKIE)
+            if previous:
+                try: await asyncio.to_thread(auth.store.revoke, previous)
+                except AuthError as error:
+                    if error.status != 401: raise
+            response = JSONResponse({"state": "SIGNED_IN", "redirect_to": return_path(body.return_to), "expires_in_seconds": seconds})
+            response.set_cookie(AUTH_COOKIE, cookie, max_age=seconds, httponly=True, secure=request.url.scheme == "https", samesite="strict", path="/")
+            response.delete_cookie(COOKIE, path="/", httponly=True, secure=request.url.scheme == "https", samesite="strict")
+            return response
+        except AuthError as error:
+            if cookie:
+                try: await asyncio.to_thread(auth.store.revoke, cookie)
+                except AuthError: pass
+            return safe_error(error.code, error.status)
+
+    @application.post("/api/auth/logout")
+    async def sign_out(request: Request, body: StrictBody):
+        if settings.auth_mode != "supabase": return safe_error("AUTH_NOT_CONFIGURED",503)
+        try:
+            # Retire this device's old subscription before dropping its binding.
+            await retire_browser(request)
+            cookie=request.cookies.get(AUTH_COOKIE)
+            if cookie:
+                try: await asyncio.to_thread(application.state.reviewer_auth.store.revoke,cookie)
+                except AuthError as error:
+                    if error.status != 401: raise
+            response=JSONResponse({"state":"SIGNED_OUT"})
+            for name in (AUTH_COOKIE,COOKIE):
+                response.delete_cookie(name,path="/",httponly=True,secure=request.url.scheme=="https",samesite="strict")
+            return response
+        except AuthError as error:
+            return safe_error(error.code,error.status)
 
     for entry in NAVIGATION:
         application.add_api_route(entry["path"], page, methods=["GET"], name=entry["key"])
@@ -264,7 +387,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
 
     @application.get("/assets/{filename}")
     async def assets(filename: str):
-        paths = {"pharmacy.css": ROOT / "web/assets/pharmacy.css",
+        paths = {"auth.js": ROOT / "web/assets/auth.js", "pharmacy.css": ROOT / "web/assets/pharmacy.css",
                  "closing.js": ROOT / "web/assets/closing.js",
                  "push.js": ROOT / "web/assets/push.js",
                  "pairing.js": ROOT / "web/assets/pairing.js",
@@ -325,7 +448,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
     @application.post("/api/demo-pairing/status")
     async def pairing_status(request: Request, body: StrictBody):
         try:
-            return await asyncio.to_thread(application.state.paired_demo.status, paired_cookie(request))
+            return await asyncio.to_thread(paired_service(request).status, paired_cookie(request))
         except ClosingError as error:
             return safe_error(error.code, error.status)
 
@@ -334,7 +457,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
         try:
             if paired_cookie(request):
                 raise ClosingError("DEMO_END_CURRENT_PAIRING_FIRST", 409)
-            cookie, code = await asyncio.to_thread(application.state.paired_demo.store.create)
+            cookie, code = await asyncio.to_thread(paired_service(request).store.create)
             return device_response(request, cookie, {"code": code, "role": "orderer", "expires_in_seconds": 600})
         except ClosingError as error:
             return safe_error(error.code, error.status)
@@ -344,7 +467,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
         try:
             if paired_cookie(request):
                 raise ClosingError("DEMO_END_CURRENT_PAIRING_FIRST", 409)
-            cookie = await asyncio.to_thread(application.state.paired_demo.store.join, body.code)
+            cookie = await asyncio.to_thread(paired_service(request).store.join, body.code)
             return device_response(request, cookie, {"role": "manufacturer", "paired": True})
         except ClosingError as error:
             return safe_error(error.code, error.status)
@@ -352,7 +475,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
     @application.post("/api/demo-pairing/invite")
     async def renew_pairing(request: Request, body: StrictBody):
         try:
-            code = await asyncio.to_thread(application.state.paired_demo.renew_invite, paired_cookie(request))
+            code = await asyncio.to_thread(paired_service(request).renew_invite, paired_cookie(request))
             return {"code": code, "expires_in_seconds": 600}
         except ClosingError as error:
             return safe_error(error.code, error.status)
@@ -360,7 +483,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
     @application.post("/api/demo-pairing/subscription")
     async def pairing_subscription(request: Request, body: PairSubscriptionBody):
         try:
-            return await asyncio.to_thread(application.state.paired_demo.register, paired_cookie(request),
+            return await asyncio.to_thread(paired_service(request).register, paired_cookie(request),
                                             body.subscription.model_dump() if body.subscription else None)
         except ClosingError as error:
             return safe_error(error.code, error.status)
@@ -371,7 +494,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
             cookie = paired_cookie(request)
             if cookie:
                 try:
-                    await asyncio.to_thread(application.state.paired_demo.leave, cookie)
+                    await asyncio.to_thread(paired_service(request).leave, cookie)
                 except ClosingError as error:
                     if error.status != 403:
                         raise
@@ -384,7 +507,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
     @application.post("/api/demo-pairing/delivery")
     async def confirm_delivery(request: Request, body: DeliveryBody):
         try:
-            return await asyncio.to_thread(application.state.paired_demo.delivery, paired_cookie(request), body.order_id)
+            return await asyncio.to_thread(paired_service(request).delivery, paired_cookie(request), body.order_id)
         except ClosingError as error:
             return safe_error(error.code, error.status)
 
@@ -393,7 +516,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
         try:
             cookie = paired_cookie(request)
             if cookie:
-                return await asyncio.to_thread(application.state.paired_demo.close, cookie)
+                return await asyncio.to_thread(paired_service(request).close, cookie)
             return await asyncio.to_thread(application.state.closing_demo.close_day)
         except ClosingError as error:
             return safe_error(error.code, error.status)
@@ -407,7 +530,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
         try:
             cookie = paired_cookie(request)
             if cookie:
-                return await asyncio.to_thread(application.state.paired_demo.notify, cookie, body.order_id, body.closing_id)
+                return await asyncio.to_thread(paired_service(request).notify, cookie, body.order_id, body.closing_id)
             return await asyncio.to_thread(application.state.closing_demo.notify,
                 body.closing_id, body.order_id, body.subscription.model_dump(), application.state.push_sender)
         except ClosingError as error:
@@ -418,7 +541,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
         try:
             cookie = paired_cookie(request)
             if cookie:
-                return await asyncio.to_thread(application.state.paired_demo.submit, cookie,
+                return await asyncio.to_thread(paired_service(request).submit, cookie,
                     body.closing_id, body.submission_id, [line.model_dump() for line in body.lines])
             return await asyncio.to_thread(application.state.closing_demo.submit,
                 body.closing_id, body.submission_id, [line.model_dump() for line in body.lines])

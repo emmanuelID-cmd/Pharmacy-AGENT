@@ -10,6 +10,25 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 16, 2026 individual reviewer login implemented on feature/supabase-migration.
+The additive private pharmacy_web migration is deployed; a separate restricted
+login and ignored .env.auth configure local Supabase mode. Existing accounts,
+passwords, managed Auth policies, Agent tools and inventory grants remain unchanged.
+Three teammate UUIDs are approved; Emmanuel confirmed real local sign-in succeeds.
+Kerrian login is not observed and Brahim's unconfirmed/passwordless account setup
+was explicitly deferred by the user. No automatic email or password reset was sent.
+Sessions are opaque/hashed, at most one hour and checked against enabled membership;
+provider-session/user deletion cascades them. New login/logout retires the old
+browser registration and pairing, and paired state checks verified user identity.
+334 full methods, 85 qualification fixtures, two sequential 80-method security
+rounds, four Node simulations, rollback/deployed schema contract, real TLS denial
+probes and visible field-feedback checks pass. Existing leaked-password-protection
+advisor warning is unchanged; the user acknowledged the paid feature limitation.
+Set the four auth settings described in docs/database/REVIEWER-LOGIN.md on the
+intended Vercel environment before testing hosted individual login. Existing demo
+storage/VAPID settings remain necessary. Continue through existing PR #30 and
+safe non-main synchronization; do not merge main or delete the demo branch here.
+
 October 16, 2026 branch synchronization: the user explicitly authorized all
 non-main branches to fast-forward to the PR #30 demo source before its main merge.
 Every branch had zero unique commits relative to d5ff734ec287eb162543f67df100eba260473281.

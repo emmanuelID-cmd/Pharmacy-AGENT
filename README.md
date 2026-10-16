@@ -377,3 +377,20 @@ pairing** stops new alerts for both phones without changing inventory. The
 unpaired single-browser demo remains available. Automated/shared-store checks
 do not replace actual two-phone notification acceptance; follow
 [the demo checklist](docs/planning/TWO-PHONE-DEMO.md) after deployment.
+
+### Individual teammate sign-in
+
+The optional Supabase login uses each approved teammate's existing email/password.
+Set PHARMACY_AUTH_MODE=supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY and the
+restricted PHARMACY_AUTH_DATABASE_URL from ignored .env.auth, then redeploy the
+intended environment. Visit /login. No duplicate reviewer credential variables
+are needed; the original shared login remains only in explicit basic mode.
+Supabase mode fails closed and never falls back to that shared login.
+
+Sessions use private server records and opaque HttpOnly cookies, last at most
+one hour, and can be signed out. Account changes clear the old phone pairing and
+subscription; pair again after login. Supabase tokens/passwords never enter the
+browser response or application persistence. The Agent/inventory grants remain
+read-only. Existing paired-storage and VAPID settings are still required for
+phone delivery. See [reviewer login and account prerequisites](docs/database/REVIEWER-LOGIN.md).
+Brahim's unfinished account activation is a separate step, as requested.

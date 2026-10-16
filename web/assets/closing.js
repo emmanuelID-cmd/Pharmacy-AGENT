@@ -21,6 +21,7 @@
     try {
       return await Promise.race([(async () => {
         const response = await fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body), signal: controller.signal});
+        window.handleAuthRequired?.(response);
         const result = await response.json();
         if (!response.ok) {const error = Error('REQUEST_FAILED'); error.code = result.reason_code === 'DEMO_BOTH_PHONES_NOT_READY' ? 'DEMO_BOTH_PHONES_NOT_READY' : ''; throw error;}
         return result;
