@@ -5,7 +5,7 @@ Pharmacy Inventory Logistics Agent: a collaborative Pursuit assignment in PRD de
 ## What the agent does
 
 A **read-only** AI agent that runs an inventory review for one pharmacy store and tells a human
-which medications need replenishment attention, and why.
+which medications need prompt human review because stock is low or critical, and why.
 
 1. **Reads** the store's inventory snapshot: usable stock and 14 days of usage per medication
    (synthetic data for store 1618).
@@ -16,8 +16,9 @@ which medications need replenishment attention, and why.
 4. **Checks national shortage context** for each exact package NDC through the public openFDA Drug
    Shortages API, labeled `MATCH`, `NO_MATCH`, `PARTIAL` or `UNAVAILABLE`. A timeout or no match never
    means "no shortage".
-5. **Reports** a review list (critical items first, with calculation evidence, FDA dates and warnings)
-   that a model may only copy. Guards check every tool call and verify the final report field by field;
+5. **Reports** a human-review list (critical items first, with calculation evidence, FDA dates and warnings).
+   CRITICAL and LOW prioritize staff review; they do not direct or recommend an order. A model may only
+   copy the verified report. Guards check every tool call and verify the final report field by field;
    anything invented is replaced by the verified facts.
 
 The agent **recommends human review only** (`REVIEW`, `MAINTAIN` or `MANUAL_REVIEW`). An authorized
@@ -102,7 +103,7 @@ Keys stay in environment variables or an ignored `.env` file. Never commit them:
 
 The agent **never**:
 
-- places, submits or suggests **orders**, or calculates **order quantities**;
+- decides to replenish, recommends or calculates an order or quantity, or places or submits an order; low or critical status only flags an item for human review;
 - **writes** to inventory, changes policy, or releases reserved, expired or quarantined stock;
 - makes **clinical** decisions: no diagnosis, treatment, dispensing or patient prioritization;
 - uses **patient data** (no patient IDs, dosing instructions or addresses);
@@ -138,7 +139,7 @@ The web Agent uses the 150-row catalog fixture; Demo preserves the original 20-r
 
 ## Product foundation
 
-The proposed agent helps an inventory manager at one configured store review synthetic stock and aggregate usage, calculate days of supply, and inspect separate FDA national shortage context. It provides recommendations for human review. It has no ordering, dispensing, clinical, inventory-write, or policy-edit authority. No patient records are in scope.
+The proposed agent helps an inventory manager at one configured store review synthetic stock and aggregate usage, calculate days of supply, and inspect separate FDA national shortage context. Low and critical statuses only flag items for human review; an authorized person decides whether and how to replenish. The agent has no ordering, dispensing, clinical, inventory-write, or policy-edit authority. No patient records are in scope.
 
 The complete PRD, including journeys, priorities, success metrics, tool contracts, safeguards, prompts, and evaluation cases, remains the requirements source:
 
