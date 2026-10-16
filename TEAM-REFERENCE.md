@@ -10,6 +10,22 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 16, 2026 closing/order demo publication: PR #30 is open at
+https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/30 from the approved temporary
+`feature/order-workflow-demo` into `main`. The verified initial push is
+`00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..c425c4d2751504769daf8c5c37e0a96d44f4fe93`;
+the reviewed file-change endpoint is `abbe42db81cf1b3b9f472593305564a9a4cdc2fa`. The user approved the
+local preview and grouped publication. One fixed pre-order report now precedes the
+150-item searchable order form, human edits/rejection and simulated submission.
+The quantity contract is additive; existing Agent/model/CLI behavior and all five
+persistent branch tips remain unchanged at `00270b3`. Real-phone SMS/provider setup
+is deferred; notification previews perform zero external sends. Full suite: 291
+passing methods; qualification: 85/85 contained, zero misses/false positives; browser
+flow/mobile/reload checks and two security rounds with affected recovery rechecks
+passed. Demo state is process-local and clears on restart. Merge, deployment and
+temporary-branch cleanup remain gated; shared harness-contract review belongs in
+the PR before merge. Historical handoffs below describe their original dates.
+
 October 15, 2026 PR and branch update: PR #18 was closed unmerged; Slack remains
 out of scope. PR #25 merged to `main` as `3acf3e4651dccb41a700237725c98af66d5533b1`
 at 17:53:28-04:00; PR #23 merged as `8bb7d1f335e96854fce8f369e3a3213b5e465483`
@@ -179,6 +195,15 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## 2026-10-16T03:50:48-04:00
+
+- Verified initial push to `feature/order-workflow-demo` for PR [#30](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/30); new branch based on verified `main` at `00270b3c11db6fcfd1c43a6c1893ff7b20b96da5`.
+- Pushed range: `00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..c425c4d2751504769daf8c5c37e0a96d44f4fe93`. Reviewed file-change range: `00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..abbe42db81cf1b3b9f472593305564a9a4cdc2fa`; final metadata-only review marker: `c425c4d2751504769daf8c5c37e0a96d44f4fe93`.
+- Four scoped commits add the validated closing snapshot/quantity contract and API, searchable human order form, field/reload safeguards and matching Mod PRD/policy/README/architecture/plan/review evidence. Original fixtures, live ordering, Supabase, model permissions and real notifications are unchanged.
+- Validation: 291 passing unittest methods; 85/85 qualification fixtures contained, 0 misses and 0 false positives; desktop/tablet/mobile browser flow and submitted-order reload passed; two security rounds and affected recovery rechecks passed. User approved the running preview.
+- Timestamp is the observed successful-push/remote-tip verification time in America/New_York. This receipt describes the feature push; publication of the receipt itself is metadata only, with final remote verification recorded in PR #30.
+
 
 ## Unverified push time — checked 2026-10-15T22:37:41-04:00
 
