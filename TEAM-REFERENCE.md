@@ -13,17 +13,25 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 October 15, 2026 PR and branch update: PR #18 was closed unmerged; Slack remains
 out of scope. PR #25 merged to `main` as `3acf3e4651dccb41a700237725c98af66d5533b1`
 at 17:53:28-04:00; PR #23 merged as `8bb7d1f335e96854fce8f369e3a3213b5e465483`
-at 17:54:21-04:00. The complete suite passed 275 tests on that final main tip.
+at 17:54:21-04:00. PR #26 merged the project branch policy as
+`9b75452a215fb470b485e0cdc41c418832f5bbe8` at 18:03:40-04:00. The complete
+suite passed 275 tests on `8bb7d1f`; PR #26 was documentation-only.
 The five approved long-lived refs are present: `main`, `feature/supabase-migration`,
 `feature/pharmacy-harness`, `feature/pharmacy-agent-instructions`, and
 `feature/pharmacy-injection-risk-prevention`. The harness lane has recent activity
 at `3b11428dcbca2999d90c69d9780bb369ca3dc060` and was left untouched; its older
 ref was deleted during cleanup before the teammate recreated the lane. The other
-three lane refs were created at main `8bb7d1f`.
+three lane refs were created at main `8bb7d1f`, then fast-forwarded to `9b75452`.
+At the 18:05 cleanup verification, the lane refs except the harness pointed at
+`main`; since then, PR #27 advanced `feature/pharmacy-injection-risk-prevention`
+to `be1270dbe9fa189995acf1c5ca12e6cbc15ca862`, two commits ahead of main. PR #27
+is open and mergeable; its Vercel build checks pass, while Supabase Preview is
+skipped. `feature/pharmacy-harness` has three unique commits and remains 13
+commits behind main; its work was preserved for Kerrian.
 
 Merged PR source refs `docs/strength-fix-evidence` and
-`feature/supabase-inventory-schema` remain on the remote pending a separate
-deletion approval. The five archived stale refs were first fast-forwarded to
+`feature/supabase-inventory-schema` were fast-forwarded to current `main`; both
+remain on the remote pending a separate deletion approval. The five archived stale refs were first fast-forwarded to
 `ec78a09f30a6ce5f27e71c7872984844e2e5ec51` and then deleted:
 `docs/readme-essentials`, `feature/openrouter-loop-adapter`,
 `feature/pharmacy-harness`, `fix/harness-omit-anthropic-temperature`, and
@@ -155,6 +163,21 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## Unverified push time — checked 2026-10-15T22:37:41-04:00
+
+- `git push` completed and `git ls-remote` verified `feature/pharmacy-injection-risk-prevention` at `be1270dbe9fa189995acf1c5ca12e6cbc15ca862`; the pushed range was `9b75452a215fb470b485e0cdc41c418832f5bbe8..be1270dbe9fa189995acf1c5ca12e6cbc15ca862`. It contains the README clarification (`6fc4909c6b5bbfebc242c4196cce91d1a1bf9c99`) and metadata-only review summary. PR #27 was opened against `main`.
+- Exact server-side push time was unavailable. The timestamp above is the verification time, not a claimed push time.
+
+## Unverified fast-forward time — checked 2026-10-15T18:05:47-04:00
+
+- Fast-forwarded `docs/strength-fix-evidence` (`5f424592b8bf86cf4608ff8bff6d9de88b9045f4`), `feature/pharmacy-agent-instructions` (`8bb7d1f335e96854fce8f369e3a3213b5e465483`), `feature/pharmacy-injection-risk-prevention` (`05808f72df7bc60d3e9003fde92c71abd2cfd05d`), `feature/supabase-inventory-schema` (`c6921dbe63cd5cfc0429cd1ae470f71dd4d88d09`), and `feature/supabase-migration` (`8bb7d1f335e96854fce8f369e3a3213b5e465483`) to main `9b75452a215fb470b485e0cdc41c418832f5bbe8`; each was an ordinary fast-forward and verified with `git ls-remote`.
+- Exact server-side ref update timestamps were not available. The timestamp above is the verification time, not a claimed push time. `feature/pharmacy-harness` was not updated because its three unique commits are not contained in main.
+
+## Unverified push time — checked 2026-10-15T18:02:56-04:00
+
+- `git ls-remote` confirmed `feature/pharmacy-injection-risk-prevention` advanced from `8bb7d1f335e96854fce8f369e3a3213b5e465483` to `05808f72df7bc60d3e9003fde92c71abd2cfd05d`; the reviewed range contains the branch policy and handoff updates in `AGENTS.md` and `TEAM-REFERENCE.md`.
+- The repository event feed did not expose the exact server-side push time. The timestamp above is the verification time, not a claimed push time.
 
 ## Unverified branch-creation time — checked 2026-10-15T18:01:09-04:00
 
