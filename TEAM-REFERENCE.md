@@ -10,7 +10,7 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
-October 16, 2026 paired-phone implementation prepared on existing
+October 16, 2026 paired-phone implementation published on existing
 feature/order-workflow-demo for PR #30: cookie-bound orderer/receiving roles,
 private shared report/orders, selected-order A-to-B push and Delivery Received
 B-to-A return event. Attempts are reserved before IO; duplicate actions do not
@@ -20,8 +20,8 @@ application integration; Supabase prerequisite work remains in that lane's histo
 322 local methods, 85 qualification fixtures, three Node simulations and two
 sequential 68-method security rounds pass. Real shared-store round trip used a
 fake sender and ended its synthetic pair. Local UI/code feedback was inspected.
-Source publication follows the explicit commit/push approval; physical two-phone
-acceptance remains pending. Configure PHARMACY_DEMO_DATABASE_URL from ignored
+Source push verified 2026-10-16T16:01:03-04:00: dc8c918a228f3aee717b5266628aea8d3df5be3c..62d6710ba24272ccdd184a07fb52673b787ab6ff.
+Reviewed endpoint: b9c06e0cd91d2291638befc5599fbde89c07d190. Physical two-phone acceptance remains pending. Configure PHARMACY_DEMO_DATABASE_URL from ignored
 .env.demo in the intended Vercel environment and deploy the new source before
 phone testing. Do not merge or delete PR #30's branch until delivery acceptance.
 See docs/planning/TWO-PHONE-DEMO.md for steps and validation limits.
@@ -297,6 +297,19 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## 2026-10-16T16:01:03-04:00
+
+- Paired-phone source push verified on feature/order-workflow-demo:
+  dc8c918a228f3aee717b5266628aea8d3df5be3c..62d6710ba24272ccdd184a07fb52673b787ab6ff.
+- Reviewed endpoint: b9c06e0cd91d2291638befc5599fbde89c07d190. Cookie-bound pairing,
+  shared synthetic report/orders, order and delivery return pushes, safe UI,
+  tests and approved product/setup documentation are published through PR #30.
+- 322 tests, 85 qualification fixtures, three Node simulations, two sequential
+  68-method security rounds and real-store/fake-sender round trip passed. Actual
+  phone display/tap and hosted PHARMACY_DEMO_DATABASE_URL setup remain pending.
+- No main merge, new PR, branch deletion, SMS, Agent tool or inventory write.
+  Final receipt-only publication is verified in PR #30 to avoid recursive receipts.
 
 ## 2026-10-16T15:29:09-04:00
 
