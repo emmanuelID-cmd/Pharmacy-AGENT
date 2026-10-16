@@ -26,8 +26,10 @@ probes and visible field-feedback checks pass. Existing leaked-password-protecti
 advisor warning is unchanged; the user acknowledged the paid feature limitation.
 Set the four auth settings described in docs/database/REVIEWER-LOGIN.md on the
 intended Vercel environment before testing hosted individual login. Existing demo
-storage/VAPID settings remain necessary. Continue through existing PR #30 and
-safe non-main synchronization; do not merge main or delete the demo branch here.
+storage/VAPID settings remain necessary. Login source and all five non-main refs
+were published together at 16987aec5a79a7d45294722f2036294a3f732191.
+Existing PR #30 remains open; main and branch deletion are untouched. Physical
+two-phone order/delivery acceptance must follow deployment and configuration.
 
 October 16, 2026 branch synchronization: the user explicitly authorized all
 non-main branches to fast-forward to the PR #30 demo source before its main merge.
@@ -328,6 +330,27 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## 2026-10-16T18:46:48-04:00
+
+- Verified atomic source publication on all five authorized non-main branches:
+  `998e3fe8aafdb23394cc99a9afff9c6e83251b4c..16987aec5a79a7d45294722f2036294a3f732191`.
+- Reviewed endpoint: `8813ad8ca936bf747fe016a1bb0856268999b494`; feature endpoint:
+  `a132c72eeabc6e29465052f18275e84671686454`. Final review marker changes no file.
+- Supabase reviewer login, private opaque sessions, account-bound pairing and
+  independent field-error recovery published with tests, migration and setup.
+  Migration deployment and Emmanuel's successful local password login are recorded.
+- Validation: 334 methods, four Node simulations, 85 qualification fixtures;
+  two sequential security rounds and deployed rollback-only schema contract pass.
+  Full changed-file review is docs/planning/REVIEWER-LOGIN-REVIEW.md.
+- All five non-main remote refs verified equal; existing local branches safely
+  fast-forwarded. Main remains 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5.
+  Existing PR #30 only; no new branch, force push, main merge or deletion.
+- Hosted individual login needs the four auth settings from ignored .env.auth,
+  existing demo-storage/VAPID settings and redeployment. Physical two-phone
+  acceptance remains pending; Brahim activation is separately deferred.
+- Receipt-only publication verification will be recorded in existing PR #30
+  to avoid recursively creating receipt commits.
 
 ## 2026-10-16T16:28:15-04:00
 
