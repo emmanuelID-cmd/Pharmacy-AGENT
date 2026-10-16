@@ -127,8 +127,23 @@ to that human-reviewed simulation; the original stock report stays unchanged. Th
 clock is October 7, 2026 at 6:00 PM New York time, distinct from the original stock snapshot and
 actual report creation. The original 20-row fixed demo remains above this workflow.
 
-No purchase order, inventory write, database write or external notification occurs. Real-phone
-SMS is a separate integration step; no provider or recipient is configured. The 6:00 AM
+After submitting, use **New demo order** to prepare another order against that same report,
+including after refreshing and viewing the report again. Earlier submissions remain in the
+submitted-order history; each distinct order can request its own browser confirmation. The demo
+retains up to 20 orders per worker and never changes stock when an order is submitted.
+
+No purchase order, inventory write or database write occurs. Optional Chrome/Android browser
+notifications show only the submitted order's item names, human quantities, units and priority
+after explicit browser opt-in. Up to six lines fit in the bounded preview; long orders indicate
+more items. Tap to open that exact order's complete list. Names/quantities may appear on the
+device's notification or lock screen. Enable and submit on the same phone/browser.
+Order recording finishes independently of notification delivery. The button changes to **Order
+submitted**, with **New demo order** beside it; notification status and safe failure references
+appear directly below the form as well as beside the notification controls. Browser requests time
+out after 20 seconds, preserve uncertain order intents and never retry notifications automatically.
+This uses Chrome's push infrastructure, not SMS or TextNow, and requires no paid messaging account.
+See [notification setup and phone test](docs/planning/ANDROID-PUSH.md). Real-phone SMS remains
+unconfigured. The 6:00 AM
 manufacturer notice is a preview using an explicitly assumed New York timezone, not a running
 scheduler. Demo records are process-local and clear on restart; drafts survive tab changes while
 the page remains open. This is not a durable or multi-worker ordering service. See the

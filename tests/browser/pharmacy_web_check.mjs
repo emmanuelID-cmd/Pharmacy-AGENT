@@ -169,4 +169,25 @@ await evaluate(`(async()=>{
  if(!restored||restored.value!=='3'||!restored.disabled||!get('order-empty').hidden)throw Error('Submitted order reload recovery failed');
 })()`);
 console.log(JSON.stringify({submittedOrderRecoveredAfterReload:true}));
+const repeatOrders = await evaluate(`(async()=>{
+ const get=id=>document.getElementById(id), pause=()=>new Promise(r=>setTimeout(r,50));
+ const before=await(await fetch('/api/closing-demo/close',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).json();
+ if(get('new-demo-order').hidden||get('new-demo-order').disabled)throw Error('New order unavailable after reload');
+ get('new-demo-order').click();
+ if(get('order-search').disabled||get('submit-demo-order').disabled||get('order-list').children.length)throw Error('New order did not unlock empty form');
+ get('order-search').value=${JSON.stringify(closingChecks.itemId)};get('order-search').dispatchEvent(new Event('input'));
+ get('order-item').value=${JSON.stringify(closingChecks.itemId)};get('order-add-form').requestSubmit();
+ const quantity=get('qty-'+${JSON.stringify(closingChecks.itemId)});quantity.value='4';quantity.dispatchEvent(new Event('input'));
+ get('close-day').click();for(let i=0;i<100&&get('close-day').disabled;i++)await pause();
+ if(get('qty-'+${JSON.stringify(closingChecks.itemId)}).value!=='4'||get('submit-demo-order').disabled)throw Error('View same report overwrote new draft');
+ get('demo-order-form').requestSubmit();for(let i=0;i<100&&(get('order-result').hidden||get('new-demo-order').disabled);i++)await pause();
+ const after=await(await fetch('/api/closing-demo/close',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).json();
+ if(after.orders.length!==2||before.order.order_id===after.order.order_id)throw Error('Second distinct order missing');
+ if(JSON.stringify(before.closing)!==JSON.stringify(after.closing))throw Error('Second order changed closing report');
+ if(after.orders[0].lines[0].quantity!==3||after.orders[1].lines[0].quantity!==4)throw Error('Order history changed or lost');
+ if(!get('order-history').textContent.includes('2 submitted demo order'))throw Error('History count missing');
+ if(get('new-demo-order').disabled)throw Error('Next draft unavailable after submit');
+ return {secondOrderAfterReload:true,originalReportUnchanged:true,historyPreserved:true};
+})()`);
+console.log(JSON.stringify({repeatOrders}));
 await call('Browser.close');socket.close();

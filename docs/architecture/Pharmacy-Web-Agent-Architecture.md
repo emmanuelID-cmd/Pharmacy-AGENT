@@ -131,7 +131,66 @@ origin, content-type, body-limit and safe-error middleware. Source labels are te
 The server uses a lock for capture and submission. Returned copies cannot mutate its original
 snapshot/order. This state is memory-only and shared within that authorized prototype worker;
 restarts clear it and different workers do not share it. No database is touched, and no durable
-idempotency or real scheduled delivery is claimed. The unconfigured notification adapter has
+idempotency or real scheduled delivery is claimed. The unconfigured SMS adapter has
 no outbound transport and reports PREVIEW_ONLY with zero sends. Actual SMS and manufacturer
 integration require a separately chosen provider/test destination; durable scheduling/write
 services require separate Supabase approval and its dedicated migration branch.
+
+## Optional Chrome/Android push confirmation
+
+`web/assets/push.js` obtains permission only on Enable and stores the subscription using the
+browser's PushManager. The user enables and submits in that same browser; no desktop-to-phone
+pairing or subscription database is implemented. After successful human submission, POST
+`/api/closing-demo/notify` binds the submitted closing/order IDs to the worker's recorded order.
+It inherits reviewer authentication, origin, JSON/body limits and safe errors. The Agent cannot
+dispatch it. `closing.py` serializes attempts under the existing lock and retains one result,
+including uncertain failures, so concurrent requests cannot repeat the send within that worker.
+
+`src/pharmacy_web/push.py` validates only HTTPS Chrome FCM endpoints and P-256/auth keys. It uses
+http-ece encryption, py-vapid signing and httpx with bounded IO, no redirects and no ambient
+proxies. The versioned synthetic-order payload is constructed from the retained submitted order,
+never a browser-supplied message. It contains demo order ID, total selected-line count and at most
+six labels/quantities/units/priorities. UTF-8 encoding is bounded at 3000 bytes, dropping trailing
+preview lines when necessary. Stock, evidence, NDCs, unselected catalog rows and secrets are excluded.
+Optional labels with controls/hidden formatting/markup or excess length use an item reference;
+invalid required quantity/unit/priority prevents sending. The Agent never sees or dispatches this.
+GET `/api/push/config` exposes the derived public key only. The private key loads server-side from
+ignored `.env.push` or environment configuration; `push_keys.py` creates but never overwrites it.
+Chrome's existing push service supplies delivery infrastructure; no SMS account is created.
+
+GET `/push-worker.js` serves the authenticated root-scoped worker, with no fetch handler or cached
+private content. It validates the payload schema/limits, displays selected lines and indicates
+remaining lines; malformed/legacy pushes use fixed fallback text. Supplied URLs are never followed.
+It constructs `/demo?order=demo-<12 hex>#order-result` on the same origin. `closing.js` loads the
+authorized worker history and selects only that exact order, focusing its result; missing orders
+show unavailable rather than the latest order. Existing subscriptions request a worker update on
+page load and the worker activates its update without waiting for every old tab to close.
+Subscription restoration precedes a separate bounded worker-update check, so an update error
+does not discard an existing subscription. Client configuration/notification fetches and JSON-body
+waits share a 20-second request deadline and abort their browser fetch when the wait ends.
+`closing.js` also bounds close/submit requests, preserving the draft/intent after an uncertain
+timeout. It releases order busy state before requesting a notification; notification errors cannot
+reclassify a recorded order as an unconfirmed submission. The recorded order's submit button says
+Order submitted and remains disabled, while the adjacent New demo order is available. Notification
+status is mirrored below the form with fixed allowlisted failure references; newer attempts/Disable
+suppress stale feedback without retrying or altering already-dispatched sends.
+Disable unsubscribes the browser. An accepted request
+is not proof of device display. The existing worker-local state limitation also applies to
+notification binding/deduplication; a missing worker order rejects the request. No 6 AM scheduler,
+durable queue, automatic retries or real manufacturer SMS is added.
+
+## Repeat demo orders against one closing report
+
+The user-requested repeat flow replaces the initial one-order restriction. `ClosingDemo` retains
+at most 20 orders/intents under the existing lock. Each distinct intent creates its own revision-1
+order; retries return that intent's original order even after later submissions. Changed contents
+under an existing intent conflict, and capacity rejects new orders without dropping history.
+The close endpoint returns the unchanged snapshot, latest order, copied order history and limit.
+Notification binding finds the exact recorded order, so each order retains its own single attempt.
+
+`closing.js` offers New demo order after submission or refresh recovery. It clears only the active
+draft/intent and unlocks its form, leaving the report, notification opt-in and submitted history
+intact. Merely starting a draft sends nothing. Returning to the report while a new draft is open
+preserves it; a full browser reload restores the latest submitted order, from which another draft
+can be started. No database, new Agent capability or order amendment service is added. Existing
+worker-local, restart and multi-worker limitations remain explicit.

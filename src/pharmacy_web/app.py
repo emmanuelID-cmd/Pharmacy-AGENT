@@ -26,6 +26,7 @@ from ..pharmacy_harness.run import run_review
 from ..pharmacy_tools.inventory import LEGACY_FIXTURE_PATH
 from .catalog import home_catalog
 from .closing import ClosingDemo, ClosingError
+from .push import PushSender
 
 NAVIGATION = [
     {"key": "home", "label": "Home", "path": "/"},
@@ -84,6 +85,22 @@ class DemoOrderBody(StrictBody):
     lines: list[OrderLine] = Field(min_length=1, max_length=150)
 
 
+class PushKeys(StrictBody):
+    p256dh: str = Field(min_length=87, max_length=87)
+    auth: str = Field(min_length=22, max_length=22)
+
+
+class PushSubscription(StrictBody):
+    endpoint: str = Field(min_length=40, max_length=2200)
+    keys: PushKeys
+
+
+class PushOrderBody(StrictBody):
+    closing_id: str = Field(min_length=20, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
+    order_id: str = Field(pattern=r"^demo-[a-f0-9]{12}$")
+    subscription: PushSubscription
+
+
 def safe_error(code, status=400, headers=None):
     return JSONResponse({"state": "Temporarily Unavailable", "reason_code": code,
                          "message": "The request could not be completed. Check the indicated state and retry."},
@@ -126,7 +143,7 @@ def access_check(request, settings):
                       {"WWW-Authenticate": 'Basic realm="Pharmacy-AGENT", charset="UTF-8"'})
 
 
-def create_app(settings=None, *, provider=None, agent_runner=None):
+def create_app(settings=None, *, provider=None, agent_runner=None, push_transport=None):
     settings = settings or Settings.load()
     application = FastAPI(title="Pharmacy-AGENT", docs_url=None, redoc_url=None, openapi_url=None)
     application.state.settings = settings
@@ -137,6 +154,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None):
     application.state.auth_failures = OrderedDict()
     application.state.read_activity = ReadActivity()
     application.state.closing_demo = ClosingDemo()
+    application.state.push_sender = PushSender(settings, **({"transport": push_transport} if push_transport else {}))
     templates = Jinja2Templates(directory=str(ROOT / "web" / "templates"))
 
     @application.middleware("http")
@@ -225,10 +243,15 @@ def create_app(settings=None, *, provider=None, agent_runner=None):
     async def favicon():
         return Response(status_code=204)
 
+    @application.get("/push-worker.js")
+    async def push_worker():
+        return FileResponse(ROOT / "web/assets/push-worker.js", media_type="application/javascript")
+
     @application.get("/assets/{filename}")
     async def assets(filename: str):
         paths = {"pharmacy.css": ROOT / "web/assets/pharmacy.css",
                  "closing.js": ROOT / "web/assets/closing.js",
+                 "push.js": ROOT / "web/assets/push.js",
                  "pharmacy.js": ROOT / "web/assets/pharmacy.js",
                  "architecture.png": ROOT / "docs/architecture/Pharmacy-Agent-Architecture-Digital.png"}
         if filename not in paths or not paths[filename].is_file():
@@ -278,6 +301,18 @@ def create_app(settings=None, *, provider=None, agent_runner=None):
     async def close_demo(body: StrictBody):
         try:
             return await asyncio.to_thread(application.state.closing_demo.close_day)
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
+
+    @application.get("/api/push/config")
+    async def push_config():
+        return application.state.push_sender.configuration()
+
+    @application.post("/api/closing-demo/notify")
+    async def notify_demo_order(body: PushOrderBody):
+        try:
+            return await asyncio.to_thread(application.state.closing_demo.notify,
+                body.closing_id, body.order_id, body.subscription.model_dump(), application.state.push_sender)
         except ClosingError as error:
             return safe_error(error.code, error.status)
 

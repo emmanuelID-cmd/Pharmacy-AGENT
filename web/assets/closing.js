@@ -2,6 +2,7 @@
 (() => {
   'use strict';
   let report = null, order = null, submission = null, busy = false;
+  let history = [], newDraft = false, orderLimit = 20;
   const lines = new Map();
   const get = id => document.getElementById(id);
   const node = (tag, text, css) => {
@@ -16,10 +17,17 @@
     target.classList.toggle('is-error', error);
   };
   async function post(path, body) {
-    const response = await fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
-    const result = await response.json();
-    if (!response.ok) throw Error(result.reason_code || 'REQUEST_FAILED');
-    return result;
+    const controller = new AbortController(); let timer;
+    try {
+      return await Promise.race([(async () => {
+        const response = await fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body), signal: controller.signal});
+        const result = await response.json();
+        if (!response.ok) throw Error('REQUEST_FAILED');
+        return result;
+      })(), new Promise((_, reject) => {
+        timer = setTimeout(() => {controller.abort(); reject(Error('REQUEST_TIMED_OUT'));}, 20000);
+      })]);
+    } finally {clearTimeout(timer);}
   }
   function errors(id, entries, focus = true) {
     const target = get(id); target.replaceChildren(); target.hidden = !entries.length;
@@ -102,36 +110,84 @@
       card.append(label, input, help, error, evidence, remove); target.append(card);
     });
   }
+  function orderControls() {
+    const locked = !!order || busy;
+    ['order-search', 'order-item', 'submit-demo-order', 'clear-demo-order'].forEach(id => {get(id).disabled = locked;});
+    get('order-add-form').querySelector('button').disabled = locked;
+    get('new-demo-order').hidden = !history.length;
+    get('new-demo-order').disabled = busy || !order || history.length >= orderLimit;
+    get('submit-demo-order').textContent = order ? 'Order submitted' : busy ? 'Submitting…' : 'Submit demo order';
+  }
+  function drawHistory() {
+    const target = get('order-history'); target.replaceChildren();
+    if (!history.length) return;
+    const details = node('details'), list = node('ol');
+    details.append(node('summary', `${history.length} submitted demo order(s) · Limit ${orderLimit}`));
+    [...history].reverse().forEach(previous => {
+      const entry = node('li');
+      entry.append(node('strong', previous.order_id), node('p', `${previous.submitted_at} · ${previous.state}`));
+      previous.lines.forEach(line => entry.append(node('p', `${line.local_class} · ${line.label} · ${line.quantity} ${line.unit}`)));
+      list.append(entry);
+    });
+    details.append(list); target.append(details);
+    if (history.length >= orderLimit) target.append(node('p', `This demo worker has reached its ${orderLimit}-order limit. Earlier orders and the report are preserved.`, 'notice notice-warn'));
+  }
   function drawOrder() {
     if (!order || !get('order-result')) return;
     lines.clear();
     order.lines.forEach(line => lines.set(line.item_id, {quantity: String(line.quantity), error: ''}));
     const target = get('order-result');
     target.replaceChildren(node('h3', 'Human-reviewed demo order'), node('p', `${order.order_id} · Revision ${order.revision} · ${order.state}`),
-      node('p', 'Simulation only. No purchase order was placed, no inventory was changed, and no notification was sent.', 'notice notice-warn'));
+      node('p', 'Simulation only. No purchase order was placed and no inventory was changed. Optional phone notification status is shown above.', 'notice notice-warn'));
     const list = node('ol', undefined, 'warning-list');
     order.lines.forEach(line => list.append(node('li', `${line.local_class} · ${line.label} · ${line.quantity} ${line.unit}${line.human_edited ? ' · Human-edited quantity' : ''}`)));
     target.append(list, node('h4', 'Test SMS preview'), node('p', order.test_sms.message),
       node('p', 'Provider and destination are not configured. Real-phone SMS is a separate integration step.', 'small muted'),
       node('h4', 'Manufacturer notice preview'), node('p', `One notice for this order, prioritized CRITICAL before LOW. Example next shift: ${order.manufacturer_notice.scheduled_for}. New York is a demo timezone assumption. No manufacturer is contacted.`));
     target.hidden = false;
-    ['order-search', 'order-item', 'submit-demo-order', 'clear-demo-order'].forEach(id => {get(id).disabled = true;});
-    get('order-add-form').querySelector('button').disabled = true; drawLines();
+    orderControls(); drawLines();
   }
   window.bindClosingDemo = () => {
     const button = get('close-day'); if (!button) return;
-    const restore = () => {drawReport(); filterItems(); drawLines(); get('closing-workspace').hidden = false; button.textContent = 'View same closing report'; drawOrder();};
+    let linkedOrder = new URLSearchParams(window.location.search).get('order');
+    window.bindPushNotifications?.();
+    const restore = () => {drawReport(); filterItems(); drawLines(); drawHistory(); orderControls(); get('closing-workspace').hidden = false; button.textContent = 'View same closing report'; get('order-result').hidden = !order; drawOrder();};
     if (report) restore();
     button.addEventListener('click', async () => {
       button.disabled = true; status('closing-status', 'Capturing the fixed synthetic closing snapshot…');
       try {
         const result = await post('/api/closing-demo/close', {});
-        if (report && report.closing_id !== result.closing.closing_id) {lines.clear(); submission = null; order = null;}
-        report = result.closing; order = result.order;
+        const sameClosing = report?.closing_id === result.closing.closing_id;
+        if (!sameClosing) {lines.clear(); submission = null; order = null; newDraft = false;}
+        report = result.closing; history = result.orders; orderLimit = result.order_limit;
+        if (linkedOrder !== null) {
+          order = /^demo-[a-f0-9]{12}$/.test(linkedOrder) && linkedOrder.length === 17 ?
+            history.find(previous => previous.order_id === linkedOrder) || null : null;
+          newDraft = false;
+        } else if (!newDraft) order = result.order;
         if (!get('close-day')) return;
         restore(); status('closing-status', 'One pre-order report is ready. Select items below; the stock snapshot stays fixed.');
+        if (linkedOrder !== null) {
+          if (order) {
+            const target = get('order-result'); target.tabIndex = -1; target.focus(); target.scrollIntoView();
+            status('order-status', 'Opened the submitted order from your notification.');
+          } else {
+            status('order-status', 'This notification’s order is unavailable in this demo worker. It may have restarted or changed. No other order has been opened. View submitted-order history or start a fresh demo.', true);
+          }
+        }
       } catch (_) {status('closing-status', 'The closing source could not be verified. No complete report is available. Correct the source and retry.', true);}
       finally {button.disabled = false;}
+    });
+    get('new-demo-order').addEventListener('click', () => {
+      if (busy || !order || history.length >= orderLimit) return;
+      linkedOrder = null;
+      if (window.location.search) window.history.replaceState(window.history.state, '', '/demo#closing-title');
+      order = null; submission = null; newDraft = true; lines.clear();
+      get('order-search').value = ''; get('order-result').hidden = true;
+      errors('order-errors', [], false); errors('order-add-errors', [], false);
+      get('order-item-error').hidden = true; get('order-item').setAttribute('aria-invalid', 'false');
+      restore(); get('order-search').focus();
+      status('order-status', 'New demo order started. Select items below. The same closing report and earlier orders are preserved.');
     });
     get('order-search').addEventListener('input', filterItems);
     get('order-item').addEventListener('change', () => {
@@ -165,14 +221,24 @@
         if (line.error) invalid.push(['qty-' + id, line.error]);
       });
       drawLines(); errors('order-errors', invalid); if (invalid.length) return;
-      busy = true; get('submit-demo-order').disabled = true; drawLines(); submission ||= crypto.randomUUID();
+      busy = true; orderControls(); drawLines(); submission ||= crypto.randomUUID();
       const selected = Array.from(lines, ([item_id, line]) => ({item_id, quantity: Number(line.quantity)}));
       status('order-status', 'Recording your human-reviewed demo submission…');
+      let recorded = null;
       try {
         order = await post('/api/closing-demo/submit', {closing_id: report.closing_id, submission_id: submission, lines: selected});
-        if (get('order-result')) {drawOrder(); status('order-status', 'Demo submission recorded. Notification previews are below; the inventory report is unchanged.');}
+        newDraft = false;
+        if (!history.some(previous => previous.order_id === order.order_id)) history.push(order);
+        if (get('order-history')) drawHistory();
+        if (get('order-result')) {drawOrder(); status('order-status', 'Order recorded. Use New demo order for another submission. The inventory report is unchanged; phone notification status is shown here separately.');}
+        recorded = order;
       } catch (_) {status('order-status', 'Submission was not confirmed. Your list is preserved. Use “View same closing report” to recover any existing submission before retrying.', true);}
-      finally {busy = false; if (get('submit-demo-order')) {get('submit-demo-order').disabled = !!order; drawLines();}}
+      finally {busy = false; if (get('submit-demo-order')) {orderControls(); drawLines();}}
+      if (recorded) {
+        try {await window.notifyDemoOrder?.(recorded);}
+        catch (_) {status('order-notification-status', 'Order recorded, but notification status is unavailable. No automatic retry will run. Reference: PUSH_CLIENT_ERROR.', true);}
+      }
     });
+    if (linkedOrder !== null) button.click();
   };
 })();

@@ -102,6 +102,31 @@ class ClosingWorkflowTests(TestCase):
             self.submit([{"item_id": "catalog-001", "quantity": 51}])
         self.assertEqual(changed.exception.code, "DEMO_ORDER_ALREADY_SUBMITTED")
 
+    def test_distinct_orders_reuse_one_report_and_old_retries_remain_idempotent(self):
+        first = self.submit()
+        second = self.submit([{"item_id": "catalog-001", "quantity": 12}], intent="synthetic-intent-002")
+        self.assertNotEqual(first["order_id"], second["order_id"])
+        self.assertEqual(self.submit(), first)
+        state = self.workflow.close_day()
+        self.assertEqual(state["closing"], self.closed)
+        self.assertEqual(state["order"], second)
+        self.assertEqual(state["orders"], [first, second])
+        self.assertEqual(len(self.reads), 1)
+        state["orders"][0]["lines"][0]["quantity"] = 999
+        self.assertEqual(self.submit(), first)
+
+    def test_order_limit_preserves_history_and_permits_existing_retry(self):
+        first = self.submit()
+        for index in range(1, 20):
+            self.submit(intent=f"synthetic-capacity-{index:02}")
+        with self.assertRaises(ClosingError) as limit:
+            self.submit(intent="synthetic-capacity-over")
+        self.assertEqual(limit.exception.code, "DEMO_ORDER_LIMIT_REACHED")
+        self.assertEqual(self.submit(), first)
+        state = self.workflow.close_day()
+        self.assertEqual(len(state["orders"]), state["order_limit"])
+        self.assertEqual(state["closing"], self.closed)
+
     def test_unknown_duplicate_missing_and_invalid_lines_do_not_submit(self):
         for lines in ([], [{"item_id": "unknown", "quantity": 1}],
                       [{"item_id": "catalog-001", "quantity": 1}] * 2,
@@ -150,6 +175,19 @@ class ClosingApiTests(TestCase):
         self.assertEqual(self.client.post("/api/closing-demo/submit", json=body).json(), response.json())
         body["recipient"] = "synthetic-arbitrary-recipient"
         self.assertEqual(self.client.post("/api/closing-demo/submit", json=body).status_code, 422)
+
+    def test_reload_recovers_history_and_new_intent_submits_another_order(self):
+        closed = self.client.post("/api/closing-demo/close", json={}).json()["closing"]
+        body = {"closing_id": closed["closing_id"], "submission_id": "synthetic-first-api-order",
+                "lines": [{"item_id": "catalog-001", "quantity": 2}]}
+        first = self.client.post("/api/closing-demo/submit", json=body).json()
+        self.assertEqual(len(self.client.post("/api/closing-demo/close", json={}).json()["orders"]), 1)
+        body["submission_id"] = "synthetic-second-api-order"
+        second = self.client.post("/api/closing-demo/submit", json=body).json()
+        self.assertNotEqual(first["order_id"], second["order_id"])
+        state = self.client.post("/api/closing-demo/close", json={}).json()
+        self.assertEqual(state["closing"], closed)
+        self.assertEqual([item["order_id"] for item in state["orders"]], [first["order_id"], second["order_id"]])
 
     def test_routes_retain_auth_origin_json_and_request_validation(self):
         hosted = local_client(create_app(Settings(app_env="production")))

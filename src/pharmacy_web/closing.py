@@ -1,7 +1,8 @@
-"""Process-local synthetic closing workflow. No database, model or outbound IO.
+"""Process-local synthetic closing workflow. No database or model calls.
 
 The fixed fixture is captured once. Human-submitted demo orders and notification
 previews are separate objects; neither can modify the frozen inventory report.
+An explicit human notification request may call the separately scoped push sender.
 """
 from copy import deepcopy
 from datetime import datetime, timedelta
@@ -19,6 +20,7 @@ from ..pharmacy_tools.inventory import read_store_inventory
 
 DEMO_CLOCK = "2026-10-07T18:00:00-04:00"
 PRIORITY = {"CRITICAL": 0, "LOW": 1, "ABOVE_THRESHOLD": 2, "UNKNOWN": 3}
+MAX_DEMO_ORDERS = 20
 
 
 class ClosingError(Exception):
@@ -39,12 +41,33 @@ class ClosingDemo:
         self.snapshot = None
         self.order = None
         self.intent = None
+        self.orders = {}
+        self.intents = {}
 
     def close_day(self):
         with self.lock:
             if self.snapshot is None:
                 self.snapshot = self._capture()
-            return {"closing": deepcopy(self.snapshot), "order": deepcopy(self.order)}
+            return {"closing": deepcopy(self.snapshot), "order": deepcopy(self.order),
+                    "orders": deepcopy(list(self.orders.values())), "order_limit": MAX_DEMO_ORDERS}
+
+    def notify(self, closing_id, order_id, subscription, sender):
+        # Separate authenticated human service. It is never exposed as an Agent tool.
+        from .push import validate_subscription
+        validate_subscription(subscription)
+        with self.lock:
+            order = next((item for item in self.orders.values()
+                          if secrets.compare_digest(order_id, item["order_id"])), None)
+            if order is None or not secrets.compare_digest(closing_id, order["closing_id"]):
+                raise ClosingError("DEMO_ORDER_NOT_FOUND", 409)
+            if "push_notification" in order:
+                return deepcopy(order["push_notification"])
+            if not sender.configuration()["configured"]:
+                raise ClosingError("PUSH_KEYS_NOT_CONFIGURED", 503)
+            order["push_notification"] = {"state": "Temporarily Unavailable", "reason_code": "PUSH_DELIVERY_UNCONFIRMED",
+                "attempted": True, "push_service_accepted": False, "delivery_confirmed": False}
+            order["push_notification"] = sender.send(subscription, order)
+            return deepcopy(order["push_notification"])
 
     def _capture(self):
         captured = {}
@@ -111,10 +134,12 @@ class ClosingDemo:
                                  "human_edited": quantity != row["suggestion"]["suggested_quantity"]})
             selected.sort(key=lambda row: (PRIORITY.get(row["local_class"], 3), row["item_id"]))
             intent = json.dumps(selected, sort_keys=True, separators=(",", ":"))
-            if self.order is not None:
-                if self.order["submission_id"] != submission_id or self.intent != intent:
+            if submission_id in self.orders:
+                if self.intents[submission_id] != intent:
                     raise ClosingError("DEMO_ORDER_ALREADY_SUBMITTED", 409)
-                return deepcopy(self.order)
+                return deepcopy(self.orders[submission_id])
+            if len(self.orders) >= MAX_DEMO_ORDERS:
+                raise ClosingError("DEMO_ORDER_LIMIT_REACHED", 409)
             shift = parse_run_at(DEMO_CLOCK).replace(hour=6, minute=0, second=0, microsecond=0)
             if shift <= parse_run_at(DEMO_CLOCK):
                 shift += timedelta(days=1)
@@ -126,4 +151,6 @@ class ClosingDemo:
                          "timezone": "America/New_York", "timezone_is_demo_assumption": True, "external_sends": 0}}
             order["test_sms"] = notification_preview(order)
             self.intent, self.order = intent, order
+            self.orders[submission_id] = order
+            self.intents[submission_id] = intent
             return deepcopy(order)

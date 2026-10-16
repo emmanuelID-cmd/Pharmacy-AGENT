@@ -1,5 +1,9 @@
 # Closing inventory and human order demo
 
+Later user-requested correction: the initial one-order-per-close limit below is superseded by
+the repeat-order flow in [REPEAT-DEMO-ORDERS.md](REPEAT-DEMO-ORDERS.md). The original approval
+record remains preserved; one immutable closing report still applies.
+
 Approved scope: user approved the full PLANNER plan and default recommendations on October 16,
 2026, then explicitly separated real-phone SMS/provider setup from the form/report work.
 This record describes the approved synthetic implementation. The later preview approval authorizes
