@@ -17,7 +17,7 @@ the verified preview-build result and remaining runtime checks are recorded belo
 ## Before publishing
 
 1. Verify the selected Vercel project/plan permits the configured function duration.
-2. Configure `APP_ENV=production`, `ANTHROPIC_MODEL=claude-haiku-5-5`, server-only
+2. Configure `APP_ENV=production`, `ANTHROPIC_MODEL=claude-sonnet-5-5`, server-only
    `ANTHROPIC_API_KEY` (or the documented alias), and reviewer username/password.
    Check the hostname guidance below. Provider/database keys are never frontend variables.
 3. Require Vercel project access protection (or an independently verified shared
@@ -50,7 +50,7 @@ Production and Preview environments:
 | Name | Value |
 | --- | --- |
 | APP_ENV | production |
-| ANTHROPIC_MODEL | claude-haiku-5-5 |
+| ANTHROPIC_MODEL | claude-sonnet-5-5 |
 | ANTHROPIC_API_KEY | Complete existing provider API key, stored as a secret; no wrapping quotes |
 | PHARMACY_REVIEWER_USERNAME | Reviewer login username |
 | PHARMACY_REVIEWER_PASSWORD | Strong reviewer login password, stored as a secret |

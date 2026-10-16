@@ -205,7 +205,7 @@ existing deterministic Python behavior without calling a model. Failure State
 explicitly illustrates recovery scenarios; it does not inject live failures.
 
 Server-only provider configuration: `ANTHROPIC_API_KEY` (also accepts the existing
-`ANTHOPIC_API_KEY` spelling) and `ANTHROPIC_MODEL`. The default is `claude-haiku-5-5`;
+`ANTHOPIC_API_KEY` spelling) and `ANTHROPIC_MODEL`. The default is `claude-sonnet-5-5`;
 Haiku and Sonnet model IDs are supported. No key is sent to the
 browser, tool arguments, model context or diagnostic output. `.env.local` is
 optional; copying a key into multiple files is unnecessary.

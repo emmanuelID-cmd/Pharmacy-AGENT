@@ -169,11 +169,11 @@ class HarnessLoopTests(unittest.TestCase):
             return Response()
 
         text = anthropic_complete("sys", {"schema_version": "prevention-v1"},
-                                  key="synthetic-key", name="claude-haiku-5-5", urlopen=urlopen)
+                                  key="synthetic-key", name="claude-sonnet-5-5", urlopen=urlopen)
         self.assertEqual(text, '{"schema_version":"report-v1"}')
 
     def test_anthropic_complete_omits_temperature(self):
-        # Haiku 5.5 rejects temperature; keep it out of the Anthropic body.
+        # Keep optional temperature out of the Anthropic Messages request body.
         seen = []
 
         def urlopen(request, timeout):
@@ -195,12 +195,16 @@ class HarnessLoopTests(unittest.TestCase):
             return Response()
 
         anthropic_complete("sys", {"schema_version": "prevention-v1"},
-                           key="synthetic-key", name="claude-haiku-5-5", urlopen=urlopen)
+                           key="synthetic-key", name="claude-sonnet-5-5", urlopen=urlopen)
         self.assertEqual(len(seen), 1)
         self.assertNotIn("temperature", seen[0])
 
 
 class HarnessModelCliTests(unittest.TestCase):
+    def test_default_anthropic_model_is_sonnet(self):
+        from src.pharmacy_harness.loop import DEFAULT_ANTHROPIC_MODEL
+        self.assertEqual(DEFAULT_ANTHROPIC_MODEL, "claude-sonnet-5-5")
+
     def test_model_copy_injects_copier(self):
         fake = run_review(run_at=EVAL_RUN_AT, fda_http_get=offline_fda_http_get)
         with patch("src.pharmacy_harness.__main__.run_review", return_value=fake) as mocked:
