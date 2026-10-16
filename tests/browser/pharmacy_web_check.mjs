@@ -124,6 +124,13 @@ const closingChecks = await evaluate(`(async()=>{
  input().value='0';input().dispatchEvent(new Event('input'));get('demo-order-form').requestSubmit();
  if(get('order-errors').hidden||input().getAttribute('aria-invalid')!=='true')throw Error('Quantity error missing');
  input().value='4';input().dispatchEvent(new Event('input'));if(input().getAttribute('aria-invalid')!=='false')throw Error('Quantity error did not clear');
+ const second=close.closing.rows.find(row=>row.item_id!==valid.item_id&&row.suggestion.suggested_quantity>0);
+ get('order-search').value=second.item_id;get('order-search').dispatchEvent(new Event('input'));get('order-item').value=second.item_id;get('order-add-form').requestSubmit();
+ for(const rowInput of get('order-list').querySelectorAll('input')){rowInput.value='0';rowInput.dispatchEvent(new Event('input'));}
+ get('demo-order-form').requestSubmit();
+ if(get('order-errors').querySelectorAll('li').length!==2)throw Error('Both quantity errors not summarized');
+ get('qty-'+second.item_id).closest('article').querySelector('button').click();
+ if(get('order-errors').hidden||get('order-errors').querySelectorAll('li').length!==1||input().getAttribute('aria-invalid')!=='true')throw Error('Removing one row hid unrelated errors');
  get('clear-demo-order').click();if(get('order-list').children.length!==0)throw Error('Reject did not clear');
  add();input().value='3';input().dispatchEvent(new Event('input'));
  return {itemId:valid.item_id,original,closingId:close.closing.closing_id,catalogEntries:150,selectionValidation:true,quantityValidation:true,rejection:true};
@@ -154,4 +161,12 @@ const closingOutput = process.env.TEMP + '/pharmacy-closing-demo.png';
 fs.writeFileSync(closingOutput, Buffer.from(closingShot.data,'base64'));
 if(exceptions.length)throw Error('Browser exceptions: '+JSON.stringify(exceptions));
 console.log(JSON.stringify({closingChecks:{...closingChecks,original:undefined},closingResult,closingScreenshot:closingOutput},null,2));
+await navigate('/demo');
+await evaluate(`(async()=>{
+ const get=id=>document.getElementById(id);get('close-day').click();
+ for(let i=0;i<100&&get('order-result').hidden;i++)await new Promise(r=>setTimeout(r,50));
+ const restored=get('qty-'+${JSON.stringify(closingChecks.itemId)});
+ if(!restored||restored.value!=='3'||!restored.disabled||!get('order-empty').hidden)throw Error('Submitted order reload recovery failed');
+})()`);
+console.log(JSON.stringify({submittedOrderRecoveredAfterReload:true}));
 await call('Browser.close');socket.close();

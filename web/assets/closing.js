@@ -94,12 +94,18 @@
       const evidence = node('details'); evidence.append(node('summary', 'Suggestion policy and evidence'));
       evidence.append(node('p', supported ? `${row.suggestion.policy_version}: target ${row.suggestion.target_days} days; target ${row.suggestion.target_units} units; confirmed incoming ${row.suggestion.confirmed_incoming}; multiple ${row.suggestion.order_multiple}; minimum ${row.suggestion.minimum_units}. ${row.suggestion.calculation}. Evidence: ${row.evidence_reference}.` : row.reason_codes.join(', ') || row.suggestion.reason_code, 'small muted'));
       const remove = node('button', 'Remove item', 'button button-text'); remove.type = 'button'; remove.disabled = !!order || busy; remove.setAttribute('aria-label', `Remove ${row.label}`);
-      remove.addEventListener('click', () => {lines.delete(id); drawLines(); errors('order-errors', [], false); get('order-item').focus();});
+      remove.addEventListener('click', () => {
+        lines.delete(id); drawLines();
+        errors('order-errors', Array.from(lines).filter(([, entry]) => entry.error).map(([key, entry]) => ['qty-' + key, entry.error]), false);
+        get('order-item').focus();
+      });
       card.append(label, input, help, error, evidence, remove); target.append(card);
     });
   }
   function drawOrder() {
     if (!order || !get('order-result')) return;
+    lines.clear();
+    order.lines.forEach(line => lines.set(line.item_id, {quantity: String(line.quantity), error: ''}));
     const target = get('order-result');
     target.replaceChildren(node('h3', 'Human-reviewed demo order'), node('p', `${order.order_id} · Revision ${order.revision} · ${order.state}`),
       node('p', 'Simulation only. No purchase order was placed, no inventory was changed, and no notification was sent.', 'notice notice-warn'));
@@ -140,6 +146,8 @@
       }
       if (!lines.has(row.item_id)) lines.set(row.item_id, {quantity: row.suggestion.suggested_quantity === null ? '' : String(row.suggestion.suggested_quantity), error: ''});
       drawLines();
+      get('order-errors').querySelector('a[href="#order-item"]')?.closest('li').remove();
+      get('order-errors').hidden = !get('order-errors').querySelector('li');
       get('qty-' + row.item_id).focus(); status('order-status', 'Item is in your order list. Selecting it again preserves the existing line and your edits.');
     });
     get('clear-demo-order').addEventListener('click', () => {
