@@ -100,3 +100,38 @@ the configured model and fixed FDA endpoint, records sanitized outcomes separate
 and makes at most two end-to-end runs without automatic model retries. A frozen
 October 7 evaluation clock is explicitly labeled; normal Agent reviews use current
 time and preserve stale-snapshot review requirements.
+
+## Approved closing/order demo - October 16, 2026
+
+The Demo tab retains its original 20-row fixed review and adds a separate 150-item closing workflow.
+`src/pharmacy_web/closing.py` invokes the existing fixed inventory read guard, then independent
+snapshot/item validation and `calculate_item`. The additive `pharmacy_harness/replenishment.py`
+contract consumes those checked results plus an explicit per-item synthetic policy. Existing
+Agent tools, model context, CLI arithmetic and output guard are unchanged; the model sees no
+order draft, submit tool, recipient, credential or notification API.
+
+```mermaid
+flowchart LR
+    Human[Human clicks Close day] --> Read[Guarded synthetic inventory read]
+    Read --> Verify[Independent validation and deterministic calculations]
+    Verify --> Report[One fixed pre-order closing report]
+    Report --> Form[Search 150 items; queue and edit selected lines]
+    Form --> Submit[Explicit human demo submit]
+    Submit --> Order[Process-local simulated order and scoped intent]
+    Order --> Preview[Separate SMS and next-shift manufacturer notice previews]
+```
+
+POST `/api/closing-demo/close` captures once per application process; repeating it returns the
+same report and any recorded demo order. POST `/api/closing-demo/submit` accepts only the server
+closing reference, submission intent and bounded item ID/quantity lines. It rebinds each line
+to the frozen snapshot, rejects unsupported/duplicate items and conflicting intents, and returns
+the same demo order for an identical retry. Both routes inherit the existing reviewer access,
+origin, content-type, body-limit and safe-error middleware. Source labels are text-only UI data.
+
+The server uses a lock for capture and submission. Returned copies cannot mutate its original
+snapshot/order. This state is memory-only and shared within that authorized prototype worker;
+restarts clear it and different workers do not share it. No database is touched, and no durable
+idempotency or real scheduled delivery is claimed. The unconfigured notification adapter has
+no outbound transport and reports PREVIEW_ONLY with zero sends. Actual SMS and manufacturer
+integration require a separately chosen provider/test destination; durable scheduling/write
+services require separate Supabase approval and its dedicated migration branch.

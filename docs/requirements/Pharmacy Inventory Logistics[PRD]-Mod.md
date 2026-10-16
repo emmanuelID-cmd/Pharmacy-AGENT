@@ -8,7 +8,7 @@
 
 **Date:** October 8, 2026
 
-**Status:** Consolidated Mod review copy; no production application or CVS integration is implemented. The initial private Supabase schema and read-only database reader are implemented as project infrastructure. Original PRD and POLICY.md remain unchanged; this copy is not silently made canonical.
+**Status:** Consolidated Mod review copy; no production application or CVS integration is implemented. The initial private Supabase schema and read-only database reader are implemented as project infrastructure. The original PRD and template remain preserved; POLICY.md includes the approved synthetic demo extension. This Mod review copy is not silently made canonical.
 
 **Industry + function:** Pharmaceuticals + Inventory Logistics.
 
@@ -125,34 +125,45 @@ Goals are complete coverage, accurate supply estimates, earlier review, faster r
 - [P0] Authorized staff can add or retire medication/package records and record stock movements through a protected staff service; history is preserved. Agent credentials cannot access these write operations.
 - [P0] Staff changes use validated input, atomic updates, event/version checks and audit records. Permission, conflict and failed-write states are explicit; a timeout is not proof of failure.
 
-### Requested next-demo extension — human-controlled replenishment workflow (draft; not implemented)
+### Approved demo extension - close inventory, then review an order
 
-This requested extension goes beyond the current v1 exclusions above. It is a proposed, synthetic-only demo path, not a claim that the current application can prepare or submit orders, update inventory, or contact a manufacturer. No live pharmacy or manufacturer connection is assumed.
+Status: approved October 16, 2026 for a synthetic local demo. This extension is separate from the read-only v1 review and does not make this Mod review copy silently canonical. The original PRD draft and template remain preserved. Real-phone SMS is a separate integration step; the current feature never sends externally.
 
-**Journey 4 — Prepare and review an order draft**
+**Journey 4 - Close the day once, before ordering**
 
-- [P1] After the inventory report, the Agent can identify low/critical items for possible replenishment and recommend a quantity only when a versioned, authorized item policy and all required evidence are present. The policy must define the target, unit/pack rounding, minimums, and treatment of confirmed open orders/receipts. Missing or conflicting inputs withhold the quantity and route that item to manual review; the Agent never invents a quantity.
-- [P1] The interface can show a clearly labeled, unsaved order draft with the recommended item lines and quantities. The Agent may prefill quantity fields only; it cannot persist, submit, transmit, or otherwise write an order. Staff can inspect, edit, remove, or reject each proposed line.
-- [P0] A distinct human action is required to submit/send an order through an authorized ordering service outside the Agent. The interface must distinguish an unsaved draft, a human-submitted order, and a confirmed manufacturer receipt. A draft or failed submission is never shown as an order placed.
+- [P0] User clicks **Close day / Generate report** in the Demo tab. The application captures one validated 150-row stock snapshot and creates one closing inventory report before any order is submitted. The demo declares October 7, 2026 at 6:00 PM America/New_York as its example closing clock; the source snapshot time and actual report-creation time remain distinct.
+- [P0] User sees the original snapshot reference/time, synthetic label, all 150 stock rows, days of supply, classifications and manual-review exceptions. The same server process returns the same report on repeated close actions, including after an order is submitted. A failed source does not become a complete report.
+- [P0] The report remains a fixed pre-order inventory snapshot. Draft quantities, submitted orders, notification previews and receipts are different events; submission alone never changes on-hand units. Later stock changes require an explicitly requested later inventory review, never silent rewriting or a second after-order closing report.
+- [P1] Opening-to-closing usage, receipts, transfers and adjustments are shown only when verified movement evidence exists. The current fixture has no connected movement ledger, so this comparison is explicitly unavailable.
 
-**Journey 5 — Close inventory and report order state**
+**Journey 5 - Select, review, edit or reject an order list**
 
-- [P1] User can create a closing inventory report from a timestamped, validated closing snapshot and show the opening-to-closing change with its supported usage, receipts, transfers, and adjustments. If a source changes before the review request, use and label the latest valid snapshot; if it changes after the report, retain the original as-of time and require a fresh run to show the update.
-- [P1] The closing report shows physical on-hand stock separately from unsent drafts and human-submitted-but-unreceived orders. Submitting an order does not increase on-hand stock; an order is not a receipt or consumption event.
-- [P1] At the start of the manufacturer's morning shift, target 6:00 AM manufacturer-local time, create one separately tracked notice for each human-submitted order (not a combined daily digest). Each notice includes its order ID/revision and item lines prioritized by validated inventory status: CRITICAL before LOW, with days of supply and supporting evidence. This is replenishment/delivery priority only, never clinical or patient priority; the Agent does not choose delivery routes or promise availability. Never include an unsent draft. Reflect the latest human-approved order revision available at shift start; later amendments/cancellations create a clearly linked revision event rather than silently changing the earlier notice. The manufacturer-local timezone, handling of orders submitted after shift start, delivery channel, and whether the notice is the purchase-order transmission itself or a separate notice remain open decisions.
+- [P0] User searches a native dropdown containing all 150 catalog items by name, item ID or exact package NDC, then chooses **Add to order list**. Only selected items queue below the selector. Reselecting an item preserves its one existing line and human edits; nothing is silently added from an alert.
+- [P1] Deterministic code may prefill a quantity only from independently validated item evidence and an explicit per-item synthetic demo policy. The visible example targets seven days of stock, supplies zero confirmed incoming units, and uses a one-dispensing-unit minimum and multiple. These are test assumptions, not manufacturer pack sizes or operational policy; no package conversion is inferred.
+- [P0] Missing, conflicting, stale, ambiguous or zero-usage evidence withholds the affected quantity. An unsupported item remains selectable for inspection but cannot be included in a supported demo submission; remove it or correct the source outside the Agent. Other supported items survive.
+- [P0] User can edit a suggested quantity, remove lines, or reject/clear the entire draft. Suggestions and human edits remain distinguishable. Quantities must be whole dispensing units from 1 through 1,000,000 for this demo.
+- [P0] Only an explicit human **Submit demo order** action records a simulated submission. It does not place/transmit a purchase order, write inventory, contact a manufacturer or authorize an Agent tool. Empty/invalid forms retain valid work and show a linked error summary plus field-level feedback.
+- [P0] A retry of the same submission intent returns the same demo order. Changed/replayed intents cannot silently create another order for that closing session. The first demo supports one order/revision per process-local closing session; later order amendments/cancellations and real ordering services remain separately scoped.
+
+**Journey 6 - Inspect a separate per-order notice preview**
+
+- [P0] After human submission, user sees a clearly labeled SMS preview and one manufacturer-notice preview linked to the submitted demo order ID/revision. Unsent/rejected drafts produce neither. Neither preview is a second inventory report.
+- [P1] Prioritize submitted lines by validated local status: CRITICAL before LOW, followed by other supported statuses; show quantity/unit, days of supply and snapshot evidence in the submitted order. This is inventory/replenishment priority, never clinical or patient priority.
+- [P1] Show the next 6:00 AM morning-shift target as a preview. America/New_York is explicitly a demo timezone assumption; after-shift submissions target the next shift. This is not a running scheduler or a delivery promise.
+- [P0] An unconfigured SMS adapter returns PREVIEW_ONLY / SMS_PROVIDER_NOT_CONFIGURED and zero external sends. Real-phone SMS, provider selection, credentials, test destination and delivery testing are a separate integration step. A browser virtual-phone service has not been connected either.
 
 **Demo sequence and acceptance**
 
-1. Show the opening synthetic snapshot and its as-of time; run the report with 50 usable units at 10 units/day (5 days, LOW).
-2. Change the synthetic stock to 20 units before the next user request. Run again and show the newer snapshot time and 2 days remaining (CRITICAL). This is the update-before-request case.
-3. Show a quantity suggestion only against a visible synthetic ordering policy, confirmed open-order data, and pack-size rule; show the arithmetic and evidence beside it. Remove or conflict one required input and rerun to demonstrate that the quantity is withheld for that item.
-4. Let the staff user edit or reject the prefilled quantity in an explicitly unsaved draft, then demonstrate the separate human submit step. In the demo this step is simulated; it does not write to a database or contact a supplier.
-5. Change the synthetic inventory after producing the report. Show that the existing report retains its original snapshot/as-of time, then rerun to show the later snapshot. In the closing report, keep physical stock separate from the still-pending order; submission alone does not increase on-hand units.
-6. Preview one simulated per-order notice queued for the start of the manufacturer's morning shift (6:00 AM local target), with CRITICAL/LOW delivery priority and a revision reference; do not send it externally.
+1. Open Demo and click Close day / Generate report. Inspect its pre-order snapshot reference, time and 150-row coverage.
+2. Search the dropdown, add a supported item, inspect its synthetic policy and suggestion, and edit the quantity. Add it again to show one preserved line. Add/remove another line or reject the draft to demonstrate human control.
+3. Try an empty/invalid quantity, then correct it without losing unrelated draft entries. Automated fault fixtures separately demonstrate that missing evidence withholds a quantity and blocks that item's submission; the normal 150-row catalog need not contain an invalid row.
+4. Submit the human-reviewed demo order. Verify its simulation label, recorded human edits, unchanged stock report, zero inventory writes and zero external sends.
+5. Click View same closing report; its ID, timestamp and stock stay identical. Inspect the separately linked SMS and next-shift manufacturer notice previews.
+6. Automated synthetic tests separately verify 50 usable units at 10/day gives 5.00 days LOW; 20 units gives 2.00 days CRITICAL. Missing/conflicting policy withholds a quantity. Concurrent identical submission retries return one order, and source mutation after closure cannot rewrite the report.
 
-The demo passes when every displayed suggestion matches the approved fixture policy, missing evidence blocks unsupported quantities, no Agent order/write/send occurs, a human submit is visibly distinct, closing stock is not increased by an unreceived order, and both pre-request and post-report changes are represented with correct snapshot/run times. Tests must cover edits, rejection, cancellation, failed submission, duplicate/revised notices, and retry without double-sending.
+Acceptance targets: 150/150 catalog entries selectable; 150/150 source rows reported or explicitly withheld; exactly one immutable report and at most one submitted demo order per process-local closing session; zero unsupported quantity suggestions, Agent submissions, operational writes or external sends. Browser checks cover search, duplicate selection, edits, errors, rejection/removal, tab return, human submit and narrow-screen layout.
 
-**Open decisions before implementation:** approve the reorder formula and required policy/source fields; confirm the manufacturer's timezone and exact shift-start cutoff around the 6:00 AM target; decide whether orders submitted after shift start trigger an immediate notice or wait for the next shift; identify the manufacturer channel and recipient configuration; define whether the human's submit action sends the purchase order or queues a separate manufacturer notice; define acknowledgements, revisions/cancellations, retries and idempotency; and decide whether this extension is demo-only or a later operational integration. Until these decisions and a separate implementation review are complete, existing v1 requirements and behavior remain authoritative.
+**Remaining operational decisions:** actual replenishment policy and pack rules require authorized staff approval; live ordering service, durable order/outbox storage, real manufacturer timezone/channel/recipient, post-submit revisions/cancellations, delivery acknowledgements and scheduled execution require separate work. Supabase changes belong on feature/supabase-migration. Current demo records are process-local and clear on restart; they are not a durable or cross-worker order system.
 
 ## 3a. Tools
 

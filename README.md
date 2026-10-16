@@ -103,7 +103,7 @@ Keys stay in environment variables or an ignored `.env` file. Never commit them:
 
 The agent **never**:
 
-- decides to replenish, recommends or calculates an order or quantity, or places or submits an order; low or critical status only flags an item for human review;
+- decides to replenish or places/submits an order; the read-only Agent review flags LOW/CRITICAL stock for human review. The separate synthetic Demo can suggest quantities using its visible test policy; it cannot execute an order;
 - **writes** to inventory, changes policy, or releases reserved, expired or quarantined stock;
 - makes **clinical** decisions: no diagnosis, treatment, dispensing or patient prioritization;
 - uses **patient data** (no patient IDs, dosing instructions or addresses);
@@ -119,14 +119,20 @@ is not flagged by the detector, although it is still contained (it never reaches
 report). Fixed: an item with ambiguous or missing dosage strength now gets `AMBIGUOUS_ITEM` and manual
 review (PR #16, tests in PR #20).
 
-**Requested next-demo extension, not implemented:** show a multi-step human replenishment review
-using synthetic data: report low/critical stock, calculate suggested quantities only from an
-approved fixture policy, prefill quantity fields in an unsaved order draft, let a human edit or
-reject lines and simulate the human submit, then show a closing inventory report that keeps
-unreceived orders separate from on-hand stock. Preview one manufacturer notice per submitted
-order for the start of the manufacturer's morning shift (6:00 AM local target), prioritizing
-CRITICAL before LOW inventory. No live order, database write, or external notice is part of this
-demo proposal; manufacturer timezone, after-shift handling, and delivery channel remain open.
+**Closing report and order-form demo:** On the Demo tab, use **Close day / Generate report**
+to capture one pre-order inventory report for the 150-item synthetic catalog. Search the dropdown,
+add selected items to the queued list, inspect the explicit seven-day demo quantity policy,
+edit/remove items, and use **Submit demo order**. The separate notification previews are linked
+to that human-reviewed simulation; the original stock report stays unchanged. The example closing
+clock is October 7, 2026 at 6:00 PM New York time, distinct from the original stock snapshot and
+actual report creation. The original 20-row fixed demo remains above this workflow.
+
+No purchase order, inventory write, database write or external notification occurs. Real-phone
+SMS is a separate integration step; no provider or recipient is configured. The 6:00 AM
+manufacturer notice is a preview using an explicitly assumed New York timezone, not a running
+scheduler. Demo records are process-local and clear on restart; drafts survive tab changes while
+the page remains open. This is not a durable or multi-worker ordering service. See the
+[approved workflow plan](docs/planning/ORDER-WORKFLOW-PLAN.md).
 
 ## Team
 
