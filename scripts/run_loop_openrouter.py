@@ -1,7 +1,7 @@
 """Run the real agent loop (observe -> decide -> act -> feed back) with an OpenRouter model.
 
 The team's loop (src/pharmacy_agent/runtime.py run_agent) speaks the Anthropic Messages
-format and normally calls Claude Haiku. This script only swaps the provider: an adapter
+format and defaults to Claude Sonnet. This script only swaps the provider: an adapter
 translates each turn to OpenRouter's OpenAI-compatible chat API, so any OpenRouter model
 with tool calling can make the decisions. Tools, guards, calculations and report
 validation are the unchanged team code.

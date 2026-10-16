@@ -6,7 +6,7 @@ from pathlib import Path
 from dotenv import dotenv_values
 
 ROOT = Path(__file__).resolve().parents[2]
-LATEST_HAIKU = "claude-haiku-5-5"
+DEFAULT_MODEL = "claude-sonnet-5-5"
 SUPPORTED_MODEL_PREFIXES = ("claude-haiku-", "claude-sonnet-")
 CONFIG_NAMES = {
     "APP_ENV", "ANTHROPIC_API_KEY", "ANTHOPIC_API_KEY", "ANTHROPIC_MODEL",
@@ -16,7 +16,7 @@ CONFIG_NAMES = {
 
 @dataclass(frozen=True)
 class Settings:
-    model: str = LATEST_HAIKU
+    model: str = DEFAULT_MODEL
     api_key: str = field(default="", repr=False)
     app_env: str = "development"
     reviewer_username: str = field(default="", repr=False)
@@ -69,7 +69,7 @@ class Settings:
             hosts = [v.strip() for v in values["PHARMACY_ALLOWED_HOSTS"].split(",") if v.strip()]
         app_env = "production" if hosted else values.get("APP_ENV", "development")
         return cls(
-            model=values.get("ANTHROPIC_MODEL") or LATEST_HAIKU,
+            model=values.get("ANTHROPIC_MODEL") or DEFAULT_MODEL,
             api_key=values.get("provider_key", ""),
             app_env=app_env,
             run_seconds=50 if app_env != "development" else 120,

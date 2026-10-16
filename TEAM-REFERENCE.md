@@ -23,11 +23,19 @@ at `3b11428dcbca2999d90c69d9780bb369ca3dc060` and was left untouched; its older
 ref was deleted during cleanup before the teammate recreated the lane. The other
 three lane refs were created at main `8bb7d1f`, then fast-forwarded to `9b75452`.
 At the 18:05 cleanup verification, the lane refs except the harness pointed at
-`main`; since then, PR #27 advanced `feature/pharmacy-injection-risk-prevention`
-to `be1270dbe9fa189995acf1c5ca12e6cbc15ca862`, two commits ahead of main. PR #27
-is open and mergeable; its Vercel build checks pass, while Supabase Preview is
-skipped. `feature/pharmacy-harness` has three unique commits and remains 13
-commits behind main; its work was preserved for Kerrian.
+`main`. PR #27, which carried the approved human-controlled replenishment demo
+proposal, subsequently merged to `main` as `59160cf`; its Vercel checks passed
+and Supabase Preview was skipped. On October 16, `feature/pharmacy-harness` at `3b11428` was confirmed 16
+commits behind `main` at `59160cf`, with three unique commits. Its pre-rebase tip
+was preserved in a verified local Git bundle, then those commits were rebased onto
+main; the sole conflict was reconciled in this file by retaining main's newer
+history and adding the missing October 15 push entry in timestamp order. Sonnet
+5.5 is now the active default across the web Agent and one-turn harness. The full
+local suite passes 277 tests. A live Sonnet 5.5 turn using the local Anthropic
+credential returned ACCEPTED with the exact `report-v1`; the overall synthetic
+fixture remained MANUAL_REVIEW because of its seeded invalid/unknown rows. FDA
+used the recorded offline payload. This branch update is still local and
+unpushed pending publication.
 
 Merged PR source refs `docs/strength-fix-evidence` and
 `feature/supabase-inventory-schema` were fast-forwarded to current `main`; both
@@ -110,7 +118,7 @@ Documentation is grouped in docs/requirements, docs/templates, docs/planning, an
 
 ## Latest local handoff — Phase 7 harness
 
-Branch `feature/pharmacy-harness`. Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW`. The CLI prints a manager table by default (`--json` for the machine copy), freezes the Eval Card clock unless `--now` is passed, and uses `--offline` for a recorded FDA payload. Phase 8 adds one guarded model turn (`--model-copy` or `--model`); invented numbers are rejected. No language-model loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
+Branch `feature/pharmacy-harness` (durable harness home). Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW`. The CLI prints a manager table by default (`--json` for the machine copy), freezes the Eval Card clock unless `--now` is passed, and uses `--offline` for a recorded FDA payload. Phase 8 one guarded model turn (`--model-copy` or `--model`) is implemented; the current default is Sonnet 5.5. Historical Haiku live acceptance is recorded above and does not establish Sonnet acceptance. Invented numbers are rejected. No second harness multi-turn tool loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
 
 | Member | Part | Verified contribution/status |
 |---|---|---|
@@ -200,6 +208,12 @@ New read_store_inventory_database returns 20 rows through the real session poole
 - Verified push to `feature/supabase-inventory-schema` at 16:36:30 America/New_York: `87e83c1a57f1d65094a33a268b5a08f0cf92f9de..1f70c89483b806978e0f21e97359c055de39f56b`.
 - Published the Sonnet runtime support, approved alert/reporting requirements, and PR #21 handoff receipt. The remote tip was confirmed with `git ls-remote`.
 - Validation: full unittest suite passed (275 tests); the reviewed baseline-to-endpoint diff passed `git diff --check`.
+
+## 2026-10-15T16:34:21-04:00
+
+- Verified `test/harness-anthropic-no-temperature` push `ec78a09f30a6ce5f27e71c7872984844e2e5ec51..b946da386848cdd97b33e911f0f9a9614422c4ad`.
+- Regression test: Anthropic Messages body omits `temperature` (Haiku 5.5). No main merge.
+- Full suite after tester merge (#21): 276 OK.
 
 ## 2026-10-15T15:57:53-04:00
 

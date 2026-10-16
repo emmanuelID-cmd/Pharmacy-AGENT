@@ -231,6 +231,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         from unittest.mock import patch
         self.assertEqual(Settings().run_seconds, 120)
         self.assertEqual(Settings().max_tokens, 24576)
+        self.assertEqual(Settings().model, "claude-sonnet-5-5")
         self.assertEqual(Settings(model="claude-sonnet-5-5").model, "claude-sonnet-5-5")
         with self.assertRaises(ValueError):
             Settings(model="claude-opus-5-5")
@@ -242,6 +243,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
                 loaded = Settings.load(Path(folder))
         self.assertEqual(loaded.run_seconds, 50)
         self.assertEqual(loaded.model_seconds, 45)
+        self.assertEqual(loaded.model, "claude-sonnet-5-5")
 
     async def test_provider_caps_read_decisions_and_full_reports(self):
         from unittest.mock import patch
@@ -264,7 +266,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
                 return Response()
         tools = claude_tools()
         with patch("src.pharmacy_agent.anthropic_client.AsyncAnthropic", Client):
-            client = ClaudeClient(Settings(api_key="synthetic-provider-key"))
+            client = ClaudeClient(Settings(model="claude-haiku-5-5", api_key="synthetic-provider-key"))
             await client.complete(messages=[{"role": "user", "content": "Synthetic review"}],
                                   tools=tools, choice={"type": "any"}, timeout=1)
             await client.complete(messages=[{"role": "user", "content": "Copy exact JSON"}],

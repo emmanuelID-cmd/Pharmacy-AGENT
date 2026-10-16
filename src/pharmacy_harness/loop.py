@@ -17,8 +17,8 @@ MODEL_TIMEOUT_SECONDS = 30
 ANTHROPIC_TIMEOUT_SECONDS = 60
 ANTHROPIC_MESSAGES_URL = "https://api.anthropic.com/v1/messages"
 ANTHROPIC_VERSION = "2023-06-01"
-# Verified Oct 2026 on Anthropic Models docs (Haiku 5.5 released Oct 7, 2026).
-DEFAULT_ANTHROPIC_MODEL = "claude-haiku-5-5"
+# Keep the CLI default aligned with the shared Sonnet runtime configuration.
+DEFAULT_ANTHROPIC_MODEL = "claude-sonnet-5-5"
 
 
 @dataclass(frozen=True)
@@ -192,7 +192,7 @@ def anthropic_text(payload):
 def anthropic_complete(system_prompt, context, *, key, name, timeout=ANTHROPIC_TIMEOUT_SECONDS,
                        urlopen=urllib.request.urlopen):
     """One Anthropic Messages call. No tools. Caller supplies the key."""
-    # Haiku 5.5 rejects temperature (invalid_request_error: deprecated for this model).
+    # Avoid model-specific temperature validation errors; output checks enforce the report contract.
     body = json.dumps({
         "model": name,
         "max_tokens": 8192,
