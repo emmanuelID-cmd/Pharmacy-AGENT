@@ -25,6 +25,7 @@ from ..pharmacy_agent.runtime import ReadActivity, envelope, run_agent
 from ..pharmacy_harness.run import run_review
 from ..pharmacy_tools.inventory import LEGACY_FIXTURE_PATH
 from .catalog import home_catalog
+from .closing import ClosingDemo, ClosingError
 
 NAVIGATION = [
     {"key": "home", "label": "Home", "path": "/"},
@@ -70,6 +71,17 @@ class TesterBody(StrictBody):
 
 class FailureBody(StrictBody):
     scenario: Literal["timeout", "key", "malformed", "store", "empty", "fda", "offline"]
+
+
+class OrderLine(StrictBody):
+    item_id: str = Field(min_length=1, max_length=64, pattern=r"^[A-Za-z0-9_.:-]+$")
+    quantity: int = Field(ge=1, le=1_000_000)
+
+
+class DemoOrderBody(StrictBody):
+    closing_id: str = Field(min_length=20, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
+    submission_id: str = Field(min_length=16, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
+    lines: list[OrderLine] = Field(min_length=1, max_length=150)
 
 
 def safe_error(code, status=400, headers=None):
@@ -124,6 +136,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None):
     application.state.run_active = False
     application.state.auth_failures = OrderedDict()
     application.state.read_activity = ReadActivity()
+    application.state.closing_demo = ClosingDemo()
     templates = Jinja2Templates(directory=str(ROOT / "web" / "templates"))
 
     @application.middleware("http")
@@ -215,6 +228,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None):
     @application.get("/assets/{filename}")
     async def assets(filename: str):
         paths = {"pharmacy.css": ROOT / "web/assets/pharmacy.css",
+                 "closing.js": ROOT / "web/assets/closing.js",
                  "pharmacy.js": ROOT / "web/assets/pharmacy.js",
                  "architecture.png": ROOT / "docs/architecture/Pharmacy-Agent-Architecture-Digital.png"}
         if filename not in paths or not paths[filename].is_file():
@@ -259,6 +273,21 @@ def create_app(settings=None, *, provider=None, agent_runner=None):
     @application.get("/api/test-samples")
     async def samples():
         return {"samples": [{key: sample[key] for key in ("id", "name", "source")} for sample in SAMPLES]}
+
+    @application.post("/api/closing-demo/close")
+    async def close_demo(body: StrictBody):
+        try:
+            return await asyncio.to_thread(application.state.closing_demo.close_day)
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
+
+    @application.post("/api/closing-demo/submit")
+    async def submit_demo_order(body: DemoOrderBody):
+        try:
+            return await asyncio.to_thread(application.state.closing_demo.submit,
+                body.closing_id, body.submission_id, [line.model_dump() for line in body.lines])
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
 
     @application.post("/api/test-input")
     async def tester(body: TesterBody):
