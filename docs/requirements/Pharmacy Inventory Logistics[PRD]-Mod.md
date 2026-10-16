@@ -124,6 +124,36 @@ Goals are complete coverage, accurate supply estimates, earlier review, faster r
 
 - [P0] Authorized staff can add or retire medication/package records and record stock movements through a protected staff service; history is preserved. Agent credentials cannot access these write operations.
 - [P0] Staff changes use validated input, atomic updates, event/version checks and audit records. Permission, conflict and failed-write states are explicit; a timeout is not proof of failure.
+
+### Requested next-demo extension — human-controlled replenishment workflow (draft; not implemented)
+
+This requested extension goes beyond the current v1 exclusions above. It is a proposed, synthetic-only demo path, not a claim that the current application can prepare or submit orders, update inventory, or contact a manufacturer. No live pharmacy or manufacturer connection is assumed.
+
+**Journey 4 — Prepare and review an order draft**
+
+- [P1] After the inventory report, the Agent can identify low/critical items for possible replenishment and recommend a quantity only when a versioned, authorized item policy and all required evidence are present. The policy must define the target, unit/pack rounding, minimums, and treatment of confirmed open orders/receipts. Missing or conflicting inputs withhold the quantity and route that item to manual review; the Agent never invents a quantity.
+- [P1] The interface can show a clearly labeled, unsaved order draft with the recommended item lines and quantities. The Agent may prefill quantity fields only; it cannot persist, submit, transmit, or otherwise write an order. Staff can inspect, edit, remove, or reject each proposed line.
+- [P0] A distinct human action is required to submit/send an order through an authorized ordering service outside the Agent. The interface must distinguish an unsaved draft, a human-submitted order, and a confirmed manufacturer receipt. A draft or failed submission is never shown as an order placed.
+
+**Journey 5 — Close inventory and report order state**
+
+- [P1] User can create a closing inventory report from a timestamped, validated closing snapshot and show the opening-to-closing change with its supported usage, receipts, transfers, and adjustments. If a source changes before the review request, use and label the latest valid snapshot; if it changes after the report, retain the original as-of time and require a fresh run to show the update.
+- [P1] The closing report shows physical on-hand stock separately from unsent drafts and human-submitted-but-unreceived orders. Submitting an order does not increase on-hand stock; an order is not a receipt or consumption event.
+- [P1] At the start of the manufacturer's morning shift, target 6:00 AM manufacturer-local time, create one separately tracked notice for each human-submitted order (not a combined daily digest). Each notice includes its order ID/revision and item lines prioritized by validated inventory status: CRITICAL before LOW, with days of supply and supporting evidence. This is replenishment/delivery priority only, never clinical or patient priority; the Agent does not choose delivery routes or promise availability. Never include an unsent draft. Reflect the latest human-approved order revision available at shift start; later amendments/cancellations create a clearly linked revision event rather than silently changing the earlier notice. The manufacturer-local timezone, handling of orders submitted after shift start, delivery channel, and whether the notice is the purchase-order transmission itself or a separate notice remain open decisions.
+
+**Demo sequence and acceptance**
+
+1. Show the opening synthetic snapshot and its as-of time; run the report with 50 usable units at 10 units/day (5 days, LOW).
+2. Change the synthetic stock to 20 units before the next user request. Run again and show the newer snapshot time and 2 days remaining (CRITICAL). This is the update-before-request case.
+3. Show a quantity suggestion only against a visible synthetic ordering policy, confirmed open-order data, and pack-size rule; show the arithmetic and evidence beside it. Remove or conflict one required input and rerun to demonstrate that the quantity is withheld for that item.
+4. Let the staff user edit or reject the prefilled quantity in an explicitly unsaved draft, then demonstrate the separate human submit step. In the demo this step is simulated; it does not write to a database or contact a supplier.
+5. Change the synthetic inventory after producing the report. Show that the existing report retains its original snapshot/as-of time, then rerun to show the later snapshot. In the closing report, keep physical stock separate from the still-pending order; submission alone does not increase on-hand units.
+6. Preview one simulated per-order notice queued for the start of the manufacturer's morning shift (6:00 AM local target), with CRITICAL/LOW delivery priority and a revision reference; do not send it externally.
+
+The demo passes when every displayed suggestion matches the approved fixture policy, missing evidence blocks unsupported quantities, no Agent order/write/send occurs, a human submit is visibly distinct, closing stock is not increased by an unreceived order, and both pre-request and post-report changes are represented with correct snapshot/run times. Tests must cover edits, rejection, cancellation, failed submission, duplicate/revised notices, and retry without double-sending.
+
+**Open decisions before implementation:** approve the reorder formula and required policy/source fields; confirm the manufacturer's timezone and exact shift-start cutoff around the 6:00 AM target; decide whether orders submitted after shift start trigger an immediate notice or wait for the next shift; identify the manufacturer channel and recipient configuration; define whether the human's submit action sends the purchase order or queues a separate manufacturer notice; define acknowledgements, revisions/cancellations, retries and idempotency; and decide whether this extension is demo-only or a later operational integration. Until these decisions and a separate implementation review are complete, existing v1 requirements and behavior remain authoritative.
+
 ## 3a. Tools
 
 Two proposed read-only tools; no CVS endpoint is claimed. A database-backed synthetic inventory source replaces the fixture-only architecture in this review copy. The database/service, not the language model, owns transaction reconciliation and approved aggregation rules. If the source cannot provide reliable usable stock and consumption, the harness flags the item instead of reconstructing patient activity.
