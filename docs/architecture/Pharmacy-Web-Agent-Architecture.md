@@ -194,3 +194,30 @@ intact. Merely starting a draft sends nothing. Returning to the report while a n
 preserves it; a full browser reload restores the latest submitted order, from which another draft
 can be started. No database, new Agent capability or order amendment service is added. Existing
 worker-local, restart and multi-worker limitations remain explicit.
+
+## Approved two-phone demo extension
+
+The existing authenticated web application now has a separate PairedDemo service.
+Host-only HttpOnly device cookies bind one orderer and one receiving/manufacturer
+demo role to a private PostgreSQL room. Single-use hashed invitations pair them;
+the server never trusts a client-supplied role or notification destination.
+PostgresDemoStore uses the dedicated pharmacy_demo_backend login, TLS, bound
+queries, transaction-local device context and row locks. Its private RLS schema
+is separate from inventory and unexposed to public Data API roles. No model tool
+or inventory write authority is introduced.
+
+Paired rooms contain one immutable closing snapshot, up to twenty submitted
+orders, private receiving subscriptions and per-event attempt records. The
+sender reserves an attempt in a committed transaction before network IO, then
+records transport results separately. Worker crashes or uncertain transport
+outcomes cannot reopen that reservation automatically. An order event targets
+the receiving role. Its human delivery acknowledgement targets the ordering
+role with a separate versioned event/tag; it does not modify stock or report.
+
+The worker validates minimized payloads, displays selected item summaries and
+routes exact IDs through the protected Demo page. Open pages receive a bounded
+refresh signal after push, rather than private payloads or credentials. Shared
+records survive workers/restarts, expire after 24 hours and are removed on later
+room creation. No background purge or scheduling service is claimed. Original
+unpaired requests retain the existing process-local implementation; existing
+pairing cookies fail visibly rather than silently falling back.

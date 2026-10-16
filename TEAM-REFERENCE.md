@@ -10,6 +10,22 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 16, 2026 paired-phone implementation prepared on existing
+feature/order-workflow-demo for PR #30: cookie-bound orderer/receiving roles,
+private shared report/orders, selected-order A-to-B push and Delivery Received
+B-to-A return event. Attempts are reserved before IO; duplicate actions do not
+resend. No Agent authority, inventory writes, SMS or 6 AM scheduler added.
+Both demo and Supabase branches were verified at dc8c918 (198 commits) before
+application integration; Supabase prerequisite work remains in that lane's history.
+322 local methods, 85 qualification fixtures, three Node simulations and two
+sequential 68-method security rounds pass. Real shared-store round trip used a
+fake sender and ended its synthetic pair. Local UI/code feedback was inspected.
+Source publication follows the explicit commit/push approval; physical two-phone
+acceptance remains pending. Configure PHARMACY_DEMO_DATABASE_URL from ignored
+.env.demo in the intended Vercel environment and deploy the new source before
+phone testing. Do not merge or delete PR #30's branch until delivery acceptance.
+See docs/planning/TWO-PHONE-DEMO.md for steps and validation limits.
+
 October 16, 2026 two-phone storage prerequisite: after user approval, the existing Supabase
 lane was fast-forwarded from main's 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5 to the current
 demo head aef261217e6a9a293cc909ab58784e9552a05980, locally and remotely, with zero unique
@@ -281,6 +297,19 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## 2026-10-16T15:29:09-04:00
+
+- Demo branch fast-forward publication: aef261217e6a9a293cc909ab58784e9552a05980..dc8c918a228f3aee717b5266628aea8d3df5be3c.
+- Remote-tracking reflog records update by push at this time; later direct remote
+  checks confirmed demo and Supabase at the same 198-commit tip. This publishes
+  the existing private storage prerequisite and its receipt, not application UI.
+
+## 2026-10-16T15:27:09-04:00
+
+- Supabase storage receipt-only push verified: a3d9be257e8c47a2845a2f12239556399700c626..dc8c918a228f3aee717b5266628aea8d3df5be3c.
+- Reviewed endpoint: 65bee6738e9c41e4dab132d8e24c95dd5060e9ac. Only verified
+  storage-publication handoff and its empty review marker were added.
 
 ## 2026-10-16T15:27:05-04:00
 

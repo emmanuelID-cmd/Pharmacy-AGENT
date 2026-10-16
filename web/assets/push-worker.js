@@ -6,7 +6,7 @@ const exactKeys = (value, keys) => value && typeof value === 'object' && !Array.
 const displayText = (value, limit) => typeof value === 'string' && value.trim().length > 0 &&
   Array.from(value).length <= limit && !/[\p{C}\p{Zl}\p{Zp}<>]/u.test(value);
 function orderPreview(value) {
-  if (!exactKeys(value, ['kind', 'order_id', 'total_lines', 'lines']) || value.kind !== 'synthetic-order-v1' ||
+  if (!exactKeys(value, ['kind', 'order_id', 'total_lines', 'lines']) || !['synthetic-order-v1', 'synthetic-delivery-v1'].includes(value.kind) ||
       !orderId(value.order_id) || !Number.isInteger(value.total_lines) || value.total_lines < 1 || value.total_lines > 150 ||
       !Array.isArray(value.lines) || value.lines.length < 1 || value.lines.length > Math.min(6, value.total_lines)) return null;
   if (!value.lines.every(line => exactKeys(line, ['label', 'quantity', 'unit', 'priority']) &&
@@ -17,15 +17,24 @@ function orderPreview(value) {
 self.addEventListener('push', event => {
   let message = null;
   try {message = orderPreview(event.data?.json());} catch (_) { /* Legacy/malformed push gets fixed fallback text. */ }
-  const body = message ? [message.order_id + ` · ${message.total_lines} item(s)`,
+  const delivery = message?.kind === 'synthetic-delivery-v1';
+  const body = message ? [(delivery ? 'Delivery received (demo) · ' : '') + message.order_id + ` · ${message.total_lines} item(s)`,
     ...message.lines.map(line => `${line.priority}: ${line.label} — ${line.quantity} ${line.unit}`),
     ...(message.total_lines > message.lines.length ? [`+${message.total_lines - message.lines.length} more item(s).`] : []),
     'Tap to view the complete submitted order.'].join('\n') :
     'Your human-reviewed demo order is ready. Open the app to review it.';
-  event.waitUntil(self.registration.showNotification('Pharmacy demo order · Synthetic', {
-    body, tag: message ? 'pharmacy-' + message.order_id : 'pharmacy-demo-order',
+  event.waitUntil((async () => {
+    await self.registration.showNotification(delivery ? 'Pharmacy delivery received · Synthetic' : 'Pharmacy demo order · Synthetic', {
+    body, tag: message ? (delivery ? 'pharmacy-delivery-' : 'pharmacy-') + message.order_id : 'pharmacy-demo-order',
     data: message ? {order_id: message.order_id} : {}
-  }));
+    });
+    if (message) {
+      try {
+        const windows = await self.clients.matchAll({type: 'window', includeUncontrolled: true});
+        windows.forEach(client => {if (typeof client.postMessage === 'function') client.postMessage({type: 'pharmacy-demo-updated', order_id: message.order_id});});
+      } catch (_) { /* Displayed notification remains valid if no page can refresh. */ }
+    }
+  })());
 });
 self.addEventListener('notificationclick', event => {
   event.notification.close();

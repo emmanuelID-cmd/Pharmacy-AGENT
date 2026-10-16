@@ -162,6 +162,11 @@ windows = [{url: 'https://demo.example/tools', async navigate(url) {navigated.pu
 listeners.notificationclick({notification: {close() {}, data: {...preview.data, url: 'https://untrusted.example'}}, waitUntil: promise => {work = promise;}}); await work;
 assert.deepEqual(navigated, ['https://demo.example/demo?order=demo-012345abcdef#order-result']);
 assert.equal(focused, 1);
+const delivery = await push({...message, kind: 'synthetic-delivery-v1'});
+assert.match(shown.at(-1)[0], /delivery received/);
+assert.match(delivery.body, /Delivery received \(demo\)/);
+assert.equal(delivery.tag, 'pharmacy-delivery-' + message.order_id);
+assert.notEqual(delivery.tag, 'pharmacy-' + message.order_id);
 const long = await push({...message, total_lines: 150});
 assert.match(long.body, /\+148 more item/);
 for (const invalid of [null, {...message, url: 'https://untrusted.example'}, {...message, order_id: message.order_id + '\n'},

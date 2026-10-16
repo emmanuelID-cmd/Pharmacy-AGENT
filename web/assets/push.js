@@ -70,6 +70,8 @@
         Notification.permission === 'denied' ? 'Notifications are blocked. Allow this site in Chrome’s notification settings, then enable here.' :
         'Notifications are off. Enable them to receive your submitted items and quantities on this device’s notification screen.');
       if (registration) void updateWorker(registration);
+      try {await bounded(window.registerPairedPush?.(subscription?.toJSON() || null));}
+      catch (_) {show("Browser notifications are available, but paired-phone registration is unconfirmed. Refresh pairing before submitting.", true);}
     } catch (_) {show(navigator.onLine ? 'Temporarily Unavailable. Reload to check notification setup again. Orders still work.' : 'No Internet Access. Reconnect and reload. Orders still work when the server is reachable.', true);}
     controls();
   }
@@ -96,6 +98,7 @@
           await bounded(subscription.unsubscribe()); subscription = null;
         }
         subscription ||= await bounded(registration.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: applicationKey(configuration.public_key)}));
+        await bounded(window.registerPairedPush?.(subscription.toJSON()));
         show('Notifications enabled for this browser. Submitted item names and quantities can appear on this device’s notification screen.');
       } catch (error) {subscription = null; enableFailure(stage, error);}
       finally {busy = false; controls();}
@@ -105,10 +108,14 @@
       busy = true; notificationSequence++; controls();
       try {
         if (!await subscription.unsubscribe()) throw Error('UNSUBSCRIBE_FAILED');
-        subscription = null; show('Notifications disabled for this browser. Previously accepted notifications may still arrive.');
+        subscription = null; await bounded(window.registerPairedPush?.(null)); show('Notifications disabled for this browser. Previously accepted notifications may still arrive.');
       } catch (_) {show('Could not confirm disabling notifications. Block notifications for this site in Chrome settings, or try Disable again.', true);}
       finally {busy = false; controls();}
     });
+  };
+  window.refreshPairedPush = async () => {
+    await bounded(restoreTask);
+    await bounded(window.registerPairedPush?.(subscription && Notification.permission === 'granted' ? subscription.toJSON() : null));
   };
   window.notifyDemoOrder = async order => {
     const sequence = ++notificationSequence;
@@ -121,6 +128,12 @@
     }
     report('Order recorded. Requesting its phone notification… You can start a New demo order while this finishes.');
     const reasons = {
+      DEMO_BOTH_PHONES_NOT_READY: 'Pair both phones and enable notifications on each before submitting.',
+      DEMO_RECIPIENT_NOT_READY: 'The receiving phone has not enabled notifications. The order remains recorded.',
+      DEMO_SHARED_STORE_UNAVAILABLE: 'Shared demo storage is temporarily unavailable. The recorded order is preserved.',
+      DEMO_PAIRING_ENDED: 'This pairing has ended. The recorded order is preserved.',
+      DEMO_DEVICE_NOT_PAIRED_OR_EXPIRED: 'This pairing expired. No notification was sent.',
+
       DEMO_ORDER_NOT_FOUND: 'The recorded order is unavailable on this server worker. No notification was sent. Refresh and inspect submitted-order history.',
       PUSH_KEYS_NOT_CONFIGURED: 'Notifications are not configured on this server. The order remains recorded.',
       PUSH_SUBSCRIPTION_INVALID: 'The notification subscription could not be verified. Disable and enable notifications before a new order.',

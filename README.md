@@ -350,3 +350,30 @@ Historical five-phase handoff/review/comparison files describe their earlier bas
 ## Local read-only database check
 
 Install the optional database requirements in the project virtual environment, then run `.venv/Scripts/python.exe -B scripts/check_database_reader.py`. It loads only the ignored generated `.env.database` credential file and prints safe counts. This read-only tool returns untrusted source evidence; it does not validate pharmacy truth, calculate supply, or approve operational actions. See [backend reader guide](docs/database/BACKEND-READER.md).
+
+### Two-phone browser demo
+
+The optional paired demo sends a reviewed order from Phone A to Phone B, then
+Phone B's **Delivery Received** action sends a distinct return notification to
+Phone A. It uses browser Web Push, not SMS, and never places a purchase order or
+changes stock. The closing inventory report remains the same pre-order snapshot.
+
+Configure the restricted server-only `PHARMACY_DEMO_DATABASE_URL` from ignored
+`.env.demo` for the deployment being tested, alongside the existing VAPID sender
+configuration, and redeploy. This is a separate demo login, not the inventory
+reader or a Supabase publishable key. See [private storage](docs/database/DEMO-PAIRING.md).
+
+Open the same deployed HTTPS link in Android Chrome on both phones and pass
+reviewer login. On Phone A choose **Use this phone to order**, share the code
+with Phone B, and join there using **Join as receiving phone**. Enable browser
+notifications on each, refresh pairing status, then create/review/submit on A.
+B receives only the selected submitted order and can confirm demo delivery.
+The return alert identifies that order on A. Both notification types have an
+exact-order link; platform preview limits and lock-screen visibility still apply.
+
+Pairing codes expire after ten minutes or one use. Shared demo records expire
+after 24 hours; the backend removes expired rows on later room creation. **End
+pairing** stops new alerts for both phones without changing inventory. The
+unpaired single-browser demo remains available. Automated/shared-store checks
+do not replace actual two-phone notification acceptance; follow
+[the demo checklist](docs/planning/TWO-PHONE-DEMO.md) after deployment.

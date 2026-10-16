@@ -168,8 +168,30 @@
     <h2 id="closing-title">Close the day. Review stock. Prepare an order.</h2>
     <p>Capture one pre-order inventory report, then select items for human review. Submitting a demo order does not change stock.</p>
     <div class="notice notice-warn">Example closing clock: October 7, 2026, 6:00 PM New York time. Orders are simulated. SMS and manufacturer notices are previews. Optional browser notifications show your submitted order items and quantities.</div>
+    <section aria-labelledby="pair-title">
+      <h3 id="pair-title">Two-phone demo</h3>
+      <p class="small muted">Use the same deployed HTTPS link on both Android phones. On Phone A, create a pairing and share its code with Phone B. On Phone B, join as the receiving manufacturer demo phone. Enable notifications on each phone. Orders go A → B; Delivery Received sends the return alert B → A.</p>
+      <div id="pair-status" class="status-message" role="status" aria-live="polite">Checking two-phone setup…</div>
+      <div class="action-row"><button id="pair-create" class="button button-secondary" type="button">Use this phone to order</button><button id="pair-refresh" class="button button-secondary" type="button">Refresh pairing / orders</button><button id="pair-end" class="button button-text" type="button" hidden>End pairing · Stop new alerts</button></div>
+      <div id="pair-invite" hidden>
+        <label for="pair-invite-code">Pairing code for your second phone</label>
+        <input id="pair-invite-code" type="text" readonly aria-describedby="pair-invite-help">
+        <p id="pair-invite-help" class="field-help">Single use, expires in 10 minutes. Share only with the other authorized demo participant.</p>
+        <div class="action-row"><button id="pair-copy" class="button button-secondary" type="button">Copy pairing code</button></div>
+      </div>
+      <div class="action-row"><button id="pair-renew" class="button button-text" type="button" hidden>Generate a new pairing code</button></div>
+      <form id="pair-join-form" novalidate>
+        <div id="pair-errors" class="error-summary" role="alert" tabindex="-1" hidden></div>
+        <label for="pair-code">Join as receiving phone · Pairing code <span class="required-mark">Required</span></label>
+        <input id="pair-code" type="text" maxlength="24" autocomplete="off" spellcheck="false" aria-invalid="false" aria-describedby="pair-code-help pair-code-error" placeholder="Paste the ordering phone’s code">
+        <p id="pair-code-help" class="field-help">24 letters, digits, underscores or hyphens. The code expires after 10 minutes or one use.</p>
+        <p id="pair-code-error" class="field-error" hidden>Paste the complete 24-character pairing code.</p>
+        <div class="action-row"><button id="pair-join-submit" class="button button-secondary" type="submit">Join as receiving phone</button></div>
+      </form>
+      <div id="pair-inbox" hidden></div>
+    </section>
     <h3>Phone notifications</h3>
-    <p class="small muted">On your Android phone, open this HTTPS site in Chrome, enable notifications, then submit the demo order here. Selected item names and quantities can appear on your notification or lock screen. Long orders show a short preview; tap to open the complete submitted order. Alerts go to this browser, not TextNow. Desktop-to-phone pairing is not included.</p>
+    <p class="small muted">On your Android phone, open this HTTPS site in Chrome, enable notifications, then submit the demo order here. Selected item names and quantities can appear on your notification or lock screen. Long orders show a short preview; tap to open the complete submitted order. Alerts are browser notifications, not SMS or TextNow. When paired, alerts go to the other phone according to its demo role; otherwise the original single-browser demo sends here.</p>
     <p class="small muted">An embedded preview is for reviewing the form. Test phone delivery by opening the deployed link directly in Android Chrome. The local 127.0.0.1 link points to whichever device opens it.</p>
     <div class="action-row"><button class="button button-secondary" type="button" id="enable-push" disabled>Enable notifications</button><button class="button button-secondary" type="button" id="disable-push" disabled>Disable notifications</button></div>
     <div id="push-status" class="status-message" role="status" aria-live="polite" hidden></div>
@@ -197,7 +219,7 @@
         <div id="order-list" class="order-list"></div>
         <p class="small muted">Enter 1–1,000,000 whole dispensing units per line. Edit or remove a suggestion before submitting. A quantity withheld for manual review cannot be submitted in this demo.</p>
         <div class="action-row"><button class="button" type="submit" id="submit-demo-order">Submit demo order</button><button class="button button-secondary" type="button" id="clear-demo-order">Reject / clear order list</button><button class="button button-secondary" type="button" id="new-demo-order" hidden>New demo order</button></div>
-        <p class="small muted">This button records a human-reviewed simulation in this server process. It places no purchase order and sends no SMS. Use New demo order after submitting to prepare another order against the same report, up to 20 per demo worker. Drafts survive tab changes while this page is open; a server restart clears demo records.</p>
+        <p class="small muted">This button records a human-reviewed simulation. A paired session stores it privately for both phones; an unpaired session stays in this server process. It places no purchase order and sends no SMS. Use New demo order after submitting to prepare another order against the same report, up to 20 per closing session. Drafts survive tab changes while this page is open. Paired records expire after 24 hours; unpaired records clear on server restart.</p>
       </form>
       <div id="order-status" class="status-message" role="status" aria-live="polite" hidden></div>
       <div id="order-notification-status" class="status-message" role="status" aria-live="polite" hidden></div>

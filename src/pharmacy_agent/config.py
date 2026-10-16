@@ -11,7 +11,7 @@ SUPPORTED_MODEL_PREFIXES = ("claude-haiku-", "claude-sonnet-")
 CONFIG_NAMES = {
     "APP_ENV", "ANTHROPIC_API_KEY", "ANTHOPIC_API_KEY", "ANTHROPIC_MODEL",
     "PHARMACY_REVIEWER_USERNAME", "PHARMACY_REVIEWER_PASSWORD", "PHARMACY_ALLOWED_HOSTS",
-    "PHARMACY_PUSH_PRIVATE_KEY", "PHARMACY_PUSH_SUBJECT",
+    "PHARMACY_PUSH_PRIVATE_KEY", "PHARMACY_PUSH_SUBJECT", "PHARMACY_DEMO_DATABASE_URL",
 }
 
 
@@ -22,6 +22,7 @@ class Settings:
     app_env: str = "development"
     reviewer_username: str = field(default="", repr=False)
     reviewer_password: str = field(default="", repr=False)
+    demo_database_url: str = field(default="", repr=False)
     push_private_key: str = field(default="", repr=False)
     push_subject: str = "https://github.com/emmanuelID-cmd/Pharmacy-AGENT"
     allowed_hosts: tuple[str, ...] = ("localhost", "127.0.0.1", "[::1]")
@@ -58,7 +59,7 @@ class Settings:
                 values["provider_key"] = (layer["ANTHROPIC_API_KEY"] if "ANTHROPIC_API_KEY" in layer
                                           else layer.get("ANTHOPIC_API_KEY", ""))
 
-        for name in (".env", ".env.push", ".env.local", ".env.web"):
+        for name in (".env", ".env.push", ".env.demo", ".env.local", ".env.web"):
             path = root / name
             if path.is_file():
                 apply_layer({k: v for k, v in dotenv_values(path, interpolate=False).items()
@@ -79,6 +80,7 @@ class Settings:
             model_seconds=45 if app_env != "development" else 90,
             reviewer_username=values.get("PHARMACY_REVIEWER_USERNAME", ""),
             reviewer_password=values.get("PHARMACY_REVIEWER_PASSWORD", ""),
+            demo_database_url=values.get("PHARMACY_DEMO_DATABASE_URL", ""),
             push_private_key=values.get("PHARMACY_PUSH_PRIVATE_KEY", ""),
             push_subject=values.get("PHARMACY_PUSH_SUBJECT") or "https://github.com/emmanuelID-cmd/Pharmacy-AGENT",
             allowed_hosts=tuple(hosts),

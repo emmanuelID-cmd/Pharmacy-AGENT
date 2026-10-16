@@ -27,6 +27,8 @@ from ..pharmacy_tools.inventory import LEGACY_FIXTURE_PATH
 from .catalog import home_catalog
 from .closing import ClosingDemo, ClosingError
 from .push import PushSender
+from .demo_store import COOKIE, PostgresDemoStore
+from .paired_demo import PairedDemo
 
 NAVIGATION = [
     {"key": "home", "label": "Home", "path": "/"},
@@ -101,6 +103,18 @@ class PushOrderBody(StrictBody):
     subscription: PushSubscription
 
 
+class PairCodeBody(StrictBody):
+    code: str = Field(min_length=24, max_length=24, pattern=r"^[A-Za-z0-9_-]+$")
+
+
+class PairSubscriptionBody(StrictBody):
+    subscription: PushSubscription | None
+
+
+class DeliveryBody(StrictBody):
+    order_id: str = Field(pattern=r"^demo-[a-f0-9]{12}$")
+
+
 def safe_error(code, status=400, headers=None):
     return JSONResponse({"state": "Temporarily Unavailable", "reason_code": code,
                          "message": "The request could not be completed. Check the indicated state and retry."},
@@ -143,7 +157,7 @@ def access_check(request, settings):
                       {"WWW-Authenticate": 'Basic realm="Pharmacy-AGENT", charset="UTF-8"'})
 
 
-def create_app(settings=None, *, provider=None, agent_runner=None, push_transport=None):
+def create_app(settings=None, *, provider=None, agent_runner=None, push_transport=None, demo_store=None):
     settings = settings or Settings.load()
     application = FastAPI(title="Pharmacy-AGENT", docs_url=None, redoc_url=None, openapi_url=None)
     application.state.settings = settings
@@ -155,6 +169,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
     application.state.read_activity = ReadActivity()
     application.state.closing_demo = ClosingDemo()
     application.state.push_sender = PushSender(settings, **({"transport": push_transport} if push_transport else {}))
+    application.state.paired_demo = PairedDemo(demo_store or PostgresDemoStore(settings.demo_database_url), application.state.push_sender)
     templates = Jinja2Templates(directory=str(ROOT / "web" / "templates"))
 
     @application.middleware("http")
@@ -252,6 +267,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
         paths = {"pharmacy.css": ROOT / "web/assets/pharmacy.css",
                  "closing.js": ROOT / "web/assets/closing.js",
                  "push.js": ROOT / "web/assets/push.js",
+                 "pairing.js": ROOT / "web/assets/pairing.js",
                  "pharmacy.js": ROOT / "web/assets/pharmacy.js",
                  "architecture.png": ROOT / "docs/architecture/Pharmacy-Agent-Architecture-Digital.png"}
         if filename not in paths or not paths[filename].is_file():
@@ -297,9 +313,87 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
     async def samples():
         return {"samples": [{key: sample[key] for key in ("id", "name", "source")} for sample in SAMPLES]}
 
-    @application.post("/api/closing-demo/close")
-    async def close_demo(body: StrictBody):
+    def paired_cookie(request):
+        return request.cookies.get(COOKIE)
+
+    def device_response(request, cookie, data):
+        response = JSONResponse(data)
+        response.set_cookie(COOKIE, cookie, max_age=86400, httponly=True,
+                            secure=request.url.scheme == "https", samesite="strict", path="/")
+        return response
+
+    @application.post("/api/demo-pairing/status")
+    async def pairing_status(request: Request, body: StrictBody):
         try:
+            return await asyncio.to_thread(application.state.paired_demo.status, paired_cookie(request))
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
+
+    @application.post("/api/demo-pairing/create")
+    async def create_pairing(request: Request, body: StrictBody):
+        try:
+            if paired_cookie(request):
+                raise ClosingError("DEMO_END_CURRENT_PAIRING_FIRST", 409)
+            cookie, code = await asyncio.to_thread(application.state.paired_demo.store.create)
+            return device_response(request, cookie, {"code": code, "role": "orderer", "expires_in_seconds": 600})
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
+
+    @application.post("/api/demo-pairing/join")
+    async def join_pairing(request: Request, body: PairCodeBody):
+        try:
+            if paired_cookie(request):
+                raise ClosingError("DEMO_END_CURRENT_PAIRING_FIRST", 409)
+            cookie = await asyncio.to_thread(application.state.paired_demo.store.join, body.code)
+            return device_response(request, cookie, {"role": "manufacturer", "paired": True})
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
+
+    @application.post("/api/demo-pairing/invite")
+    async def renew_pairing(request: Request, body: StrictBody):
+        try:
+            code = await asyncio.to_thread(application.state.paired_demo.renew_invite, paired_cookie(request))
+            return {"code": code, "expires_in_seconds": 600}
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
+
+    @application.post("/api/demo-pairing/subscription")
+    async def pairing_subscription(request: Request, body: PairSubscriptionBody):
+        try:
+            return await asyncio.to_thread(application.state.paired_demo.register, paired_cookie(request),
+                                            body.subscription.model_dump() if body.subscription else None)
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
+
+    @application.post("/api/demo-pairing/leave")
+    async def leave_pairing(request: Request, body: StrictBody):
+        try:
+            cookie = paired_cookie(request)
+            if cookie:
+                try:
+                    await asyncio.to_thread(application.state.paired_demo.leave, cookie)
+                except ClosingError as error:
+                    if error.status != 403:
+                        raise
+            response = JSONResponse({"ended": True})
+            response.delete_cookie(COOKIE, path="/", httponly=True, secure=request.url.scheme == "https", samesite="strict")
+            return response
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
+
+    @application.post("/api/demo-pairing/delivery")
+    async def confirm_delivery(request: Request, body: DeliveryBody):
+        try:
+            return await asyncio.to_thread(application.state.paired_demo.delivery, paired_cookie(request), body.order_id)
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
+
+    @application.post("/api/closing-demo/close")
+    async def close_demo(request: Request, body: StrictBody):
+        try:
+            cookie = paired_cookie(request)
+            if cookie:
+                return await asyncio.to_thread(application.state.paired_demo.close, cookie)
             return await asyncio.to_thread(application.state.closing_demo.close_day)
         except ClosingError as error:
             return safe_error(error.code, error.status)
@@ -309,16 +403,23 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
         return application.state.push_sender.configuration()
 
     @application.post("/api/closing-demo/notify")
-    async def notify_demo_order(body: PushOrderBody):
+    async def notify_demo_order(request: Request, body: PushOrderBody):
         try:
+            cookie = paired_cookie(request)
+            if cookie:
+                return await asyncio.to_thread(application.state.paired_demo.notify, cookie, body.order_id, body.closing_id)
             return await asyncio.to_thread(application.state.closing_demo.notify,
                 body.closing_id, body.order_id, body.subscription.model_dump(), application.state.push_sender)
         except ClosingError as error:
             return safe_error(error.code, error.status)
 
     @application.post("/api/closing-demo/submit")
-    async def submit_demo_order(body: DemoOrderBody):
+    async def submit_demo_order(request: Request, body: DemoOrderBody):
         try:
+            cookie = paired_cookie(request)
+            if cookie:
+                return await asyncio.to_thread(application.state.paired_demo.submit, cookie,
+                    body.closing_id, body.submission_id, [line.model_dump() for line in body.lines])
             return await asyncio.to_thread(application.state.closing_demo.submit,
                 body.closing_id, body.submission_id, [line.model_dump() for line in body.lines])
         except ClosingError as error:

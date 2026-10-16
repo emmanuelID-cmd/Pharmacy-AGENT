@@ -22,7 +22,7 @@
       return await Promise.race([(async () => {
         const response = await fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body), signal: controller.signal});
         const result = await response.json();
-        if (!response.ok) throw Error('REQUEST_FAILED');
+        if (!response.ok) {const error = Error('REQUEST_FAILED'); error.code = result.reason_code === 'DEMO_BOTH_PHONES_NOT_READY' ? 'DEMO_BOTH_PHONES_NOT_READY' : ''; throw error;}
         return result;
       })(), new Promise((_, reject) => {
         timer = setTimeout(() => {controller.abort(); reject(Error('REQUEST_TIMED_OUT'));}, 20000);
@@ -141,15 +141,23 @@
       node('p', 'Simulation only. No purchase order was placed and no inventory was changed. Optional phone notification status is shown above.', 'notice notice-warn'));
     const list = node('ol', undefined, 'warning-list');
     order.lines.forEach(line => list.append(node('li', `${line.local_class} · ${line.label} · ${line.quantity} ${line.unit}${line.human_edited ? ' · Human-edited quantity' : ''}`)));
-    target.append(list, node('h4', 'Test SMS preview'), node('p', order.test_sms.message),
+    target.append(list);
+    if (window.pairingState?.role) {
+      target.append(node('p', 'Paired browser alerts go to the receiving demo phone. Delivery confirmation sends the return alert to the ordering phone. No SMS or purchase order is sent.', 'small muted'),
+        node('h4', 'Morning-shift preview'), node('p', `Example next shift: ${order.manufacturer_notice.scheduled_for}. This remains a preview; the two-phone demo sends immediately after a human action.`));
+    } else {
+      target.append( node('h4', 'Test SMS preview'), node('p', order.test_sms.message),
       node('p', 'Provider and destination are not configured. Real-phone SMS is a separate integration step.', 'small muted'),
       node('h4', 'Manufacturer notice preview'), node('p', `One notice for this order, prioritized CRITICAL before LOW. Example next shift: ${order.manufacturer_notice.scheduled_for}. New York is a demo timezone assumption. No manufacturer is contacted.`));
+    }
+    if (order.delivery) target.append(node('p', `Delivery received (demo): ${order.delivery.confirmed_at}. The frozen inventory report is unchanged.`, 'notice notice-info'));
     target.hidden = false;
     orderControls(); drawLines();
   }
   window.bindClosingDemo = () => {
     const button = get('close-day'); if (!button) return;
     let linkedOrder = new URLSearchParams(window.location.search).get('order');
+    window.bindPairedDemo?.();
     window.bindPushNotifications?.();
     const restore = () => {drawReport(); filterItems(); drawLines(); drawHistory(); orderControls(); get('closing-workspace').hidden = false; button.textContent = 'View same closing report'; get('order-result').hidden = !order; drawOrder();};
     if (report) restore();
@@ -232,13 +240,16 @@
         if (get('order-history')) drawHistory();
         if (get('order-result')) {drawOrder(); status('order-status', 'Order recorded. Use New demo order for another submission. The inventory report is unchanged; phone notification status is shown here separately.');}
         recorded = order;
-      } catch (_) {status('order-status', 'Submission was not confirmed. Your list is preserved. Use “View same closing report” to recover any existing submission before retrying.', true);}
+      } catch (error) {status('order-status', error.code === 'DEMO_BOTH_PHONES_NOT_READY' ? 'Pair both phones and enable notifications on each before submitting. Your list is preserved.' : 'Submission was not confirmed. Your list is preserved. Use “View same closing report” to recover any existing submission before retrying.', true);}
       finally {busy = false; if (get('submit-demo-order')) {orderControls(); drawLines();}}
       if (recorded) {
         try {await window.notifyDemoOrder?.(recorded);}
         catch (_) {status('order-notification-status', 'Order recorded, but notification status is unavailable. No automatic retry will run. Reference: PUSH_CLIENT_ERROR.', true);}
       }
     });
-    if (linkedOrder !== null) button.click();
+    if (linkedOrder !== null) {
+      if (window.pairingReady) window.pairingReady.then(() => {if (window.pairingState?.role !== "manufacturer") button.click();});
+      else button.click();
+    }
   };
 })();

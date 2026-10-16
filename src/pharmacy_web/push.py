@@ -31,11 +31,13 @@ def display_text(value, limit):
     return value.strip() or None
 
 
-def order_message(order):
+def order_message(order, kind="synthetic-order-v1"):
     """Minimize an existing server-bound synthetic order, never a submitted message."""
     if (order.get("state") != "SIMULATED_SUBMISSION" or order.get("order_placed") is not False
             or not re.fullmatch(r"demo-[a-f0-9]{12}", order.get("order_id", ""))
             or not isinstance(order.get("lines"), list) or not 1 <= len(order["lines"]) <= 150):
+        raise ClosingError("PUSH_ORDER_CONTENT_INVALID")
+    if kind not in {"synthetic-order-v1", "synthetic-delivery-v1"} or (kind == "synthetic-delivery-v1" and order.get("delivery", {}).get("state") != "SIMULATED_DELIVERY_RECEIVED"):
         raise ClosingError("PUSH_ORDER_CONTENT_INVALID")
     preview = []
     for line in order["lines"][:MAX_PREVIEW_LINES]:
@@ -46,7 +48,7 @@ def order_message(order):
             raise ClosingError("PUSH_ORDER_CONTENT_INVALID")
         preview.append({"label": display_text(line.get("label"), 120) or f"Item {item_id}",
                         "quantity": quantity, "unit": unit, "priority": priority})
-    message = {"kind": "synthetic-order-v1", "order_id": order["order_id"],
+    message = {"kind": kind, "order_id": order["order_id"],
                "total_lines": len(order["lines"]), "lines": preview}
     while len(json.dumps(message, ensure_ascii=False).encode("utf-8")) > MAX_PAYLOAD_BYTES:
         preview.pop()
@@ -104,9 +106,9 @@ class PushSender:
         except (ValueError, TypeError):
             return {"configured": False, "reason_code": "PUSH_KEYS_NOT_CONFIGURED"}
 
-    def send(self, subscription, order):
+    def send(self, subscription, order, *, kind="synthetic-order-v1"):
         validate_subscription(subscription)
-        message = order_message(order)
+        message = order_message(order, kind)
         result = {"state": "Temporarily Unavailable", "reason_code": "PUSH_DELIVERY_UNCONFIRMED",
                   "attempted": True, "push_service_accepted": False, "delivery_confirmed": False}
         try:

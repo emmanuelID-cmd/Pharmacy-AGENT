@@ -128,3 +128,35 @@ before a separate worker-update check; an update failure must not silently disca
 After an explicit Enable notifications gesture and browser permission, a human submitting a demo order in that same Chrome browser may request one encrypted Web Push notification. This is an authenticated human application service, never an Agent tool. Emmanuel approved replacing the initial generic confirmation with the submitted-order list on October 16, 2026. The server constructs a versioned payload from the retained order: demo order ID, total selected-line count and up to six selected labels, submitted quantities, units and local inventory priorities; reduce that preview further when needed to remain within 3000 UTF-8 bytes. The full catalog, stock report, NDCs, evidence, raw input, credentials and private key are excluded. Labels are bounded single-line display text; unsafe optional labels use their item reference, while invalid required values withhold the send. The notification/lock screen may show these synthetic item names and quantities; the Enable guidance says so. Only validated HTTPS fcm.googleapis.com Chrome endpoints and valid subscription encryption keys are accepted; no arbitrary hosts, redirects or browser-supplied message/link are allowed. Chrome's push infrastructure receives delivery metadata and encrypted content. No SMS account, TextNow login or phone number is collected.
 
 Browser subscriptions remain in that browser. The request carries its subscription only for this send; the server does not persist or return the endpoint/auth key. Disable unsubscribes this browser, while already accepted notifications may still arrive. The service worker has no fetch/cache handler; it validates the payload and constructs only a protected same-origin link to the exact order. Malformed/legacy messages show fixed fallback text, never supplied URLs. A missing order shows unavailable instead of another order. Push-service acceptance is not device delivery acknowledgement. One attempted send per process-local demo order prevents automatic duplicate attempts, including after uncertain timeouts. Failed/expired/unconfigured notifications do not roll back the simulated order or change its stock snapshot. There is no durable retry, scheduled send or desktop-to-phone pairing. Do not claim multi-worker reliability; an order missing from the current worker cannot notify. The user supplied Android evidence of generic confirmation display; the new selected-order display/tap still requires observed acceptance after HTTPS deployment.
+
+## Approved two-phone synthetic demo - October 16, 2026
+
+This extension supersedes the preceding same-browser and no-persistence limits
+only for explicitly paired sessions. Those limits still apply to the unpaired demo.
+
+The authorized human application may persist private demo pairing, immutable
+report/order state, receiving-browser subscriptions and notification attempts
+under the separate restricted pharmacy_demo_backend identity. The Agent and
+pharmacy_agent_backend remain read-only; no tool may invoke pairing, send,
+delivery or SQL writes. Public/anonymous Data API roles have no demo access.
+
+One explicitly paired orderer and receiving/manufacturer demo phone each opt
+in. Server-bound device cookies, single-use hashed ten-minute invitations and
+paired-order checks determine recipient authority. Never accept a client role,
+message, arbitrary endpoint or record ID as permission to send. Validate the
+stored subscription and minimized versioned payload again at dispatch.
+
+Paired submissions require both subscriptions ready. The order event routes to
+the receiving phone; its human Delivery Received action records only a synthetic
+acknowledgement and sends a distinct return event to the orderer. Inventory and
+the pre-order snapshot never change. Reserve each attempt in shared state before
+network IO; duplicates/uncertain results never automatically resend. Acceptance
+by the push service is not proof of device delivery or a real manufacturer order.
+
+Rooms expire after 24 hours and expired records are cleaned opportunistically
+when another room is created. Ending pairing disables future paired actions and
+clears subscriptions; previously accepted messages cannot be recalled. No
+background purge, SMS, purchase, stock adjustment or 6 AM schedule is implemented.
+The existing unpaired demo stays process-local; an enrolled pair never silently
+falls back to that state or another recipient. Actual two-phone display/tap
+acceptance must be observed after deployment before it is claimed passed.
