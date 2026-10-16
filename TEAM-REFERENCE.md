@@ -23,11 +23,19 @@ at `3b11428dcbca2999d90c69d9780bb369ca3dc060` and was left untouched; its older
 ref was deleted during cleanup before the teammate recreated the lane. The other
 three lane refs were created at main `8bb7d1f`, then fast-forwarded to `9b75452`.
 At the 18:05 cleanup verification, the lane refs except the harness pointed at
-`main`; since then, PR #27 advanced `feature/pharmacy-injection-risk-prevention`
-to `be1270dbe9fa189995acf1c5ca12e6cbc15ca862`, two commits ahead of main. PR #27
-is open and mergeable; its Vercel build checks pass, while Supabase Preview is
-skipped. `feature/pharmacy-harness` has three unique commits and remains 13
-commits behind main; its work was preserved for Kerrian.
+`main`. PR #27, which carried the approved human-controlled replenishment demo
+proposal, subsequently merged to `main` as `59160cf`; its Vercel checks passed
+and Supabase Preview was skipped. On October 16, `feature/pharmacy-harness` at `3b11428` was confirmed 16
+commits behind `main` at `59160cf`, with three unique commits. Its pre-rebase tip
+was preserved in a verified local Git bundle, then those commits were rebased onto
+main; the sole conflict was reconciled in this file by retaining main's newer
+history and adding the missing October 15 push entry in timestamp order. Sonnet
+5.5 is now the active default across the web Agent and one-turn harness. The full
+local suite passes 277 tests. A live Sonnet 5.5 turn using the local Anthropic
+credential returned ACCEPTED with the exact `report-v1`; the overall synthetic
+fixture remained MANUAL_REVIEW because of its seeded invalid/unknown rows. FDA
+used the recorded offline payload. This branch update is still local and
+unpushed pending publication.
 
 Merged PR source refs `docs/strength-fix-evidence` and
 `feature/supabase-inventory-schema` were fast-forwarded to current `main`; both
@@ -110,7 +118,7 @@ Documentation is grouped in docs/requirements, docs/templates, docs/planning, an
 
 ## Latest local handoff — Phase 7 harness
 
-Branch `feature/pharmacy-harness` (durable harness home). Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW`. The CLI prints a manager table by default (`--json` for the machine copy), freezes the Eval Card clock unless `--now` is passed, and uses `--offline` for a recorded FDA payload. Phase 8 one guarded model turn (`--model-copy` or `--model`) is implemented and live-proven ACCEPTED; invented numbers are rejected. No second harness multi-turn tool loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
+Branch `feature/pharmacy-harness` (durable harness home). Deterministic harness calls `read_store_inventory` and `get_fda_shortage_context` through `execute_guarded`, validates identity/units/freshness/14-day usage, calculates POLICY.md (`SYNTHETIC-v0`) days of supply, constructs `TrustedFact` in harness code, and emits a PRD human report plus `report-v1`. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW`. The CLI prints a manager table by default (`--json` for the machine copy), freezes the Eval Card clock unless `--now` is passed, and uses `--offline` for a recorded FDA payload. Phase 8 one guarded model turn (`--model-copy` or `--model`) is implemented; the current default is Sonnet 5.5. Historical Haiku live acceptance is recorded above and does not establish Sonnet acceptance. Invented numbers are rejected. No second harness multi-turn tool loop, SQL, or live CVS inventory. Proposed per-item thresholds remain deferred.
 
 | Member | Part | Verified contribution/status |
 |---|---|---|
