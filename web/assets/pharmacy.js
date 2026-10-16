@@ -468,6 +468,7 @@
     bindTester();
     bindDemo();
     bindFailurePreview();
+    window.bindClosingDemo?.();
   }
 
   bindNavigation();

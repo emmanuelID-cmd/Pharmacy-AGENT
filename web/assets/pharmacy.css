@@ -110,6 +110,20 @@ textarea[aria-invalid="true"], select[aria-invalid="true"] { border-color: var(-
 .report-table th { background: var(--soft); font-size: 12px; white-space: nowrap; }
 .report-table tr:last-child td { border-bottom: 0; }
 .report-table td { overflow-wrap: anywhere; }
+.closing-section { margin-top: 28px; }
+.closing-section input { width: 100%; min-height: 46px; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); color: var(--ink); font: inherit; }
+.closing-section input[aria-invalid="true"] { border-color: var(--error); box-shadow: 0 0 0 1px var(--error); }
+.closing-section h3 { margin-top: 26px; }
+.closing-order { margin-top: 28px; padding-top: 4px; border-top: 1px solid var(--border); }
+.order-list { display: grid; gap: 16px; }
+.order-line { min-width: 0; padding: 16px; border: 1px solid var(--border); border-radius: 10px; }
+.order-line h4 { margin: 0 0 8px; overflow-wrap: anywhere; }
+.order-line input { max-width: 240px; }
+.order-line details, .closing-stock { margin-top: 12px; }
+.order-line summary, .closing-stock summary { min-height: 40px; padding: 8px 0; cursor: pointer; color: var(--brand); }
+.closing-stock-scroll { max-height: 400px; overflow: auto; }
+.closing-stock-scroll table { min-width: 780px; }
+.closing-section p, .closing-section dd, .order-line details { overflow-wrap: anywhere; }
 .catalog-section { margin-top: 36px; }
 .catalog-source summary { width: fit-content; min-height: 40px; padding: 8px 0; color: var(--brand); cursor: pointer; }
 .catalog-scroll { max-height: 620px; overflow: auto; }

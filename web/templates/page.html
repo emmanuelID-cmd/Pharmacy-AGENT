@@ -162,6 +162,43 @@
     </div>
   </section>
 
+  {% if active_view == 'demo' %}
+  <section class="panel closing-section" aria-labelledby="closing-title">
+    <p class="eyebrow">Closing workflow · Synthetic 150-item catalog</p>
+    <h2 id="closing-title">Close the day. Review stock. Prepare an order.</h2>
+    <p>Capture one pre-order inventory report, then select items for human review. Submitting a demo order does not change stock.</p>
+    <div class="notice notice-warn">Example closing clock: October 7, 2026, 6:00 PM New York time. Orders are simulated. SMS and manufacturer notices are previews; nothing is sent.</div>
+    <div class="action-row"><button class="button" type="button" id="close-day">Close day / Generate report</button></div>
+    <div id="closing-status" class="status-message" role="status" aria-live="polite" hidden></div>
+    <div id="closing-report" hidden></div>
+    <div id="closing-workspace" hidden>
+      <h3>Prepare your order list</h3>
+      <p class="small muted">Suggestions use a visible synthetic policy: seven days of stock, zero confirmed incoming, one dispensing-unit order multiple and minimum. These are demo assumptions, not manufacturer package sizes or pharmacy policy.</p>
+      <form id="order-add-form" novalidate>
+        <div id="order-add-errors" class="error-summary" role="alert" tabindex="-1" hidden></div>
+        <label for="order-search">Find a catalog item</label>
+        <input id="order-search" type="search" maxlength="120" aria-describedby="order-search-help" placeholder="Search name, item ID, or package NDC">
+        <p class="field-help" id="order-search-help">Filter the dropdown by name, item ID or package NDC. All 150 items are available.</p>
+        <label for="order-item">Catalog item <span class="required-mark">Required</span></label>
+        <select id="order-item" aria-describedby="order-item-error" aria-invalid="false"><option value="">Choose an item</option></select>
+        <p id="order-item-error" class="field-error" hidden></p>
+        <div class="action-row"><button class="button button-secondary" type="submit">Add to order list</button></div>
+      </form>
+      <form id="demo-order-form" class="closing-order" novalidate>
+        <h3>Queued order items</h3>
+        <div id="order-errors" class="error-summary" role="alert" tabindex="-1" hidden></div>
+        <p id="order-empty" class="muted">Your order list is empty. Select an item above to add it.</p>
+        <div id="order-list" class="order-list"></div>
+        <p class="small muted">Enter 1–1,000,000 whole dispensing units per line. Edit or remove a suggestion before submitting. A quantity withheld for manual review cannot be submitted in this demo.</p>
+        <div class="action-row"><button class="button" type="submit" id="submit-demo-order">Submit demo order</button><button class="button button-secondary" type="button" id="clear-demo-order">Reject / clear order list</button></div>
+        <p class="small muted">This button records a human-reviewed simulation in this server process. It places no purchase order and sends no SMS. Drafts survive tab changes while this page is open; a server restart clears demo records.</p>
+      </form>
+      <div id="order-status" class="status-message" role="status" aria-live="polite" hidden></div>
+      <div id="order-result" class="result-area" hidden></div>
+    </div>
+  </section>
+  {% endif %}
+
   {% elif active_view == 'architecture' %}
   <section class="view" aria-labelledby="page-title">
     <p class="eyebrow">Architecture · Steps to connect</p><h1 class="page-heading" id="page-title" tabindex="-1">Request → guarded tools → verified report.</h1>
