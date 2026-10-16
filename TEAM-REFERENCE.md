@@ -34,8 +34,16 @@ history and adding the missing October 15 push entry in timestamp order. Sonnet
 local suite passes 277 tests. A live Sonnet 5.5 turn using the local Anthropic
 credential returned ACCEPTED with the exact `report-v1`; the overall synthetic
 fixture remained MANUAL_REVIEW because of its seeded invalid/unknown rows. FDA
-used the recorded offline payload. This branch update is still local and
-unpushed pending publication.
+used the recorded offline payload. PR #28 was opened with head `a3b0079` at
+01:28:56-04:00 on October 16 and merged at 01:30:16-04:00 as
+`821fb4cdd6c4f3eaa6ad2859ec7755173ae84dd8`. Its reviewed source range was
+`59160cf3e217c244ec4b9c27bae2e45a1d14502b..66c0185bbeffd873a703bf67793725ec1826fee7`;
+the metadata-only review summary is `a3b0079f7247e1c797dc3d30f86ef263b890cc67`.
+The old remote harness tip `3b11428dcbca2999d90c69d9780bb369ca3dc060` was
+replaced with force-with-lease after its bundle archive was verified. GitHub's
+available activity feed did not expose the exact push timestamp; the head was
+confirmed present when PR #28 was created. The remote and local harness lane
+were then fast-forwarded to `main` at `821fb4c`.
 
 Merged PR source refs `docs/strength-fix-evidence` and
 `feature/supabase-inventory-schema` were fast-forwarded to current `main`; both
