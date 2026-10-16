@@ -10,6 +10,18 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 16, 2026 branch synchronization: the user explicitly authorized all
+non-main branches to fast-forward to the PR #30 demo source before its main merge.
+Every branch had zero unique commits relative to d5ff734ec287eb162543f67df100eba260473281.
+The three teammate lanes advanced from 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5;
+Supabase advanced from dc8c918a228f3aee717b5266628aea8d3df5be3c. All five non-main
+remote branches now share the same reviewed feature history. Main remains
+00270b3c11db6fcfd1c43a6c1893ff7b20b96da5; PR #30 is still open and unmerged.
+Active workspace is feature/supabase-migration. No auth implementation, schema,
+Agent tool, application code, permission or secret changed in this synchronization.
+The final shared receipt marker will be verified in PR #30; all non-main branches
+receive that same documentation-only endpoint so they remain identical.
+
 October 16, 2026 paired-phone implementation published on existing
 feature/order-workflow-demo for PR #30: cookie-bound orderer/receiving roles,
 private shared report/orders, selected-order A-to-B push and Delivery Received
@@ -297,6 +309,22 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## 2026-10-16T16:28:15-04:00
+
+- Verified atomic fast-forward push to existing non-main branches; no new commits
+  were created for the ref updates. The demo source was already published/reviewed.
+- feature/pharmacy-agent-instructions: 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..d5ff734ec287eb162543f67df100eba260473281.
+- feature/pharmacy-harness: 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..d5ff734ec287eb162543f67df100eba260473281.
+- feature/pharmacy-injection-risk-prevention: 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..d5ff734ec287eb162543f67df100eba260473281.
+- feature/supabase-migration: dc8c918a228f3aee717b5266628aea8d3df5be3c..d5ff734ec287eb162543f67df100eba260473281.
+- Direct GitHub verification matched d5ff734 on all five non-main branches
+  (202 commits). Existing local branches also matched, then the workspace switched
+  to feature/supabase-migration. No new branch, force push, merge or deletion.
+- Main remained 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5. PR #30 stays open;
+  its existing preview and pending physical-phone acceptance remain unchanged.
+- This receipt and its empty review marker are then shared to all non-main
+  branches. Final receipt-only push verification is recorded in PR #30.
 
 ## 2026-10-16T16:01:03-04:00
 
