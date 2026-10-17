@@ -344,6 +344,23 @@ New read_store_inventory_database returns 20 rows through the real session poole
 
 # Date and Timestamp of Push
 
+## 2026-10-16T22:06:49-04:00
+
+- Verified atomic source push on all five authorized non-main branches:
+  `8716999335b056ecdf6fd6f48da8e19be7125edb..99791aa46f7fd33bf09142a7e01c58646afa45f1`.
+- Reviewed setup endpoint: `42097e5ae57c0b90e6106d8919ffe9d59df45e11`; final marker is empty.
+- Added one-use existing-account password setup and private local recovery-link
+  helper, form validation, contracts and synchronized Modded PRD/policy/setup.
+  No SMTP, new account, membership grant, admin app secret or automatic message.
+- Validation: 341 methods, five browser simulations, two sequential 87-method
+  security rounds and 85 contained qualification fixtures, zero misses/false positives.
+  Full changed-line review: docs/planning/ACCOUNT-SETUP-REVIEW.md.
+- Real private links await the deployed setup page; no teammate password was
+  assigned or entered. Real teammate setup/sign-in and two-phone acceptance remain
+  pending. Existing PR #30 only; main unchanged and no branch deletion.
+- The receipt-only final publication verification is recorded in PR #30 to avoid
+  recursive receipt commits. Ignore account setup link files; share privately.
+
 ## 2026-10-16T18:46:48-04:00
 
 - Verified atomic source publication on all five authorized non-main branches:
