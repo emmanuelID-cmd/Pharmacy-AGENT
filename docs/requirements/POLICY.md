@@ -189,3 +189,25 @@ Explicit basic mode preserves the historical prototype for transition; configure
 Supabase mode never falls back on failures. Display safe generic credential denial,
 field-level feedback, loading/offline/timeout recovery and sign-in-again guidance
 without secrets or account enumeration. Model/harness authority remains unchanged.
+
+
+## Approved existing-account password setup - October 16, 2026
+
+This later approval supersedes the earlier deferral of teammate activation only.
+A maintainer may generate recovery links for the existing Kerrian/Brahim records
+and hand each link privately to its verified named recipient. No new user,
+public signup, shared password, SMTP service or automated message is authorized.
+Only the teammate chooses the new password. Link possession is sensitive bearer
+proof; keep generated links in ignored local files, never logs/Git/PRs/group chat.
+
+The setup page removes fragment proof from browser history, keeps it transient,
+validates all fields before submission and never automatically replays an attempt.
+The server verifies recovery with the fixed Supabase service, validates the exact
+provider token with /user, matches the supplied email and checks existing enabled
+membership before updating that same account. Provider tokens stay server-side.
+Setup never issues an application session or adds membership. Attempt global
+provider-session logout after confirmed password change and report cleanup
+uncertainty separately. Existing-cookie immediate exclusion still uses membership
+disable when provider cleanup is unavailable. Password minimum: 12 characters;
+provider policy may reject additional passwords. Expired/used/uncertain proof
+requires a fresh link. Actual teammate completion must be confirmed separately.

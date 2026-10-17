@@ -10,6 +10,19 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 16, 2026 existing-account setup approved after the user clarified that
+stored account metadata did not establish teammate-owned usable passwords.
+Added /account/setup and same-origin /api/auth/setup: one-use recovery proof,
+exact provider validation, email/approval binding and user-selected password.
+A local maintainer script generates private recovery links for the two existing
+teammate records and writes only to new ignored files; no SMTP, admin application
+secret, signup, public registration or automatic external message is added.
+341 full methods, five Node simulations and two sequential 87-method security
+rounds pass; qualification: 85 contained, zero misses/false positives. Visible
+local form validation passed without using a real proof or entering a password.
+Real teammate setup/sign-in and physical two-phone acceptance remain pending.
+Publish using existing PR #30 and safe non-main fast-forwards; main untouched.
+
 October 16, 2026 individual reviewer login implemented on feature/supabase-migration.
 The additive private pharmacy_web migration is deployed; a separate restricted
 login and ignored .env.auth configure local Supabase mode. Existing accounts,

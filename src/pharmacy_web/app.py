@@ -31,6 +31,7 @@ from .push import PushSender
 from .demo_store import COOKIE, PostgresDemoStore
 from .paired_demo import PairedDemo
 from .reviewer_auth import AuthError, SupabaseReviewerAuth, COOKIE as AUTH_COOKIE
+from .account_setup import complete_setup
 
 NAVIGATION = [
     {"key": "home", "label": "Home", "path": "/"},
@@ -61,6 +62,12 @@ class SignInBody(StrictBody):
     email: str = Field(min_length=3, max_length=254, pattern=r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
     password: str = Field(min_length=1, max_length=1024)
     return_to: str = Field(default="/demo", max_length=256)
+
+
+class SetupBody(StrictBody):
+    email: str = Field(min_length=3, max_length=254, pattern=r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+    token_hash: str = Field(pattern=r"^[a-f0-9]{40,128}$")
+    password: str = Field(min_length=12, max_length=1024)
 
 
 class ReviewBody(StrictBody):
@@ -211,8 +218,8 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
     async def personal_access(request):
         if (settings.hosted or not is_loopback(request)) and request.url.scheme != "https":
             return safe_error("HTTPS_REQUIRED", 403)
-        public_get = request.method in {"GET", "HEAD"} and request.url.path in {"/login", "/assets/auth.js", "/assets/pharmacy.css", "/favicon.ico"}
-        public_post = request.method == "POST" and request.url.path in {"/api/auth/login", "/api/auth/logout"}
+        public_get = request.method in {"GET", "HEAD"} and request.url.path in {"/login", "/account/setup", "/assets/account-setup.js", "/assets/auth.js", "/assets/pharmacy.css", "/favicon.ico"}
+        public_post = request.method == "POST" and request.url.path in {"/api/auth/login", "/api/auth/logout", "/api/auth/setup"}
         if public_get or public_post:
             return None
         auth = application.state.reviewer_auth
@@ -254,7 +261,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
             response = safe_error("METHOD_NOT_ALLOWED", 405)
         if response is None and request.method == "POST":
             origin = request.headers.get("origin")
-            if request.url.path in {"/api/auth/login", "/api/auth/logout"} and not origin:
+            if request.url.path in {"/api/auth/login", "/api/auth/logout", "/api/auth/setup"} and not origin:
                 response = safe_error("ORIGIN_REQUIRED", 403)
             elif origin and (urlsplit(origin).scheme, urlsplit(origin).netloc) != (request.url.scheme, request.url.netloc):
                 response = safe_error("ORIGIN_NOT_ALLOWED", 403)
@@ -356,6 +363,37 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
                 except AuthError: pass
             return safe_error(error.code, error.status)
 
+    @application.get("/account/setup")
+    async def setup_page(request: Request):
+        return templates.TemplateResponse(request=request, name="account-setup.html", context={
+            "active_view": "login", "navigation": [], "personal_login": False,
+            "auth_configured": settings.auth_mode == "supabase" and application.state.reviewer_auth.configured,
+        })
+
+    @application.post("/api/auth/setup")
+    async def set_password(request: Request, body: SetupBody):
+        if settings.auth_mode != "supabase":
+            return safe_error("AUTH_NOT_CONFIGURED", 503)
+        peer = request.client.host if request.client else "unknown"
+        attempts = application.state.login_attempts
+        key = "setup:" + peer
+        now = time.monotonic()
+        bucket = attempts.setdefault(key, deque(maxlen=5))
+        while bucket and now - bucket[0] >= 60:
+            bucket.popleft()
+        if len(bucket) >= 5:
+            return safe_error("AUTH_RATE_LIMITED", 429, {"Retry-After": "60"})
+        bucket.append(now); attempts.move_to_end(key)
+        while len(attempts) > 128:
+            attempts.popitem(last=False)
+        try:
+            result = await asyncio.to_thread(complete_setup, application.state.reviewer_auth,
+                                            body.email, body.token_hash, body.password)
+            # Setup does not sign a user in or inherit an old device pairing.
+            return JSONResponse(result)
+        except AuthError as error:
+            return safe_error(error.code, error.status)
+
     @application.post("/api/auth/logout")
     async def sign_out(request: Request, body: StrictBody):
         if settings.auth_mode != "supabase": return safe_error("AUTH_NOT_CONFIGURED",503)
@@ -387,7 +425,7 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
 
     @application.get("/assets/{filename}")
     async def assets(filename: str):
-        paths = {"auth.js": ROOT / "web/assets/auth.js", "pharmacy.css": ROOT / "web/assets/pharmacy.css",
+        paths = {"account-setup.js": ROOT / "web/assets/account-setup.js", "auth.js": ROOT / "web/assets/auth.js", "pharmacy.css": ROOT / "web/assets/pharmacy.css",
                  "closing.js": ROOT / "web/assets/closing.js",
                  "push.js": ROOT / "web/assets/push.js",
                  "pairing.js": ROOT / "web/assets/pairing.js",

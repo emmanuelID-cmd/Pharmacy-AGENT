@@ -243,3 +243,18 @@ falls back. Reviewer UUIDs are attached only by verified server sessions. Demo
 store instances bind room roles to that identity; login/logout retires this
 proven device's old subscription and clears its pairing cookie. This introduces
 no model capability, inventory write or real purchasing authority.
+
+
+## Existing-account password setup
+
+/account/setup is public only to render a form; /api/auth/setup requires explicit
+same-origin JSON plus recovery proof. A local maintainer script generates type
+recovery links against fixed existing teammate IDs using transient CLI management
+access. It writes links only to new ignored files; no admin credential enters
+application configuration. Manual private delivery avoids an SMTP integration.
+Supabase /verify consumes proof, /user validates the exact resulting token, then
+private approval and email binding precede PUT /user password mutation. No app
+cookie is issued. Browser memory holds only one-use proof, not provider tokens;
+fragment cleanup removes it from the current history entry. A post-update global
+provider logout attempts to cascade app sessions; cleanup uncertainty is distinct
+from password success. No inventory/Agent grants or database schema changes.
