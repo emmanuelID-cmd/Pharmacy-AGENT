@@ -146,7 +146,8 @@
     try {
       const json = subscription.toJSON();
       const {response, result} = await request('/api/closing-demo/notify', {method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({closing_id: order.closing_id, order_id: order.order_id, subscription: {endpoint: json.endpoint, keys: json.keys}})});
+        // Only reached after the person clicked "Send notification" (closing.js offerNotification).
+        body: JSON.stringify({closing_id: order.closing_id, order_id: order.order_id, subscription: {endpoint: json.endpoint, keys: json.keys}, confirm_send: true})});
       if (response.ok && result.push_service_accepted === true) report('Accepted by the push service. Check your phone; delivery is not confirmed. Your order remains a simulation.');
       else {
         const code = Object.hasOwn(reasons, result.reason_code) ? result.reason_code :

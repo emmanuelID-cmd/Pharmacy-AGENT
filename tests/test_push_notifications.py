@@ -207,7 +207,11 @@ class PushTests(TestCase):
         invalid = deepcopy(body); invalid["subscription"]["expirationTime"] = 0
         self.assertEqual(client.post("/api/closing-demo/notify", json=invalid).status_code, 422)
         self.assertEqual(client.post("/api/closing-demo/notify", json=body, headers={"origin": "https://untrusted.example"}).status_code, 403)
+        # Without the explicit human confirmation, nothing is sent.
+        unconfirmed = client.post("/api/closing-demo/notify", json=body)
+        self.assertEqual((unconfirmed.status_code, unconfirmed.json()["reason_code"]), (428, "NOTIFICATION_CONFIRMATION_REQUIRED"))
         self.assertEqual(self.calls, [])
+        body["confirm_send"] = True
         self.assertTrue(client.post("/api/closing-demo/notify", json=body).json()["push_service_accepted"])
         for path in ("/api/push/config", "/push-worker.js"):
             self.assertEqual(local_client(create_app(Settings(app_env="production"))).get(path).status_code, 503)

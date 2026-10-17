@@ -2,7 +2,7 @@
 from copy import deepcopy
 from datetime import datetime, timezone
 
-from .closing import ClosingDemo, ClosingError
+from .closing import ClosingDemo, ClosingError, cancel_order
 from .push import validate_subscription
 
 ORDER_EVENT = "synthetic-order-v1"
@@ -104,6 +104,8 @@ class PairedDemo:
             order = next((value for value in state.get("orders", {}).values() if value["order_id"] == order_id), None)
             if order is None or (closing_id is not None and closing_id != order["closing_id"]):
                 raise ClosingError("DEMO_ORDER_NOT_FOUND", 409)
+            if order.get("state") == "CANCELLED":
+                raise ClosingError("DEMO_ORDER_CANCELLED", 409)
             if kind == DELIVERY_EVENT and not order.get("delivery"):
                 raise ClosingError("DEMO_DELIVERY_NOT_RECORDED", 409)
             events = state.setdefault("events", {})
@@ -127,6 +129,17 @@ class PairedDemo:
             # The committed reservation remains unconfirmed and is never automatically retried.
             pass
         return result
+
+    def cancel(self, cookie, order_id, closing_id=None):
+        """The orderer cancels a submitted order while its order notification is not yet attempted."""
+        with self.store.room(cookie) as room:
+            self.active(room, "orderer")
+            state = room["state"]
+            order = next((value for value in state.get("orders", {}).values() if value["order_id"] == order_id), None)
+            if order is None or (closing_id is not None and closing_id != order["closing_id"]):
+                raise ClosingError("DEMO_ORDER_NOT_FOUND", 409)
+            notified = (ORDER_EVENT + ":" + order_id) in state.get("events", {})
+            return deepcopy(cancel_order(order, notified=notified))
 
     def delivery(self, cookie, order_id):
         with self.store.room(cookie) as room:
