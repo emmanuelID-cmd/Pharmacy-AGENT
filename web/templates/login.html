@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Sign in · Pharmacy-AGENT{% endblock %}
+{% block content %}
+<section class="panel login-panel" aria-labelledby="login-title">
+  <p class="eyebrow">TEAM ACCESS</p>
+  <h1 id="login-title" class="page-heading">Sign in to your workspace</h1>
+  <p class="muted">Use your own approved teammate account. Inventory and demo orders remain synthetic.</p>
+  {% if not auth_configured %}<div class="notice notice-error" role="alert">Individual login is not configured on this server yet. A maintainer must complete the server settings.</div>{% endif %}
+  <form id="reviewer-login-form" data-return-to="{{ return_to }}" data-configured="{{ 'true' if auth_configured else 'false' }}" novalidate>
+    <div id="login-errors" class="error-summary" role="alert" tabindex="-1" hidden></div>
+    <label for="login-email">Email <span class="required-mark">Required</span></label>
+    <input id="login-email" name="email" type="email" autocomplete="username" maxlength="254" required aria-invalid="false" aria-describedby="login-email-error">
+    <p id="login-email-error" class="field-error" hidden>Enter the email address for your approved account.</p>
+    <label for="login-password">Password <span class="required-mark">Required</span></label>
+    <input id="login-password" name="password" type="password" autocomplete="current-password" maxlength="1024" required aria-invalid="false" aria-describedby="login-password-error">
+    <p id="login-password-error" class="field-error" hidden>Enter your account password.</p>
+    <div class="action-row"><button class="button" id="reviewer-sign-in" type="submit"{% if not auth_configured %} disabled{% endif %}>Sign in</button></div>
+  </form>
+  <p><a href="/account/setup">Need to set up your password?</a> Ask Emmanuel for your private setup link.</p>
+  <p class="small muted form-footnote">Only approved team accounts can enter. If your invitation or password setup is unfinished, contact the project owner. Your session lasts up to one hour; sign-in starts a new phone pairing.</p>
+  <div id="login-status" class="status-message" role="status" aria-live="polite" hidden></div>
+</section>
+{% endblock %}

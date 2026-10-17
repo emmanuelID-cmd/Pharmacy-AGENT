@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Set your password · Pharmacy-AGENT{% endblock %}
+{% block content %}
+<section class="panel login-panel" aria-labelledby="setup-title">
+  <p class="eyebrow">TEAM ACCESS</p>
+  <h1 id="setup-title" class="page-heading">Set your own password</h1>
+  <p class="muted">Use the private setup link Emmanuel shared with you. It applies only to your existing approved account. Never forward it.</p>
+  {% if not auth_configured %}<div class="notice notice-error" role="alert">Account setup is not configured on this server yet.</div>{% endif %}
+  <form id="account-setup-form" data-configured="{{ 'true' if auth_configured else 'false' }}" novalidate>
+    <div id="setup-errors" class="error-summary" role="alert" tabindex="-1" hidden></div>
+    <label for="setup-email">Your team email <span class="required-mark">Required</span></label>
+    <input id="setup-email" type="email" autocomplete="username" maxlength="254" required aria-invalid="false" aria-describedby="setup-email-error">
+    <p id="setup-email-error" class="field-error" hidden>Enter the email address belonging to your setup link.</p>
+    <label for="setup-password">New password <span class="required-mark">Required</span></label>
+    <input id="setup-password" type="password" autocomplete="new-password" minlength="12" maxlength="1024" required aria-invalid="false" aria-describedby="setup-password-help setup-password-error">
+    <p id="setup-password-help" class="small muted">Use at least 12 characters. Choose a password you do not share with others.</p>
+    <p id="setup-password-error" class="field-error" hidden>Use between 12 and 1024 characters.</p>
+    <label for="setup-confirm">Confirm new password <span class="required-mark">Required</span></label>
+    <input id="setup-confirm" type="password" autocomplete="new-password" maxlength="1024" required aria-invalid="false" aria-describedby="setup-confirm-error">
+    <p id="setup-confirm-error" class="field-error" hidden>Enter the same new password again.</p>
+    <div class="action-row"><button class="button" id="setup-submit" type="submit"{% if not auth_configured %} disabled{% endif %}>Set password</button></div>
+  </form>
+  <div id="setup-status" class="status-message" role="status" aria-live="polite" hidden></div>
+  <p class="small muted">A link can be used once and expires under Supabase's settings. If an attempt fails or is interrupted, ask Emmanuel for a fresh link. Your password is never shown to the team.</p>
+  <p><a href="/login">Return to sign in</a></p>
+</section>
+<script defer src="/assets/account-setup.js"></script>
+{% endblock %}

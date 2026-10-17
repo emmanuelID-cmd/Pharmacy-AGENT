@@ -97,12 +97,117 @@ Status: Approved scope clarification for synthetic prototype testing. SYNTHETIC-
 - Show CRITICAL items first, then LOW items. Keep manual-review exceptions prominent and separate. FDA shortage context may add an external-risk review cue but cannot change a local class or threshold alert.
 - Produce one report for each user-requested run. It begins with total and per-class/review-state counts, then identifies the synthetic data mode, configured store, run and snapshot times, usage window, policy version, per-item calculation and threshold, FDA state, exceptions, run completeness and human next step. Every input row is either reported or explicitly withheld; partial or failed runs are never all-clear.
 - Group multiple reasons for the same item within a run into one alert. Keep unaffected supported items reportable.
-- Deliver reports and alerts only in the authorized review session. Email, SMS, Slack, webhooks, push notifications, scheduled runs and other external delivery are excluded. The model cannot create or change alert classes and cannot place orders or write inventory.
+- Deliver inventory reports and threshold alerts only in the authorized review session. Email, SMS, Slack, webhooks, scheduled runs and external report delivery are excluded. The separate approved browser-notification demo below sends a bounded synthetic submitted-order list. The model cannot create or change alert classes and cannot place orders, send notifications or write inventory.
 
 A diagnostic evaluation trace may show timestamped request, tool, permission, evidence, validation and final-state events. Keep it to safe metadata and bounded arguments; do not retain raw prompts, source free text, full records, credentials or hidden model reasoning. Trace evidence supplements the human report and does not establish live-source accuracy.
 
-### Requested replenishment extension — draft, not active policy
+### Approved synthetic closing/order demo - October 16, 2026
 
-The following is a proposed synthetic-demo extension only; it does not change the read-only authority or current v1 behavior above. The Agent may recommend item quantities only when an approved, versioned replenishment policy and verified inputs support the calculation, including target stock, usable on-hand units, confirmed incoming/open orders, pack size and rounding, and applicable minimums. If evidence is missing or conflicting, withhold that item's quantity for human review. The interface may prefill quantity fields in an unsaved draft; only a human may edit and submit it through a separately authorized ordering service. The Agent must not persist, submit, transmit, or write an order.
+This separate demo does not change SYNTHETIC-v0 stock classification, the Agent tool allowlist, or its read-only credentials. Close day captures one validated 150-row pre-order snapshot at a visibly frozen October 7 closing clock. Its report never changes after order submission. A source failure withholds closure; row-level exceptions remain visible. No movement ledger is connected, so opening-to-closing movements are unavailable rather than invented.
 
-If later approved, keep unsent drafts and submitted-but-unreceived orders separate from physical on-hand stock. For each human-submitted order, prepare a separately tracked manufacturer notice at the start of the manufacturer's morning shift, targeting 6:00 AM in the manufacturer's local time. Prioritize order lines by validated inventory status (CRITICAL before LOW), with days of supply and supporting evidence. This is delivery/replenishment priority, never clinical or patient priority. Do not include unsent drafts. Manufacturer timezone, after-shift submissions, channel, acknowledgements, and whether human submission transmits the purchase order or queues a separate notice remain unresolved. No external notification or order workflow is authorized by this draft.
+The additive deterministic contract is SYNTHETIC-DEMO-REPLENISHMENT-v1. For each exact item and dispensing unit, the explicit demo policy supplies target_days=7, confirmed_incoming=0, order_multiple=1 and minimum_units=1. These values are synthetic test assumptions, not authorized operational pharmacy policy or inferred manufacturer package quantities. The policy never enters or expands the existing model context.
+
+Target units = verified average daily usage * target_days. Deficit = max(0, target units - usable on-hand - confirmed incoming). If deficit is positive, apply the minimum, then round up to the order multiple. A zero deficit yields a zero suggestion, not an instruction to order. Missing/mismatched policy, invalid/nonfinite values, ambiguous identity, invalid stock, incomplete/zero usage, or stale evidence withholds the suggestion. Suggestions exceeding the demo limit of 1,000,000 units are also withheld. No live open-order book is assumed to be empty.
+
+A human selects from all 150 catalog entries, edits or removes supported suggestions, and explicitly submits a simulated order. Human-entered quantities must be whole dispensing units in 1..1,000,000. Unsupported items cannot be submitted as supported evidence. The application retains up to 20 distinct demo orders per process-local closing session, each with a scoped submission intent. Identical retries return the same order, including older orders; changed content under the same intent is rejected. New demo order starts a separate draft against the original report, without changing or deleting earlier submissions. Reaching the visible limit preserves history and rejects further new orders. The Agent has no submit/write tool. A simulated submission is not a placed order, stock receipt or consumption event.
+
+After human submission only, show separate SMS and per-order manufacturer notice previews, with CRITICAL before LOW inventory priority. The demo next-shift time is 6:00 AM America/New_York, explicitly an assumption; after-shift submissions target the next shift. This is neither a scheduler nor an external send. The unconfigured adapter reports PREVIEW_ONLY and SMS_PROVIDER_NOT_CONFIGURED, never SENT. Real-phone SMS is unconfigured; the user selected the browser confirmation below for the current demo instead. No Slack integration is planned.
+
+The report and simulated orders are memory-only, shared within the authorized prototype worker, and clear on restart; no cross-worker durability, real purchase-order transmission, post-submit revision/cancellation service or delivery acknowledgement is claimed. Durable orders/outbox and a protected human write service require separate Supabase scope on its assigned branch. An actual receipt, not an order submission, would change on-hand stock.
+
+### Approved Android browser notification - October 16, 2026
+
+Recovery clarification: order recording and notification delivery are separate outcomes. Once
+recorded, the order remains immutable and its submit button displays Order submitted; adjacent
+New demo order becomes available without awaiting notification delivery. A 20-second browser
+request/body deadline releases pending waits, preserves uncertain order intents for reconciliation,
+and never automatically retries a send. Fixed allowlisted notification failure references appear
+below the form without exposing arbitrary response text or keys. Restore an existing subscription
+before a separate worker-update check; an update failure must not silently discard that subscription.
+
+After an explicit Enable notifications gesture and browser permission, a human submitting a demo order in that same Chrome browser may request one encrypted Web Push notification. This is an authenticated human application service, never an Agent tool. Emmanuel approved replacing the initial generic confirmation with the submitted-order list on October 16, 2026. The server constructs a versioned payload from the retained order: demo order ID, total selected-line count and up to six selected labels, submitted quantities, units and local inventory priorities; reduce that preview further when needed to remain within 3000 UTF-8 bytes. The full catalog, stock report, NDCs, evidence, raw input, credentials and private key are excluded. Labels are bounded single-line display text; unsafe optional labels use their item reference, while invalid required values withhold the send. The notification/lock screen may show these synthetic item names and quantities; the Enable guidance says so. Only validated HTTPS fcm.googleapis.com Chrome endpoints and valid subscription encryption keys are accepted; no arbitrary hosts, redirects or browser-supplied message/link are allowed. Chrome's push infrastructure receives delivery metadata and encrypted content. No SMS account, TextNow login or phone number is collected.
+
+Browser subscriptions remain in that browser. The request carries its subscription only for this send; the server does not persist or return the endpoint/auth key. Disable unsubscribes this browser, while already accepted notifications may still arrive. The service worker has no fetch/cache handler; it validates the payload and constructs only a protected same-origin link to the exact order. Malformed/legacy messages show fixed fallback text, never supplied URLs. A missing order shows unavailable instead of another order. Push-service acceptance is not device delivery acknowledgement. One attempted send per process-local demo order prevents automatic duplicate attempts, including after uncertain timeouts. Failed/expired/unconfigured notifications do not roll back the simulated order or change its stock snapshot. There is no durable retry, scheduled send or desktop-to-phone pairing. Do not claim multi-worker reliability; an order missing from the current worker cannot notify. The user supplied Android evidence of generic confirmation display; the new selected-order display/tap still requires observed acceptance after HTTPS deployment.
+
+## Approved two-phone synthetic demo - October 16, 2026
+
+This extension supersedes the preceding same-browser and no-persistence limits
+only for explicitly paired sessions. Those limits still apply to the unpaired demo.
+
+The authorized human application may persist private demo pairing, immutable
+report/order state, receiving-browser subscriptions and notification attempts
+under the separate restricted pharmacy_demo_backend identity. The Agent and
+pharmacy_agent_backend remain read-only; no tool may invoke pairing, send,
+delivery or SQL writes. Public/anonymous Data API roles have no demo access.
+
+One explicitly paired orderer and receiving/manufacturer demo phone each opt
+in. Server-bound device cookies, single-use hashed ten-minute invitations and
+paired-order checks determine recipient authority. Never accept a client role,
+message, arbitrary endpoint or record ID as permission to send. Validate the
+stored subscription and minimized versioned payload again at dispatch.
+
+Paired submissions require both subscriptions ready. The order event routes to
+the receiving phone; its human Delivery Received action records only a synthetic
+acknowledgement and sends a distinct return event to the orderer. Inventory and
+the pre-order snapshot never change. Reserve each attempt in shared state before
+network IO; duplicates/uncertain results never automatically resend. Acceptance
+by the push service is not proof of device delivery or a real manufacturer order.
+
+Rooms expire after 24 hours and expired records are cleaned opportunistically
+when another room is created. Ending pairing disables future paired actions and
+clears subscriptions; previously accepted messages cannot be recalled. No
+background purge, SMS, purchase, stock adjustment or 6 AM schedule is implemented.
+The existing unpaired demo stays process-local; an enrolled pair never silently
+falls back to that state or another recipient. Actual two-phone display/tap
+acceptance must be observed after deployment before it is claimed passed.
+
+## Approved individual reviewer login - October 16, 2026
+
+Supabase mode replaces the shared web gate with each approved teammate's existing
+email/password account. Provider verification precedes private membership/session
+issuance. Never trust submitted identity/role flags, decoded claims alone or
+user-editable metadata. No public signup, automatic invitation, account confirmation
+or password reset is authorized here. Brahim's account activation remains separate.
+
+A distinct restricted auth backend accesses only the private reviewer/session
+schema. It receives no inventory/demo grants, managed Auth table access or role
+administration. Passwords and Supabase tokens are transient only. Browser cookies
+contain random application-session secrets, never provider/database credentials;
+store only their hashes with verified identities and at-most-one-hour expiry.
+Require HTTPS outside isolated loopback development, HttpOnly/SameSite=Strict,
+protected APIs, explicit same-origin login/logout, JSON contracts and bounded IO.
+
+Every protected request checks enabled membership. Logout revokes the app session;
+upstream session/user deletion cascades its record. Other upstream account changes
+are not an instant revocation guarantee: disable private reviewer membership when
+immediate exclusion is required. Session expiry requires sign-in again; no token
+refresh or background expiry purge is claimed. Login/logout clears the old device
+notification registration and pairing cookie. Pending accepted pushes cannot be
+recalled. Paired access is also bound to the server-verified user UUID.
+
+Explicit basic mode preserves the historical prototype for transition; configured
+Supabase mode never falls back on failures. Display safe generic credential denial,
+field-level feedback, loading/offline/timeout recovery and sign-in-again guidance
+without secrets or account enumeration. Model/harness authority remains unchanged.
+
+
+## Approved existing-account password setup - October 16, 2026
+
+This later approval supersedes the earlier deferral of teammate activation only.
+A maintainer may generate recovery links for the existing Kerrian/Brahim records
+and hand each link privately to its verified named recipient. No new user,
+public signup, shared password, SMTP service or automated message is authorized.
+Only the teammate chooses the new password. Link possession is sensitive bearer
+proof; keep generated links in ignored local files, never logs/Git/PRs/group chat.
+
+The setup page removes fragment proof from browser history, keeps it transient,
+validates all fields before submission and never automatically replays an attempt.
+The server verifies recovery with the fixed Supabase service, validates the exact
+provider token with /user, matches the supplied email and checks existing enabled
+membership before updating that same account. Provider tokens stay server-side.
+Setup never issues an application session or adds membership. Attempt global
+provider-session logout after confirmed password change and report cleanup
+uncertainty separately. Existing-cookie immediate exclusion still uses membership
+disable when provider cleanup is unavailable. Password minimum: 12 characters;
+provider policy may reject additional passwords. Expired/used/uncertain proof
+requires a fresh link. Actual teammate completion must be confirmed separately.

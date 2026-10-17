@@ -10,6 +10,170 @@ Collaborative Pursuit assignment. Root: Pharmacy-Agent-Role. Workspace: Pharmacy
 
 ## Current handoff
 
+October 16, 2026 existing-account setup approved after the user clarified that
+stored account metadata did not establish teammate-owned usable passwords.
+Added /account/setup and same-origin /api/auth/setup: one-use recovery proof,
+exact provider validation, email/approval binding and user-selected password.
+A local maintainer script generates private recovery links for the two existing
+teammate records and writes only to new ignored files; no SMTP, admin application
+secret, signup, public registration or automatic external message is added.
+341 full methods, five Node simulations and two sequential 87-method security
+rounds pass; qualification: 85 contained, zero misses/false positives. Visible
+local form validation passed without using a real proof or entering a password.
+Real teammate setup/sign-in and physical two-phone acceptance remain pending.
+Publish using existing PR #30 and safe non-main fast-forwards; main untouched.
+
+October 16, 2026 individual reviewer login implemented on feature/supabase-migration.
+The additive private pharmacy_web migration is deployed; a separate restricted
+login and ignored .env.auth configure local Supabase mode. Existing accounts,
+passwords, managed Auth policies, Agent tools and inventory grants remain unchanged.
+Three teammate UUIDs are approved; Emmanuel confirmed real local sign-in succeeds.
+Kerrian login is not observed and Brahim's unconfirmed/passwordless account setup
+was explicitly deferred by the user. No automatic email or password reset was sent.
+Sessions are opaque/hashed, at most one hour and checked against enabled membership;
+provider-session/user deletion cascades them. New login/logout retires the old
+browser registration and pairing, and paired state checks verified user identity.
+334 full methods, 85 qualification fixtures, two sequential 80-method security
+rounds, four Node simulations, rollback/deployed schema contract, real TLS denial
+probes and visible field-feedback checks pass. Existing leaked-password-protection
+advisor warning is unchanged; the user acknowledged the paid feature limitation.
+Set the four auth settings described in docs/database/REVIEWER-LOGIN.md on the
+intended Vercel environment before testing hosted individual login. Existing demo
+storage/VAPID settings remain necessary. Login source and all five non-main refs
+were published together at 16987aec5a79a7d45294722f2036294a3f732191.
+Existing PR #30 remains open; main and branch deletion are untouched. Physical
+two-phone order/delivery acceptance must follow deployment and configuration.
+
+October 16, 2026 branch synchronization: the user explicitly authorized all
+non-main branches to fast-forward to the PR #30 demo source before its main merge.
+Every branch had zero unique commits relative to d5ff734ec287eb162543f67df100eba260473281.
+The three teammate lanes advanced from 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5;
+Supabase advanced from dc8c918a228f3aee717b5266628aea8d3df5be3c. All five non-main
+remote branches now share the same reviewed feature history. Main remains
+00270b3c11db6fcfd1c43a6c1893ff7b20b96da5; PR #30 is still open and unmerged.
+Active workspace is feature/supabase-migration. No auth implementation, schema,
+Agent tool, application code, permission or secret changed in this synchronization.
+The final shared receipt marker will be verified in PR #30; all non-main branches
+receive that same documentation-only endpoint so they remain identical.
+
+October 16, 2026 paired-phone implementation published on existing
+feature/order-workflow-demo for PR #30: cookie-bound orderer/receiving roles,
+private shared report/orders, selected-order A-to-B push and Delivery Received
+B-to-A return event. Attempts are reserved before IO; duplicate actions do not
+resend. No Agent authority, inventory writes, SMS or 6 AM scheduler added.
+Both demo and Supabase branches were verified at dc8c918 (198 commits) before
+application integration; Supabase prerequisite work remains in that lane's history.
+322 local methods, 85 qualification fixtures, three Node simulations and two
+sequential 68-method security rounds pass. Real shared-store round trip used a
+fake sender and ended its synthetic pair. Local UI/code feedback was inspected.
+Source push verified 2026-10-16T16:01:03-04:00: dc8c918a228f3aee717b5266628aea8d3df5be3c..62d6710ba24272ccdd184a07fb52673b787ab6ff.
+Reviewed endpoint: b9c06e0cd91d2291638befc5599fbde89c07d190. Physical two-phone acceptance remains pending. Configure PHARMACY_DEMO_DATABASE_URL from ignored
+.env.demo in the intended Vercel environment and deploy the new source before
+phone testing. Do not merge or delete PR #30's branch until delivery acceptance.
+See docs/planning/TWO-PHONE-DEMO.md for steps and validation limits.
+
+October 16, 2026 two-phone storage prerequisite: after user approval, the existing Supabase
+lane was fast-forwarded from main's 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5 to the current
+demo head aef261217e6a9a293cc909ab58784e9552a05980, locally and remotely, with zero unique
+lane commits. Private pharmacy_demo schema and separate restricted login are deployed;
+two rollback security rounds, post-deployment access contract and real two-instance
+shared-state/replay checks pass. No inventory privileges or Agent tools changed.
+The ignored .env.demo contains the new server credential; hosted configuration and the
+pairing/delivery UI are still pending. Continue application integration on the existing
+demo branch/PR #30 after this isolated storage change is committed and published.
+
+October 16, 2026 browser-notification history consolidation: user confirmed that browser push
+with the order works and authorized squashing the notification attempts while continuing on
+`feature/order-workflow-demo` and existing PR #30. The nineteen commits after `880f05a3b6ae99fbed6b1e20c8873342812e8d86`
+were consolidated without changing the implementation tree. Earlier closing-form commits remain.
+Original head `da81f6b738dae607d76bad474d33ebeb8e87850c` is retained in a verified, restore-tested local Git bundle
+under `.git/codex-archives/`. Historical push ranges below remain historical/archive references.
+Exact-order phone tap is not separately confirmed. Two-phone recipient routing and the
+Delivery Received return notification remain unbuilt; complete and verify them before branch
+merge/cleanup. No SMS, new branch, PR, main merge or branch deletion occurred. The task-scoped
+commit/push waiver remains active. The final receipt-only rewrite is verified in PR #30.
+
+October 16, 2026 notification recovery publication: user temporarily waived repeated commit/push
+approval only for the PR #30 task on `feature/order-workflow-demo`, until completion and the
+feature branch's merge/cleanup. Keep checks/review/preview; normal approval rules resume afterward.
+This is a task-scoped instruction, not a change to the external Git workflow. Consolidation remains
+deferred until the phone test succeeds; no new PR, main merge, squashing or branch deletion here.
+Source push verified 2026-10-16T14:02:38-04:00: `0f13c51662e6fd62a8aee246db6e8b6013bed334..22e825f4215fb49eaa8acb66da1cf2552c204ecb`;
+reviewed endpoint `e27bd00b48c6884330667b1061f89b375c0eab32`. Corrected two reproduced local defects: failed worker
+updates skipped subscription restoration, and a pending notification locked the next order.
+Order submitted now identifies the locked recorded order; adjacent New demo order is released
+before notification waiting. Bounded requests and fixed rejection/timeout references appear below
+the form; unknown Android delivery failure is not claimed resolved. Existing keys/permissions,
+stock/report, one-attempt notification policy and read-only Agent authority remain unchanged.
+308 tests and 85 qualification fixtures pass (55 unsafe detected, 30 benign accepted, zero
+misses/false positives); two SECURITY rounds each passed 31 affected methods and both Node
+simulations. Visible local form recovery passed; Android content/delivery/tap needs retesting.
+The receipt-only publication verification is recorded in existing PR #30 to avoid recursive receipts.
+
+October 16, 2026 selected-order push publication: user approved local preview, commit and push
+on existing `feature/order-workflow-demo`; PR #30 receives the changes, with no new PR or main merge.
+Source push verified 2026-10-16T13:03:47-04:00: `37a4be4a1ede84480c19f11ada7a3e55eda0eef0..31746e958b14db08da1aa79a4df55068267084b4`;
+reviewed source endpoint `554e8b372ed380e8db87972e2b94b803e85ca105`. Android generic delivery was observed in the
+user's screenshot; the new payload contains only the submitted order ID/count and bounded selected
+labels, human quantities, units and stock priorities. Long lists disclose remaining items; a tap
+selects the exact retained order, and missing references show unavailable. Existing subscriptions
+check worker updates. No recipient pairing, delivery confirmation, SMS, Supabase or Agent tool added.
+308 tests pass; 85 qualification fixtures contained, 55 unsafe detected, 30 benign accepted, zero
+misses/false positives; two SECURITY rounds each passed 31 affected methods and both isolated Node
+simulations. Visible browser confirmed older-order recovery and missing-order feedback. New Android
+content/tap remains pending a fresh phone submission after deployment. No full CDP rerun, external
+send or durable multi-worker claim. Consolidation waits for successful phone verification.
+The receipt-only publication verification is recorded in existing PR #30 to avoid recursive receipts.
+
+October 16, 2026 repeat-order correction: user approved the preview and grouped publication on
+`feature/order-workflow-demo`; existing PR #30 only, no main merge. Source push verified
+at 2026-10-16T10:43:10-04:00 from `c28fc8dbf42c1589a4ac3ca20309585099ae6a18` to
+`05cf9ec73ee1adeee994db4b6b3203002b9884a3`; reviewed endpoint `157c0d83ec4b52fdcb5732e4f055d00ae9f538c3`.
+New demo order now unlocks a fresh form after submission or refresh recovery against the same
+immutable closing report. Up to 20 distinct simulated orders and their intents remain visible;
+older retries return their original order and each notification binds to its exact retained order.
+Mod PRD, policy, README, architecture and setup/plan/review records match this behavior.
+304 unittest methods pass; qualification: 85 contained, 55 unsafe detected, 30 benign accepted,
+zero misses/false positives. Two sequential security rounds and visible browser repeat-order
+recovery passed. Extended CDP regression has syntax validation only in this follow-up.
+The user reported a phone alert, but actual notification text remains unverified pending repeat
+testing on the updated HTTPS deployment. This is browser push; no SMS/TextNow integration.
+Agent authority and stock remain read-only. State remains worker-local and resets on restart.
+The receipt-only push verification is recorded in existing PR #30 to avoid recursive receipts.
+
+October 16, 2026 Android notification publication: user approved grouped commits and push on
+the existing `feature/order-workflow-demo`, explicitly requesting no new PR. Source push verified
+at 09:39:30-04:00 from `880f05a3b6ae99fbed6b1e20c8873342812e8d86` to
+`3408a6c1ebc62b47d235c2512c47f2507bc625a3`; reviewed source endpoint
+`639dfb67f8beeae9a9c0c54504b2ab71a03264d8`. Existing PR #30 receives the branch updates;
+no new PR or main merge occurred. Optional human-only Chrome/Android Web Push sends fixed,
+encrypted demo confirmations after explicit browser opt-in and a recorded simulated order.
+The Agent still cannot send, order or write. SMS/TextNow and 6 AM scheduling remain unconfigured.
+Enable errors now distinguish permission/setup/subscription stages and bound browser waits;
+the Codex preview's pending permission was observed and now returns PUSH_PERMISSION_TIMED_OUT.
+Final suite: 300 passing methods; qualification: 85 contained, 55 unsafe detected, 30 benign
+accepted, 0 misses/false positives; browser simulations/syntax and affected checks pass.
+The private sender key is ignored and excluded from commits. Configure PHARMACY_PUSH_PRIVATE_KEY
+on the HTTPS deployment and test enable/submit/display/tap in the same Android Chrome browser.
+Actual Android delivery remains unverified; demo order/deduplication state is worker-local.
+The receipt-only push verification is recorded in existing PR #30 to avoid recursive receipt commits.
+
+October 16, 2026 closing/order demo publication: PR #30 is open at
+https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/30 from the approved temporary
+`feature/order-workflow-demo` into `main`. The verified initial push is
+`00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..c425c4d2751504769daf8c5c37e0a96d44f4fe93`;
+the reviewed file-change endpoint is `abbe42db81cf1b3b9f472593305564a9a4cdc2fa`. The user approved the
+local preview and grouped publication. One fixed pre-order report now precedes the
+150-item searchable order form, human edits/rejection and simulated submission.
+The quantity contract is additive; existing Agent/model/CLI behavior and all five
+persistent branch tips remain unchanged at `00270b3`. Real-phone SMS/provider setup
+is deferred; notification previews perform zero external sends. Full suite: 291
+passing methods; qualification: 85/85 contained, zero misses/false positives; browser
+flow/mobile/reload checks and two security rounds with affected recovery rechecks
+passed. Demo state is process-local and clears on restart. Merge, deployment and
+temporary-branch cleanup remain gated; shared harness-contract review belongs in
+the PR before merge. Historical handoffs below describe their original dates.
+
 October 15, 2026 PR and branch update: PR #18 was closed unmerged; Slack remains
 out of scope. PR #25 merged to `main` as `3acf3e4651dccb41a700237725c98af66d5533b1`
 at 17:53:28-04:00; PR #23 merged as `8bb7d1f335e96854fce8f369e3a3213b5e465483`
@@ -179,6 +343,146 @@ Approved dedicated backend login and database reader implemented independently o
 New read_store_inventory_database returns 20 rows through the real session pooler and preserves unverified/stale source evidence. The original file reader remains unchanged. 103 tests passed; actual login read succeeded and insert/update/delete/raw access/escalation probes were denied. See docs/database/BACKEND-READER.md. Dependencies are project-local and pinned. No Git publication for this database work yet; presentation cleanup is still separate. This is not a push record.
 
 # Date and Timestamp of Push
+
+## 2026-10-16T22:06:49-04:00
+
+- Verified atomic source push on all five authorized non-main branches:
+  `8716999335b056ecdf6fd6f48da8e19be7125edb..99791aa46f7fd33bf09142a7e01c58646afa45f1`.
+- Reviewed setup endpoint: `42097e5ae57c0b90e6106d8919ffe9d59df45e11`; final marker is empty.
+- Added one-use existing-account password setup and private local recovery-link
+  helper, form validation, contracts and synchronized Modded PRD/policy/setup.
+  No SMTP, new account, membership grant, admin app secret or automatic message.
+- Validation: 341 methods, five browser simulations, two sequential 87-method
+  security rounds and 85 contained qualification fixtures, zero misses/false positives.
+  Full changed-line review: docs/planning/ACCOUNT-SETUP-REVIEW.md.
+- Real private links await the deployed setup page; no teammate password was
+  assigned or entered. Real teammate setup/sign-in and two-phone acceptance remain
+  pending. Existing PR #30 only; main unchanged and no branch deletion.
+- The receipt-only final publication verification is recorded in PR #30 to avoid
+  recursive receipt commits. Ignore account setup link files; share privately.
+
+## 2026-10-16T18:46:48-04:00
+
+- Verified atomic source publication on all five authorized non-main branches:
+  `998e3fe8aafdb23394cc99a9afff9c6e83251b4c..16987aec5a79a7d45294722f2036294a3f732191`.
+- Reviewed endpoint: `8813ad8ca936bf747fe016a1bb0856268999b494`; feature endpoint:
+  `a132c72eeabc6e29465052f18275e84671686454`. Final review marker changes no file.
+- Supabase reviewer login, private opaque sessions, account-bound pairing and
+  independent field-error recovery published with tests, migration and setup.
+  Migration deployment and Emmanuel's successful local password login are recorded.
+- Validation: 334 methods, four Node simulations, 85 qualification fixtures;
+  two sequential security rounds and deployed rollback-only schema contract pass.
+  Full changed-file review is docs/planning/REVIEWER-LOGIN-REVIEW.md.
+- All five non-main remote refs verified equal; existing local branches safely
+  fast-forwarded. Main remains 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5.
+  Existing PR #30 only; no new branch, force push, main merge or deletion.
+- Hosted individual login needs the four auth settings from ignored .env.auth,
+  existing demo-storage/VAPID settings and redeployment. Physical two-phone
+  acceptance remains pending; Brahim activation is separately deferred.
+- Receipt-only publication verification will be recorded in existing PR #30
+  to avoid recursively creating receipt commits.
+
+## 2026-10-16T16:28:15-04:00
+
+- Verified atomic fast-forward push to existing non-main branches; no new commits
+  were created for the ref updates. The demo source was already published/reviewed.
+- feature/pharmacy-agent-instructions: 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..d5ff734ec287eb162543f67df100eba260473281.
+- feature/pharmacy-harness: 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..d5ff734ec287eb162543f67df100eba260473281.
+- feature/pharmacy-injection-risk-prevention: 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..d5ff734ec287eb162543f67df100eba260473281.
+- feature/supabase-migration: dc8c918a228f3aee717b5266628aea8d3df5be3c..d5ff734ec287eb162543f67df100eba260473281.
+- Direct GitHub verification matched d5ff734 on all five non-main branches
+  (202 commits). Existing local branches also matched, then the workspace switched
+  to feature/supabase-migration. No new branch, force push, merge or deletion.
+- Main remained 00270b3c11db6fcfd1c43a6c1893ff7b20b96da5. PR #30 stays open;
+  its existing preview and pending physical-phone acceptance remain unchanged.
+- This receipt and its empty review marker are then shared to all non-main
+  branches. Final receipt-only push verification is recorded in PR #30.
+
+## 2026-10-16T16:01:03-04:00
+
+- Paired-phone source push verified on feature/order-workflow-demo:
+  dc8c918a228f3aee717b5266628aea8d3df5be3c..62d6710ba24272ccdd184a07fb52673b787ab6ff.
+- Reviewed endpoint: b9c06e0cd91d2291638befc5599fbde89c07d190. Cookie-bound pairing,
+  shared synthetic report/orders, order and delivery return pushes, safe UI,
+  tests and approved product/setup documentation are published through PR #30.
+- 322 tests, 85 qualification fixtures, three Node simulations, two sequential
+  68-method security rounds and real-store/fake-sender round trip passed. Actual
+  phone display/tap and hosted PHARMACY_DEMO_DATABASE_URL setup remain pending.
+- No main merge, new PR, branch deletion, SMS, Agent tool or inventory write.
+  Final receipt-only publication is verified in PR #30 to avoid recursive receipts.
+
+## 2026-10-16T15:29:09-04:00
+
+- Demo branch fast-forward publication: aef261217e6a9a293cc909ab58784e9552a05980..dc8c918a228f3aee717b5266628aea8d3df5be3c.
+- Remote-tracking reflog records update by push at this time; later direct remote
+  checks confirmed demo and Supabase at the same 198-commit tip. This publishes
+  the existing private storage prerequisite and its receipt, not application UI.
+
+## 2026-10-16T15:27:09-04:00
+
+- Supabase storage receipt-only push verified: a3d9be257e8c47a2845a2f12239556399700c626..dc8c918a228f3aee717b5266628aea8d3df5be3c.
+- Reviewed endpoint: 65bee6738e9c41e4dab132d8e24c95dd5060e9ac. Only verified
+  storage-publication handoff and its empty review marker were added.
+
+## 2026-10-16T15:27:05-04:00
+
+- Private demo storage source push on feature/supabase-migration verified: `aef261217e6a9a293cc909ab58784e9552a05980..a3d9be257e8c47a2845a2f12239556399700c626`; reviewed endpoint `01fc19654d5fa265913f6800cc74f14f603eb66b`.
+- New private schema/login and store are deployed and verified; source/tests/docs/driver pins are now published. No inventory changes or external push sends. 314 tests and 85 qualification fixtures pass, with zero misses/false positives.
+- The final receipt-only publication is verified in existing PR #30 when the database commits are integrated into the demo branch, avoiding recursive receipt commits.
+
+## 2026-10-16T15:25:09-04:00
+
+- Verified the prior ref-only fast-forward of existing feature/supabase-migration: `00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..aef261217e6a9a293cc909ab58784e9552a05980`.
+- User required the Supabase branch to be synchronized before demo storage changes; it had zero unique commits. This copied existing reviewed commits and introduced no new commit or branch.
+- This timestamp records remote verification, not an invented exact time for the earlier push. The shared-storage implementation will be published separately; do not treat this synchronization range as containing the new migration.
+
+## 2026-10-16T15:07:11-04:00
+
+- Authorized history rewrite verified: old remote `da81f6b738dae607d76bad474d33ebeb8e87850c` to `873969dbb0050d21d8b274542e197d7cbd9c30a5`; consolidated feature endpoint `5c37aad7c1b25af6129a9310848708e10591ae5e`.
+- Reviewed rewritten-history range: `880f05a3b6ae99fbed6b1e20c8873342812e8d86..5c37aad7c1b25af6129a9310848708e10591ae5e`. The retained anchor replaces the normal ancestor baseline because this operation intentionally rewrites pushed history; the exact old remote tip was the lease guard.
+- One notification feature commit replaces nineteen attempt/receipt commits; required empty review marker is separate. Same branch and PR #30 remain open for two-phone delivery work.
+- Full application tree matched the previously tested head exactly. Its existing 308-test, 85-fixture qualification and two-round security/browser evidence remain applicable; tests were not claimed rerun for unchanged code.
+- Original branch bundle integrity and isolated commit/tree/object restore checks passed before rewriting. This receipt is folded into the same feature commit; final publication is verified in PR #30 to avoid more receipt commits.
+
+## 2026-10-16T14:02:38-04:00
+
+- Notification recovery source push verified: `0f13c51662e6fd62a8aee246db6e8b6013bed334..22e825f4215fb49eaa8acb66da1cf2552c204ecb`;
+  reviewed endpoint `e27bd00b48c6884330667b1061f89b375c0eab32`. Same branch and PR #30 under the user's task-scoped commit/push waiver.
+- Preserves subscriptions across failed updates, releases next-order controls before notification
+  waiting, adds bounded requests/safe nearby feedback and regression/docs updates. 308 methods pass;
+  85 contained fixtures, zero misses/false positives. Actual Android outcome remains unverified.
+
+## 2026-10-16T13:03:47-04:00
+
+- Selected-order notification source push verified: `37a4be4a1ede84480c19f11ada7a3e55eda0eef0..31746e958b14db08da1aa79a4df55068267084b4`;
+  reviewed endpoint `554e8b372ed380e8db87972e2b94b803e85ca105`. Same feature branch and PR #30.
+- Selected names/quantities/units/priorities, bounded long-list preview, exact-order tap/recovery,
+  worker update, regression/security checks and synchronized Mod PRD/policy/docs. 308 methods pass;
+  85 contained qualification fixtures with zero misses/false positives. Android content/tap pending.
+
+## 2026-10-16T10:43:10-04:00
+
+- Verified repeat-order source push: `c28fc8dbf42c1589a4ac3ca20309585099ae6a18..05cf9ec73ee1adeee994db4b6b3203002b9884a3`;
+  reviewed endpoint `157c0d83ec4b52fdcb5732e4f055d00ae9f538c3`. Existing feature branch and PR #30.
+- Adds repeat human submissions, retained bounded history and exact per-order notification binding
+  with synchronized requirements and verification. 304 methods pass; 85 qualification fixtures
+  contained, zero misses/false positives. No main merge or new PR; Android message text pending.
+
+## 2026-10-16T09:39:30-04:00
+
+- Verified push to existing `feature/order-workflow-demo`; no new branch or PR. Pushed range: `880f05a3b6ae99fbed6b1e20c8873342812e8d86..3408a6c1ebc62b47d235c2512c47f2507bc625a3`. Reviewed range: `880f05a3b6ae99fbed6b1e20c8873342812e8d86..639dfb67f8beeae9a9c0c54504b2ab71a03264d8`.
+- Three scoped commits add the human-only encrypted push connection and opt-in controls, separate Enable failure/timeout safeguards, and synchronized Mod PRD/policy/README/architecture/setup/review evidence. Final summary `3408a6c` is metadata only. Existing PR #30 tracks the same branch; `main` and teammate branches were untouched.
+- Validation: 300 passing unittest methods; qualification 85 contained, 0 misses, 0 false positives; browser API/syntax, two security rounds and affected rechecks passed. No actual Android delivery is claimed. Secret `.env.push` remains ignored; no SMS account, live order, Supabase change or external test notification.
+- Timestamp is the observed successful-push/remote-tip verification time in America/New_York. The final receipt-only push verification is recorded separately in existing PR #30.
+
+## 2026-10-16T03:50:48-04:00
+
+- Verified initial push to `feature/order-workflow-demo` for PR [#30](https://github.com/emmanuelID-cmd/Pharmacy-AGENT/pull/30); new branch based on verified `main` at `00270b3c11db6fcfd1c43a6c1893ff7b20b96da5`.
+- Pushed range: `00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..c425c4d2751504769daf8c5c37e0a96d44f4fe93`. Reviewed file-change range: `00270b3c11db6fcfd1c43a6c1893ff7b20b96da5..abbe42db81cf1b3b9f472593305564a9a4cdc2fa`; final metadata-only review marker: `c425c4d2751504769daf8c5c37e0a96d44f4fe93`.
+- Four scoped commits add the validated closing snapshot/quantity contract and API, searchable human order form, field/reload safeguards and matching Mod PRD/policy/README/architecture/plan/review evidence. Original fixtures, live ordering, Supabase, model permissions and real notifications are unchanged.
+- Validation: 291 passing unittest methods; 85/85 qualification fixtures contained, 0 misses and 0 false positives; desktop/tablet/mobile browser flow and submitted-order reload passed; two security rounds and affected recovery rechecks passed. User approved the running preview.
+- Timestamp is the observed successful-push/remote-tip verification time in America/New_York. This receipt describes the feature push; publication of the receipt itself is metadata only, with final remote verification recorded in PR #30.
+
 
 ## Unverified push time — checked 2026-10-15T22:37:41-04:00
 

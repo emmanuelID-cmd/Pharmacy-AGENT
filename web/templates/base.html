@@ -7,7 +7,13 @@
   <meta name="theme-color" content="#087a60">
   <title>{% block title %}Pharmacy-AGENT{% endblock %}</title>
   <link rel="stylesheet" href="/assets/pharmacy.css">
+  <script defer src="/assets/auth.js"></script>
+  {% if active_view != "login" %}
+  <script defer src="/assets/push.js"></script>
+  <script defer src="/assets/pairing.js"></script>
+  <script defer src="/assets/closing.js"></script>
   <script defer src="/assets/pharmacy.js"></script>
+  {% endif %}
 </head>
 <body>
   <div class="app-shell">
@@ -23,6 +29,7 @@
       <div class="header-meta">
         <span class="badge">Store {{ store_id|default(1618) }} · Synthetic data</span>
         <span class="badge badge-soft">Read-only · Human review</span>
+        {% if personal_login %}<button class="button button-secondary" id="reviewer-sign-out" type="button">Sign out</button>{% endif %}
       </div>
     </header>
     <nav class="primary-nav" aria-label="Main navigation">
@@ -31,6 +38,8 @@
       {% endfor %}
     </nav>
     <div id="navigation-status" class="status-message navigation-status" role="status" aria-live="polite" hidden></div>
+    <div id="reviewer-auth-status" class="status-message" role="status" aria-live="polite" hidden></div>
+    <div id="reviewer-auth-required" class="notice notice-error" role="alert" hidden>Your session ended. Your current page is preserved. <a id="reviewer-sign-in-link" href="/login">Sign in again</a> to continue. Signing in starts a new device pairing.</div>
     <main class="main-content" id="main-content" tabindex="-1">
       {% block content %}{% endblock %}
     </main>

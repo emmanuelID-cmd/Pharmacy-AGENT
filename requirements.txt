@@ -28,3 +28,12 @@ typing-inspection==0.4.4
 typing_extensions==4.16.0
 tzdata==2026.5
 uvicorn==0.54.0
+# Web Push encryption and VAPID signing; no SMS service SDK.
+cffi==2.1.1
+cryptography==50.0.2
+http-ece==1.2.1
+py-vapid==1.9.6
+pycparser==3.11
+# Restricted private demo database service; no Agent write grant.
+psycopg==3.3.6
+psycopg-binary==3.3.6

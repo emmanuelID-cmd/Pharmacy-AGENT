@@ -100,3 +100,161 @@ the configured model and fixed FDA endpoint, records sanitized outcomes separate
 and makes at most two end-to-end runs without automatic model retries. A frozen
 October 7 evaluation clock is explicitly labeled; normal Agent reviews use current
 time and preserve stale-snapshot review requirements.
+
+## Approved closing/order demo - October 16, 2026
+
+The Demo tab retains its original 20-row fixed review and adds a separate 150-item closing workflow.
+`src/pharmacy_web/closing.py` invokes the existing fixed inventory read guard, then independent
+snapshot/item validation and `calculate_item`. The additive `pharmacy_harness/replenishment.py`
+contract consumes those checked results plus an explicit per-item synthetic policy. Existing
+Agent tools, model context, CLI arithmetic and output guard are unchanged; the model sees no
+order draft, submit tool, recipient, credential or notification API.
+
+```mermaid
+flowchart LR
+    Human[Human clicks Close day] --> Read[Guarded synthetic inventory read]
+    Read --> Verify[Independent validation and deterministic calculations]
+    Verify --> Report[One fixed pre-order closing report]
+    Report --> Form[Search 150 items; queue and edit selected lines]
+    Form --> Submit[Explicit human demo submit]
+    Submit --> Order[Process-local simulated order and scoped intent]
+    Order --> Preview[Separate SMS and next-shift manufacturer notice previews]
+```
+
+POST `/api/closing-demo/close` captures once per application process; repeating it returns the
+same report and any recorded demo order. POST `/api/closing-demo/submit` accepts only the server
+closing reference, submission intent and bounded item ID/quantity lines. It rebinds each line
+to the frozen snapshot, rejects unsupported/duplicate items and conflicting intents, and returns
+the same demo order for an identical retry. Both routes inherit the existing reviewer access,
+origin, content-type, body-limit and safe-error middleware. Source labels are text-only UI data.
+
+The server uses a lock for capture and submission. Returned copies cannot mutate its original
+snapshot/order. This state is memory-only and shared within that authorized prototype worker;
+restarts clear it and different workers do not share it. No database is touched, and no durable
+idempotency or real scheduled delivery is claimed. The unconfigured SMS adapter has
+no outbound transport and reports PREVIEW_ONLY with zero sends. Actual SMS and manufacturer
+integration require a separately chosen provider/test destination; durable scheduling/write
+services require separate Supabase approval and its dedicated migration branch.
+
+## Optional Chrome/Android push confirmation
+
+`web/assets/push.js` obtains permission only on Enable and stores the subscription using the
+browser's PushManager. The user enables and submits in that same browser; no desktop-to-phone
+pairing or subscription database is implemented. After successful human submission, POST
+`/api/closing-demo/notify` binds the submitted closing/order IDs to the worker's recorded order.
+It inherits reviewer authentication, origin, JSON/body limits and safe errors. The Agent cannot
+dispatch it. `closing.py` serializes attempts under the existing lock and retains one result,
+including uncertain failures, so concurrent requests cannot repeat the send within that worker.
+
+`src/pharmacy_web/push.py` validates only HTTPS Chrome FCM endpoints and P-256/auth keys. It uses
+http-ece encryption, py-vapid signing and httpx with bounded IO, no redirects and no ambient
+proxies. The versioned synthetic-order payload is constructed from the retained submitted order,
+never a browser-supplied message. It contains demo order ID, total selected-line count and at most
+six labels/quantities/units/priorities. UTF-8 encoding is bounded at 3000 bytes, dropping trailing
+preview lines when necessary. Stock, evidence, NDCs, unselected catalog rows and secrets are excluded.
+Optional labels with controls/hidden formatting/markup or excess length use an item reference;
+invalid required quantity/unit/priority prevents sending. The Agent never sees or dispatches this.
+GET `/api/push/config` exposes the derived public key only. The private key loads server-side from
+ignored `.env.push` or environment configuration; `push_keys.py` creates but never overwrites it.
+Chrome's existing push service supplies delivery infrastructure; no SMS account is created.
+
+GET `/push-worker.js` serves the authenticated root-scoped worker, with no fetch handler or cached
+private content. It validates the payload schema/limits, displays selected lines and indicates
+remaining lines; malformed/legacy pushes use fixed fallback text. Supplied URLs are never followed.
+It constructs `/demo?order=demo-<12 hex>#order-result` on the same origin. `closing.js` loads the
+authorized worker history and selects only that exact order, focusing its result; missing orders
+show unavailable rather than the latest order. Existing subscriptions request a worker update on
+page load and the worker activates its update without waiting for every old tab to close.
+Subscription restoration precedes a separate bounded worker-update check, so an update error
+does not discard an existing subscription. Client configuration/notification fetches and JSON-body
+waits share a 20-second request deadline and abort their browser fetch when the wait ends.
+`closing.js` also bounds close/submit requests, preserving the draft/intent after an uncertain
+timeout. It releases order busy state before requesting a notification; notification errors cannot
+reclassify a recorded order as an unconfirmed submission. The recorded order's submit button says
+Order submitted and remains disabled, while the adjacent New demo order is available. Notification
+status is mirrored below the form with fixed allowlisted failure references; newer attempts/Disable
+suppress stale feedback without retrying or altering already-dispatched sends.
+Disable unsubscribes the browser. An accepted request
+is not proof of device display. The existing worker-local state limitation also applies to
+notification binding/deduplication; a missing worker order rejects the request. No 6 AM scheduler,
+durable queue, automatic retries or real manufacturer SMS is added.
+
+## Repeat demo orders against one closing report
+
+The user-requested repeat flow replaces the initial one-order restriction. `ClosingDemo` retains
+at most 20 orders/intents under the existing lock. Each distinct intent creates its own revision-1
+order; retries return that intent's original order even after later submissions. Changed contents
+under an existing intent conflict, and capacity rejects new orders without dropping history.
+The close endpoint returns the unchanged snapshot, latest order, copied order history and limit.
+Notification binding finds the exact recorded order, so each order retains its own single attempt.
+
+`closing.js` offers New demo order after submission or refresh recovery. It clears only the active
+draft/intent and unlocks its form, leaving the report, notification opt-in and submitted history
+intact. Merely starting a draft sends nothing. Returning to the report while a new draft is open
+preserves it; a full browser reload restores the latest submitted order, from which another draft
+can be started. No database, new Agent capability or order amendment service is added. Existing
+worker-local, restart and multi-worker limitations remain explicit.
+
+## Approved two-phone demo extension
+
+The existing authenticated web application now has a separate PairedDemo service.
+Host-only HttpOnly device cookies bind one orderer and one receiving/manufacturer
+demo role to a private PostgreSQL room. Single-use hashed invitations pair them;
+the server never trusts a client-supplied role or notification destination.
+PostgresDemoStore uses the dedicated pharmacy_demo_backend login, TLS, bound
+queries, transaction-local device context and row locks. Its private RLS schema
+is separate from inventory and unexposed to public Data API roles. No model tool
+or inventory write authority is introduced.
+
+Paired rooms contain one immutable closing snapshot, up to twenty submitted
+orders, private receiving subscriptions and per-event attempt records. The
+sender reserves an attempt in a committed transaction before network IO, then
+records transport results separately. Worker crashes or uncertain transport
+outcomes cannot reopen that reservation automatically. An order event targets
+the receiving role. Its human delivery acknowledgement targets the ordering
+role with a separate versioned event/tag; it does not modify stock or report.
+
+The worker validates minimized payloads, displays selected item summaries and
+routes exact IDs through the protected Demo page. Open pages receive a bounded
+refresh signal after push, rather than private payloads or credentials. Shared
+records survive workers/restarts, expire after 24 hours and are removed on later
+room creation. No background purge or scheduling service is claimed. Original
+unpaired requests retain the existing process-local implementation; existing
+pairing cookies fail visibly rather than silently falling back.
+
+## Individual reviewer authentication
+
+With PHARMACY_AUTH_MODE=supabase, SupabaseReviewerAuth verifies email/password
+against the fixed project Auth endpoint and validates the exact token with /user.
+It ignores external metadata for authority and discards provider tokens/passwords.
+AuthStore issues a random opaque browser cookie backed by private RLS records
+under the separate pharmacy_web_auth_backend identity. The dedicated role can
+issue/read/revoke app sessions but cannot change reviewer membership, managed
+Auth tables, inventory or paired state. Provider-session/user foreign keys cascade
+deletion; each request checks enabled application membership and one-hour expiry.
+Other account changes require membership disable for immediate app exclusion.
+
+The web middleware gates protected pages/APIs; same-origin JSON login/logout are
+the only public auth mutations. Guest pages redirect through safe local return
+paths; expired API actions expose sign-in guidance while preserving current input.
+The familiar login page uses shared visual tokens and accessible field feedback.
+Explicit basic mode retains earlier access_check behavior; Supabase mode never
+falls back. Reviewer UUIDs are attached only by verified server sessions. Demo
+store instances bind room roles to that identity; login/logout retires this
+proven device's old subscription and clears its pairing cookie. This introduces
+no model capability, inventory write or real purchasing authority.
+
+
+## Existing-account password setup
+
+/account/setup is public only to render a form; /api/auth/setup requires explicit
+same-origin JSON plus recovery proof. A local maintainer script generates type
+recovery links against fixed existing teammate IDs using transient CLI management
+access. It writes links only to new ignored files; no admin credential enters
+application configuration. Manual private delivery avoids an SMTP integration.
+Supabase /verify consumes proof, /user validates the exact resulting token, then
+private approval and email binding precede PUT /user password mutation. No app
+cookie is issued. Browser memory holds only one-use proof, not provider tokens;
+fragment cleanup removes it from the current history entry. A post-update global
+provider logout attempts to cascade app sessions; cleanup uncertainty is distinct
+from password success. No inventory/Agent grants or database schema changes.

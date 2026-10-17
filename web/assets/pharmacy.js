@@ -60,6 +60,7 @@
       options.body = JSON.stringify(payload);
     }
     const response = await fetch(url, options);
+    window.handleAuthRequired?.(response);
     let body;
     try { body = await response.json(); } catch (_) { throw new Error('SAFE_RESPONSE'); }
     if (!response.ok) {
@@ -99,7 +100,8 @@
     const navigationNotice = agentNotice;
     setStatus(routeStatus, navigationNotice || 'Opening page…', navigationNotice ? 'info' : 'loading');
     fetch(target.pathname, { headers: { Accept: 'text/html' } })
-      .then(response => { if (!response.ok) throw new Error('ROUTE_UNAVAILABLE'); return response.text(); })
+      .then(response => {
+        if (response.redirected && new URL(response.url).pathname === '/login') {window.location.assign(response.url); throw Error('AUTH_SIGN_IN_REQUIRED');} if (!response.ok) throw new Error('ROUTE_UNAVAILABLE'); return response.text(); })
       .then(html => {
         const nextDocument = new DOMParser().parseFromString(html, 'text/html');
         const nextMain = nextDocument.getElementById('main-content');
@@ -463,11 +465,13 @@
   }
 
   function bindPage() {
+    window.bindReviewerAuth?.();
     updateClock();
     bindReview();
     bindTester();
     bindDemo();
     bindFailurePreview();
+    window.bindClosingDemo?.();
   }
 
   bindNavigation();

@@ -103,7 +103,7 @@ Keys stay in environment variables or an ignored `.env` file. Never commit them:
 
 The agent **never**:
 
-- decides to replenish, recommends or calculates an order or quantity, or places or submits an order; low or critical status only flags an item for human review;
+- decides to replenish or places/submits an order; the read-only Agent review flags LOW/CRITICAL stock for human review. The separate synthetic Demo can suggest quantities using its visible test policy; it cannot execute an order;
 - **writes** to inventory, changes policy, or releases reserved, expired or quarantined stock;
 - makes **clinical** decisions: no diagnosis, treatment, dispensing or patient prioritization;
 - uses **patient data** (no patient IDs, dosing instructions or addresses);
@@ -119,14 +119,35 @@ is not flagged by the detector, although it is still contained (it never reaches
 report). Fixed: an item with ambiguous or missing dosage strength now gets `AMBIGUOUS_ITEM` and manual
 review (PR #16, tests in PR #20).
 
-**Requested next-demo extension, not implemented:** show a multi-step human replenishment review
-using synthetic data: report low/critical stock, calculate suggested quantities only from an
-approved fixture policy, prefill quantity fields in an unsaved order draft, let a human edit or
-reject lines and simulate the human submit, then show a closing inventory report that keeps
-unreceived orders separate from on-hand stock. Preview one manufacturer notice per submitted
-order for the start of the manufacturer's morning shift (6:00 AM local target), prioritizing
-CRITICAL before LOW inventory. No live order, database write, or external notice is part of this
-demo proposal; manufacturer timezone, after-shift handling, and delivery channel remain open.
+**Closing report and order-form demo:** On the Demo tab, use **Close day / Generate report**
+to capture one pre-order inventory report for the 150-item synthetic catalog. Search the dropdown,
+add selected items to the queued list, inspect the explicit seven-day demo quantity policy,
+edit/remove items, and use **Submit demo order**. The separate notification previews are linked
+to that human-reviewed simulation; the original stock report stays unchanged. The example closing
+clock is October 7, 2026 at 6:00 PM New York time, distinct from the original stock snapshot and
+actual report creation. The original 20-row fixed demo remains above this workflow.
+
+After submitting, use **New demo order** to prepare another order against that same report,
+including after refreshing and viewing the report again. Earlier submissions remain in the
+submitted-order history; each distinct order can request its own browser confirmation. The demo
+retains up to 20 orders per worker and never changes stock when an order is submitted.
+
+No purchase order, inventory write or database write occurs. Optional Chrome/Android browser
+notifications show only the submitted order's item names, human quantities, units and priority
+after explicit browser opt-in. Up to six lines fit in the bounded preview; long orders indicate
+more items. Tap to open that exact order's complete list. Names/quantities may appear on the
+device's notification or lock screen. Enable and submit on the same phone/browser.
+Order recording finishes independently of notification delivery. The button changes to **Order
+submitted**, with **New demo order** beside it; notification status and safe failure references
+appear directly below the form as well as beside the notification controls. Browser requests time
+out after 20 seconds, preserve uncertain order intents and never retry notifications automatically.
+This uses Chrome's push infrastructure, not SMS or TextNow, and requires no paid messaging account.
+See [notification setup and phone test](docs/planning/ANDROID-PUSH.md). Real-phone SMS remains
+unconfigured. The 6:00 AM
+manufacturer notice is a preview using an explicitly assumed New York timezone, not a running
+scheduler. Demo records are process-local and clear on restart; drafts survive tab changes while
+the page remains open. This is not a durable or multi-worker ordering service. See the
+[approved workflow plan](docs/planning/ORDER-WORKFLOW-PLAN.md).
 
 ## Team
 
@@ -329,3 +350,51 @@ Historical five-phase handoff/review/comparison files describe their earlier bas
 ## Local read-only database check
 
 Install the optional database requirements in the project virtual environment, then run `.venv/Scripts/python.exe -B scripts/check_database_reader.py`. It loads only the ignored generated `.env.database` credential file and prints safe counts. This read-only tool returns untrusted source evidence; it does not validate pharmacy truth, calculate supply, or approve operational actions. See [backend reader guide](docs/database/BACKEND-READER.md).
+
+### Two-phone browser demo
+
+The optional paired demo sends a reviewed order from Phone A to Phone B, then
+Phone B's **Delivery Received** action sends a distinct return notification to
+Phone A. It uses browser Web Push, not SMS, and never places a purchase order or
+changes stock. The closing inventory report remains the same pre-order snapshot.
+
+Configure the restricted server-only `PHARMACY_DEMO_DATABASE_URL` from ignored
+`.env.demo` for the deployment being tested, alongside the existing VAPID sender
+configuration, and redeploy. This is a separate demo login, not the inventory
+reader or a Supabase publishable key. See [private storage](docs/database/DEMO-PAIRING.md).
+
+Open the same deployed HTTPS link in Android Chrome on both phones and pass
+reviewer login. On Phone A choose **Use this phone to order**, share the code
+with Phone B, and join there using **Join as receiving phone**. Enable browser
+notifications on each, refresh pairing status, then create/review/submit on A.
+B receives only the selected submitted order and can confirm demo delivery.
+The return alert identifies that order on A. Both notification types have an
+exact-order link; platform preview limits and lock-screen visibility still apply.
+
+Pairing codes expire after ten minutes or one use. Shared demo records expire
+after 24 hours; the backend removes expired rows on later room creation. **End
+pairing** stops new alerts for both phones without changing inventory. The
+unpaired single-browser demo remains available. Automated/shared-store checks
+do not replace actual two-phone notification acceptance; follow
+[the demo checklist](docs/planning/TWO-PHONE-DEMO.md) after deployment.
+
+### Individual teammate sign-in
+
+The optional Supabase login uses each approved teammate's existing email/password.
+Set PHARMACY_AUTH_MODE=supabase, SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY and the
+restricted PHARMACY_AUTH_DATABASE_URL from ignored .env.auth, then redeploy the
+intended environment. Visit /login. No duplicate reviewer credential variables
+are needed; the original shared login remains only in explicit basic mode.
+Supabase mode fails closed and never falls back to that shared login.
+
+Sessions use private server records and opaque HttpOnly cookies, last at most
+one hour, and can be signed out. Account changes clear the old phone pairing and
+subscription; pair again after login. Supabase tokens/passwords never enter the
+browser response or application persistence. The Agent/inventory grants remain
+read-only. Existing paired-storage and VAPID settings are still required for
+phone delivery. See [reviewer login and account prerequisites](docs/database/REVIEWER-LOGIN.md).
+Teammates must complete their own account setup; database readiness flags do not
+prove a usable password. The approved setup page accepts a private, one-use
+Supabase recovery link generated by the maintainer. See the reviewer-login guide
+for private link delivery, password selection and normal sign-in. No SMTP
+account, public signup or additional Vercel secret is needed.
