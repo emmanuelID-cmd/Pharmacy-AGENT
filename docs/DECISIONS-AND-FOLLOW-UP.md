@@ -5,8 +5,8 @@
 Status: **Conflict-clear** (no blocking conflict), with corrections below applied. This checklist is an implementer self-check, not an independent review.
 
 **Branch layout (2026-10-18):**
-- `feature/pharmacy-harness` tip: Bundle A (model-turn) + `demo_store` mock-connect fix + wire/demo_store tests + core boundary guard. Clean tip `unittest discover` → see latest recorded total below.
-- `wip/closing-run-log`: replenishment REVIEW-only + `closing.py` run_log + matching POLICY/PRD demo text (**pending merge**; held for Emmanuel). Replenishment must not land without the updated closing tests (`None != 0` on MAINTAIN was the broken-tip lesson).
+- `feature/pharmacy-harness` tip: Bundle A (model-turn) + `demo_store` mock-connect fix + wire/demo_store tests + core boundary guard. Clean tip `unittest discover` → **361 OK** (2026-10-18).
+- `wip/closing-run-log`: replenishment REVIEW-only + `closing.py` run_log + matching POLICY/PRD demo text (**pending merge**; held for Emmanuel). Clean WIP tip `unittest discover` → **368 OK**. Replenishment must not land without the updated closing tests (`None != 0` on MAINTAIN was the broken-tip lesson).
 
 **Docs vs code:** On this feature branch, do **not** claim REVIEW-only replenishment or run_log counters as shipped. Those live on `wip/closing-run-log` until Emmanuel reviews and that branch merges. Phase 8 docs cover the one-turn model path only.
 
@@ -14,8 +14,8 @@ Status: **Conflict-clear** (no blocking conflict), with corrections below applie
 
 ### PR description items
 
-- **demo_store.py:** live Postgres path remains untested in this environment because there is no driver; unit tests cover mocked connect and missing-`psycopg` → `DEMO_SHARED_STORE_UNAVAILABLE`.
-- **Merge order:** replenishment signature change broke old closing tests. After merging either branch (or both), run full `python3 -m unittest discover -s tests` again.
+- **demo_store.py (`28e5b29`):** live Postgres path remains untested in this environment because there is no driver; unit tests cover mocked connect and missing-`psycopg` → `DEMO_SHARED_STORE_UNAVAILABLE`.
+- **Merge order / broken-tip lesson:** the replenishment signature change broke the old closing tests. If both branches merge in either order, run full `python3 -m unittest discover -s tests` after each merge.
 
 ### Known suite note (Emmanuel / demo store)
 
