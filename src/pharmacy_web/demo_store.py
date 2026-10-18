@@ -58,14 +58,39 @@ class PostgresDemoStore:
     def _database(self, device="", invite=""):
         if not self.configured:
             raise ClosingError("DEMO_SHARED_STORE_NOT_CONFIGURED", 503)
+        options = (
+            "-c statement_timeout=5000 -c lock_timeout=1000 "
+            "-c idle_in_transaction_session_timeout=5000"
+        )
         try:
-            import psycopg
-            from psycopg.rows import dict_row
-            connect = self._connect or psycopg.connect
-            with connect(self._url, sslmode="require", connect_timeout=5, row_factory=dict_row,
-                         options="-c statement_timeout=5000 -c lock_timeout=1000 -c idle_in_transaction_session_timeout=5000") as connection:
+            # Injected connect (unit tests) must not require the live driver.
+            if self._connect is not None:
+                connect = self._connect
+                connect_kwargs = {
+                    "sslmode": "require",
+                    "connect_timeout": 5,
+                    "options": options,
+                }
+            else:
+                try:
+                    import psycopg
+                    from psycopg.rows import dict_row
+                except ImportError:
+                    raise ClosingError("DEMO_SHARED_STORE_UNAVAILABLE", 503) from None
+                connect = psycopg.connect
+                connect_kwargs = {
+                    "sslmode": "require",
+                    "connect_timeout": 5,
+                    "row_factory": dict_row,
+                    "options": options,
+                }
+            with connect(self._url, **connect_kwargs) as connection:
                 with connection.cursor() as cursor:
-                    cursor.execute("select set_config('pharmacy_demo.device_hash', %s, true), set_config('pharmacy_demo.invite_hash', %s, true)", (device, invite))
+                    cursor.execute(
+                        "select set_config('pharmacy_demo.device_hash', %s, true), "
+                        "set_config('pharmacy_demo.invite_hash', %s, true)",
+                        (device, invite),
+                    )
                     yield cursor
         except ClosingError:
             raise
