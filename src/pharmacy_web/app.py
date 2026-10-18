@@ -116,6 +116,12 @@ class PushOrderBody(StrictBody):
     closing_id: str = Field(min_length=20, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
     order_id: str = Field(pattern=r"^demo-[a-f0-9]{12}$")
     subscription: PushSubscription
+    confirm_send: bool = False  # must be explicitly true: the human confirmed this send
+
+
+class CancelOrderBody(StrictBody):
+    closing_id: str = Field(min_length=20, max_length=64, pattern=r"^[A-Za-z0-9_-]+$")
+    order_id: str = Field(pattern=r"^demo-[a-f0-9]{12}$")
 
 
 class PairCodeBody(StrictBody):
@@ -565,12 +571,25 @@ def create_app(settings=None, *, provider=None, agent_runner=None, push_transpor
 
     @application.post("/api/closing-demo/notify")
     async def notify_demo_order(request: Request, body: PushOrderBody):
+        # Human-in-the-loop: a notification is only sent after an explicit second confirmation.
+        if body.confirm_send is not True:
+            return safe_error("NOTIFICATION_CONFIRMATION_REQUIRED", 428)
         try:
             cookie = paired_cookie(request)
             if cookie:
                 return await asyncio.to_thread(paired_service(request).notify, cookie, body.order_id, body.closing_id)
             return await asyncio.to_thread(application.state.closing_demo.notify,
                 body.closing_id, body.order_id, body.subscription.model_dump(), application.state.push_sender)
+        except ClosingError as error:
+            return safe_error(error.code, error.status)
+
+    @application.post("/api/closing-demo/cancel")
+    async def cancel_demo_order(request: Request, body: CancelOrderBody):
+        try:
+            cookie = paired_cookie(request)
+            if cookie:
+                return await asyncio.to_thread(paired_service(request).cancel, cookie, body.order_id, body.closing_id)
+            return await asyncio.to_thread(application.state.closing_demo.cancel, body.closing_id, body.order_id)
         except ClosingError as error:
             return safe_error(error.code, error.status)
 

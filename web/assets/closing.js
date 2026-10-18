@@ -23,7 +23,7 @@
         const response = await fetch(path, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body), signal: controller.signal});
         window.handleAuthRequired?.(response);
         const result = await response.json();
-        if (!response.ok) {const error = Error('REQUEST_FAILED'); error.code = result.reason_code === 'DEMO_BOTH_PHONES_NOT_READY' ? 'DEMO_BOTH_PHONES_NOT_READY' : ''; throw error;}
+        if (!response.ok) {const error = Error('REQUEST_FAILED'); error.code = typeof result.reason_code === 'string' ? result.reason_code : ''; throw error;}
         return result;
       })(), new Promise((_, reject) => {
         timer = setTimeout(() => {controller.abort(); reject(Error('REQUEST_TIMED_OUT'));}, 20000);
@@ -119,6 +119,40 @@
     get('new-demo-order').disabled = busy || !order || history.length >= orderLimit;
     get('submit-demo-order').textContent = order ? 'Order submitted' : busy ? 'Submitting…' : 'Submit demo order';
   }
+  // Human-in-the-loop: after Submit, nothing is sent until the person confirms; they can cancel instead.
+  function offerNotification(recorded) {
+    const panel = get('order-send-confirm'); if (!panel) return;
+    panel.replaceChildren(node('p', `Order ${recorded.order_id} is recorded. No notification has been sent yet. ` +
+      'Sending notifies the receiving phone and cannot be undone. You can cancel the order until it is sent.'));
+    const actions = node('div', undefined, 'action-row');
+    const send = node('button', 'Send notification', 'button'); send.type = 'button';
+    const cancel = node('button', 'Cancel order', 'button button-secondary'); cancel.type = 'button';
+    const done = message => {panel.replaceChildren(); panel.hidden = true; if (message) status('order-notification-status', message);};
+    send.addEventListener('click', async () => {
+      send.disabled = cancel.disabled = true;
+      done();
+      try {await window.notifyDemoOrder?.(recorded);}
+      catch (_) {status('order-notification-status', 'Order recorded, but notification status is unavailable. No automatic retry will run. Reference: PUSH_CLIENT_ERROR.', true);}
+    });
+    cancel.addEventListener('click', async () => {
+      send.disabled = cancel.disabled = true;
+      try {
+        const cancelled = await post('/api/closing-demo/cancel', {closing_id: recorded.closing_id, order_id: recorded.order_id});
+        history = history.map(previous => previous.order_id === cancelled.order_id ? cancelled : previous);
+        if (order?.order_id === cancelled.order_id) {order = cancelled; if (get('order-result')) drawOrder();}
+        if (get('order-history')) drawHistory();
+        done(`Order ${cancelled.order_id} cancelled. No notification was sent. The inventory report is unchanged.`);
+      } catch (error) {
+        send.disabled = cancel.disabled = false;
+        status('order-notification-status', error.code === 'DEMO_ORDER_ALREADY_NOTIFIED' ?
+          'This order was already sent, so it can no longer be cancelled.' :
+          'Cancellation was not confirmed. The order may still be active; try again. Reference: ' + (error.code || 'CANCEL_UNCONFIRMED') + '.', true);
+      }
+    });
+    actions.append(send, cancel); panel.append(actions); panel.hidden = false;
+    send.focus();
+  }
+
   function drawHistory() {
     const target = get('order-history'); target.replaceChildren();
     if (!history.length) return;
@@ -243,10 +277,7 @@
         recorded = order;
       } catch (error) {status('order-status', error.code === 'DEMO_BOTH_PHONES_NOT_READY' ? 'Pair both phones and enable notifications on each before submitting. Your list is preserved.' : 'Submission was not confirmed. Your list is preserved. Use “View same closing report” to recover any existing submission before retrying.', true);}
       finally {busy = false; if (get('submit-demo-order')) {orderControls(); drawLines();}}
-      if (recorded) {
-        try {await window.notifyDemoOrder?.(recorded);}
-        catch (_) {status('order-notification-status', 'Order recorded, but notification status is unavailable. No automatic retry will run. Reference: PUSH_CLIENT_ERROR.', true);}
-      }
+      if (recorded) offerNotification(recorded);
     });
     if (linkedOrder !== null) {
       if (window.pairingReady) window.pairingReady.then(() => {if (window.pairingState?.role !== "manufacturer") button.click();});

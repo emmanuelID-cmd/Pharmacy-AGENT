@@ -34,6 +34,17 @@ def notification_preview(order):
             "external_sends": 0, "message": f"SYNTHETIC DEMO: {order['order_id']} reviewed by a human; {len(order['lines'])} item line(s). No purchase order was sent."}
 
 
+def cancel_order(order, *, notified):
+    """Mark a submitted demo order cancelled. Idempotent; refused once a notification was attempted."""
+    if order.get("state") == "CANCELLED":
+        return order
+    if notified:
+        raise ClosingError("DEMO_ORDER_ALREADY_NOTIFIED", 409)
+    order["state"] = "CANCELLED"
+    order["cancelled_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
+    return order
+
+
 class ClosingDemo:
     def __init__(self, *, inventory_reader=read_store_inventory):
         self.reader = inventory_reader
@@ -60,6 +71,8 @@ class ClosingDemo:
                           if secrets.compare_digest(order_id, item["order_id"])), None)
             if order is None or not secrets.compare_digest(closing_id, order["closing_id"]):
                 raise ClosingError("DEMO_ORDER_NOT_FOUND", 409)
+            if order.get("state") == "CANCELLED":
+                raise ClosingError("DEMO_ORDER_CANCELLED", 409)
             if "push_notification" in order:
                 return deepcopy(order["push_notification"])
             if not sender.configuration()["configured"]:
@@ -68,6 +81,15 @@ class ClosingDemo:
                 "attempted": True, "push_service_accepted": False, "delivery_confirmed": False}
             order["push_notification"] = sender.send(subscription, order)
             return deepcopy(order["push_notification"])
+
+    def cancel(self, closing_id, order_id):
+        """Human cancellation, allowed only while no notification has been attempted."""
+        with self.lock:
+            order = next((item for item in self.orders.values()
+                          if secrets.compare_digest(order_id, item["order_id"])), None)
+            if order is None or not secrets.compare_digest(closing_id, order["closing_id"]):
+                raise ClosingError("DEMO_ORDER_NOT_FOUND", 409)
+            return deepcopy(cancel_order(order, notified="push_notification" in order))
 
     def _capture(self):
         captured = {}
