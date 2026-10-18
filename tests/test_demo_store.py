@@ -1,7 +1,7 @@
 """Synthetic shared-store boundaries; no real connection or credential needed."""
-from contextlib import contextmanager
 from datetime import datetime, timezone
 from unittest import TestCase
+from unittest.mock import patch
 
 from src.pharmacy_web.closing import ClosingError
 from src.pharmacy_web.demo_store import PostgresDemoStore, fingerprint, parse_cookie, valid_database_url
@@ -54,6 +54,37 @@ class DemoStoreTests(TestCase):
         with self.assertRaises(ClosingError) as raised: store.create()
         self.assertEqual(raised.exception.code, "DEMO_SHARED_STORE_UNAVAILABLE")
         self.assertNotIn(URL, str(raised.exception))
+
+    def test_live_path_without_psycopg_fails_unavailable_not_silent(self):
+        # connect=None is the production path; missing driver must not fall through.
+        import builtins
+        real_import = builtins.__import__
+
+        def block_psycopg(name, *args, **kwargs):
+            if name == "psycopg" or name.startswith("psycopg."):
+                raise ImportError("psycopg blocked for test")
+            return real_import(name, *args, **kwargs)
+
+        store = PostgresDemoStore(URL)  # no injected connect
+        self.assertIsNone(store._connect)
+        with patch("builtins.__import__", block_psycopg):
+            with self.assertRaises(ClosingError) as raised:
+                store.create()
+        self.assertEqual(raised.exception.code, "DEMO_SHARED_STORE_UNAVAILABLE")
+
+    def test_injected_connect_is_constructor_only_not_settings_or_env(self):
+        # Production wiring: create_app(PostgresDemoStore(url)) — connect kwarg is
+        # tests-only and is not read from PHARMACY_DEMO_DATABASE_URL / Settings.
+        from src.pharmacy_agent.config import Settings
+        from src.pharmacy_web.app import create_app
+
+        settings = Settings(demo_database_url=URL)
+        self.assertFalse(hasattr(settings, "demo_connect"))
+        self.assertNotIn("PHARMACY_DEMO_CONNECT", Settings.__dataclass_fields__)
+        app = create_app(settings)
+        store = app.state.paired_demo.store
+        self.assertIsInstance(store, PostgresDemoStore)
+        self.assertIsNone(store._connect)
 
     def test_room_resolves_role_from_stored_binding_and_bounds_transport(self):
         row = {"owner_hash": fingerprint(TOKEN), "manufacturer_hash": None,
