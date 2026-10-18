@@ -5,10 +5,17 @@
 Status: **Conflict-clear** (no blocking conflict), with corrections below applied. This checklist is an implementer self-check, not an independent review.
 
 **Branch layout (2026-10-18):**
-- `feature/pharmacy-harness` tip: Bundle A + `demo_store` mock-connect fix + wire/demo_store follow-up tests. Clean tip `unittest discover` → **358 OK** (2026-10-18).
-- `wip/closing-run-log`: replenishment REVIEW-only + `closing.py` run_log (held for Emmanuel). Tip alone broke when replenishment shipped without closing tests (`None != 0` on MAINTAIN); replenishment travels with closing until he reviews. Closing tests on that branch: **27 OK**.
+- `feature/pharmacy-harness` tip: Bundle A (model-turn) + `demo_store` mock-connect fix + wire/demo_store tests + core boundary guard. Clean tip `unittest discover` → see latest recorded total below.
+- `wip/closing-run-log`: replenishment REVIEW-only + `closing.py` run_log + matching POLICY/PRD demo text (**pending merge**; held for Emmanuel). Replenishment must not land without the updated closing tests (`None != 0` on MAINTAIN was the broken-tip lesson).
 
-**`closing.py` / closing tests wait for Emmanuel’s review** (he authored the file). Call out the `demo_store.py` commit in the PR for his review before merge. Brahim or Emmanuel: shared reason names `MODEL_REFUSAL` / `MODEL_NO_RESPONSE`. API key untouched. Live Postgres path is untested here (no `psycopg` in this venv).
+**Docs vs code:** On this feature branch, do **not** claim REVIEW-only replenishment or run_log counters as shipped. Those live on `wip/closing-run-log` until Emmanuel reviews and that branch merges. Phase 8 docs cover the one-turn model path only.
+
+**`closing.py` / closing tests wait for Emmanuel’s review** (he authored the file). Call out the `demo_store.py` commit (`e7b9697` / tip ancestry) in the PR for his review before merge. Brahim or Emmanuel: shared reason names `MODEL_REFUSAL` / `MODEL_NO_RESPONSE`. API key untouched. Live Postgres path is untested here (no `psycopg` in this venv).
+
+### PR description items
+
+- **demo_store.py:** live Postgres path remains untested in this environment because there is no driver; unit tests cover mocked connect and missing-`psycopg` → `DEMO_SHARED_STORE_UNAVAILABLE`.
+- **Merge order:** replenishment signature change broke old closing tests. After merging either branch (or both), run full `python3 -m unittest discover -s tests` again.
 
 ### Known suite note (Emmanuel / demo store)
 
@@ -16,17 +23,15 @@ Status: **Conflict-clear** (no blocking conflict), with corrections below applie
 
 | Bundle | Verdict | Evidence |
 |---|---|---|
-| A. Model-turn contract | Keep | Default still `claude-sonnet-5-5`; one `complete` then `validate_report`; empty → `MODEL_UNAVAILABLE`/`MODEL_NO_RESPONSE` (not `MODEL_TIMEOUT`); refusal/truncation → `REJECTED` with distinct codes. Prevention / tools / `runtime.py` untouched for behavior. |
-| B. Replenishment REVIEW-only gate + closing run_log | Keep (Emmanuel review of `closing.py`) | POLICY: core never calculates order quantities; suggestions only when `local_action == REVIEW`. Core modules do not import `replenishment`. Refused `place_order` / `write_inventory` / `send_external` increment attempt counters; `demo_orders_created` increments on new simulated submit; `RLock` for nested lock use. |
+| A. Model-turn contract | On feature tip | Default still `claude-sonnet-5-5`; one `complete` then `validate_report`; empty → `MODEL_UNAVAILABLE`/`MODEL_NO_RESPONSE` (not `MODEL_TIMEOUT`); refusal/truncation → `REJECTED` with distinct codes. |
+| B. Replenishment REVIEW-only + closing run_log | **Pending on `wip/closing-run-log`** | Not present on feature tip. WIP holds REVIEW-only `replenishment.py`, closing counters/`RLock`, and POLICY gated-demo section. |
 | C. Live sampling | Manual only; see protocol | Benign 10× is harness `--offline --model`. Hostile free-text is **not** available on the harness CLI today. |
 
-### run_log (correction)
+### run_log (correction) — pending on WIP
 
-Only `push_notifications_sent` waits on confirm-before-send (#31). Do **not** defer attempt counters to #31.
+Only `push_notifications_sent` waits on confirm-before-send (#31). Attempt counters / `demo_orders_created` / `RLock` are implemented on **`wip/closing-run-log`**, not on this feature tip.
 
-Implemented now: refused `place_order`, `write_inventory`, `send_external` with counters; `demo_orders_created`; `RLock`; tests that move those counters.
-
-Until those counters are exercised and reviewed, **no PRD, POLICY, or deck line may cite the closing demo `run_log` as evidence** of “0 attempts.” Zeros before the refused paths are called are still zeros-by-construction for those attempt fields.
+Until that WIP merges and Emmanuel reviews, **no PRD, POLICY, or deck line may cite the closing demo `run_log` as evidence** of “0 attempts.”
 
 ### Bundle C protocol (correction)
 
@@ -67,7 +72,7 @@ Status: Not run yet. Protocol above. Conflict verification left this as manual-o
 
 ## Human-controlled replenishment demo extension
 
-Status: Synthetic demo implemented as a gated add-on (`pharmacy_harness/replenishment.py`); not authorized for operational use. Core review harness still calculates no order quantities. Conflict verification (2026-10-18): Bundle B conflict-clear to keep after Emmanuel reviews `closing.py` changes.
+Status: **Pending on `wip/closing-run-log`** (Emmanuel review of `closing.py`). Feature tip does not yet ship the REVIEW-only gate or closing `run_log`. Core review harness on feature still calculates no order quantities.
 
 - Requirement: Demonstrate a multi-step synthetic workflow with validated inventory reports, quantity recommendations from an approved fixture policy, an unsaved order form with quantity fields prefilled by the Agent, explicit human review and simulated submission, a closing inventory report, and one manufacturer notice per human-submitted order at the start of the manufacturer's morning shift (6:00 AM local target). Prioritize notice lines by inventory status (CRITICAL before LOW), not clinical or patient priority.
 - Affected files: `docs/requirements/Pharmacy Inventory Logistics[PRD]-Mod.md`, `docs/requirements/POLICY.md`, and `README.md`.
