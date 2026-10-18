@@ -190,10 +190,11 @@ class HarnessLoopTests(unittest.TestCase):
 
             return Response()
 
-        text = http_complete("sys", {"schema_version": "prevention-v1"},
-                             url="https://example.invalid/v1/chat/completions",
-                             key="secret", name="demo", urlopen=urlopen)
-        self.assertEqual(text, '{"schema_version":"report-v1"}')
+        reply = http_complete("sys", {"schema_version": "prevention-v1"},
+                              url="https://example.invalid/v1/chat/completions",
+                              key="secret", name="demo", urlopen=urlopen)
+        self.assertEqual(reply.text, '{"schema_version":"report-v1"}')
+        self.assertIsNone(reply.provider_model)
 
     def test_complete_from_env_requires_url_or_anthropic_key(self):
         self.assertIsNone(complete_from_env(environ={}))
@@ -211,6 +212,7 @@ class HarnessLoopTests(unittest.TestCase):
             class Response:
                 def read(self):
                     return json.dumps({
+                        "model": "claude-sonnet-5-5-20251001",
                         "content": [{"type": "text", "text": '{"schema_version":"report-v1"}'}],
                     }).encode()
 
@@ -222,9 +224,10 @@ class HarnessLoopTests(unittest.TestCase):
 
             return Response()
 
-        text = anthropic_complete("sys", {"schema_version": "prevention-v1"},
-                                  key="synthetic-key", name="claude-sonnet-5-5", urlopen=urlopen)
-        self.assertEqual(text, '{"schema_version":"report-v1"}')
+        reply = anthropic_complete("sys", {"schema_version": "prevention-v1"},
+                                   key="synthetic-key", name="claude-sonnet-5-5", urlopen=urlopen)
+        self.assertEqual(reply.text, '{"schema_version":"report-v1"}')
+        self.assertEqual(reply.provider_model, "claude-sonnet-5-5-20251001")
 
     def test_anthropic_complete_omits_temperature(self):
         # Keep optional temperature out of the Anthropic Messages request body.
@@ -496,6 +499,22 @@ class HarnessModelCliTests(unittest.TestCase):
     def test_default_anthropic_model_is_sonnet(self):
         from src.pharmacy_harness.loop import DEFAULT_ANTHROPIC_MODEL
         self.assertEqual(DEFAULT_ANTHROPIC_MODEL, "claude-sonnet-5-5")
+
+    def test_provider_model_from_api_response_is_recorded_on_model_turn(self):
+        # Requested name and API-reported model can differ; record the response field.
+        from src.pharmacy_harness.loop import ModelCompletion
+
+        def complete(system_prompt, context):
+            return ModelCompletion(
+                copying_complete(system_prompt, context),
+                provider_model="claude-haiku-5-5-20251001",
+            )
+
+        report = run_review(
+            run_at=EVAL_RUN_AT, fda_http_get=offline_fda_http_get, complete=complete,
+        )
+        self.assertEqual(report["model_turn"]["state"], "ACCEPTED")
+        self.assertEqual(report["model_turn"]["provider_model"], "claude-haiku-5-5-20251001")
 
     def test_model_copy_injects_copier(self):
         fake = run_review(run_at=EVAL_RUN_AT, fda_http_get=offline_fda_http_get)

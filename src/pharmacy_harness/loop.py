@@ -34,6 +34,18 @@ class ModelTurnResult:
     state: str
     reason_code: str
     report: dict
+    provider_model: str | None = None
+
+
+@dataclass(frozen=True)
+class ModelCompletion:
+    """Text returned by a provider, plus the model id the API reported when present.
+
+    Stub completers may still return a bare string. Live adapters should return
+    this so batch records can cite the response model, not only the config value.
+    """
+    text: object
+    provider_model: str | None = None
 
 
 class ModelAnswerRejected(Exception):
@@ -42,6 +54,12 @@ class ModelAnswerRejected(Exception):
     def __init__(self, reason_code):
         self.reason_code = reason_code
         super().__init__(reason_code)
+
+
+def _unwrap_completion(raw):
+    if isinstance(raw, ModelCompletion):
+        return raw.text, raw.provider_model
+    return raw, None
 
 
 MODEL_ENV_KEYS = (
@@ -162,25 +180,29 @@ def run_model_turn(context, complete):
     fails validation is REJECTED (usually OUTPUT_EVIDENCE_MISMATCH). Provider
     refusal or max_tokens stop become REJECTED with MODEL_REFUSAL / MODEL_TRUNCATED.
     """
+    provider_model = None
     try:
-        raw = complete(wrapped_system_prompt(), context)
+        raw, provider_model = _unwrap_completion(complete(wrapped_system_prompt(), context))
     except ModelAnswerRejected as error:
-        return ModelTurnResult("REJECTED", error.reason_code, _manual_review_safety(context))
+        return ModelTurnResult("REJECTED", error.reason_code, _manual_review_safety(context),
+                               provider_model=provider_model)
     except Exception as error:
         return ModelTurnResult("MODEL_UNAVAILABLE", _transport_reason(error),
-                               _manual_review_safety(context))
+                               _manual_review_safety(context), provider_model=provider_model)
     if _is_empty_reply(raw):
         # Same reason code name as the web Agent; harness packages it as
         # MODEL_UNAVAILABLE (no answer to judge), not a validated REJECTED body.
         return ModelTurnResult("MODEL_UNAVAILABLE", "MODEL_NO_RESPONSE",
-                               _manual_review_safety(context))
+                               _manual_review_safety(context), provider_model=provider_model)
     proposed = parse_proposal(raw)
     if proposed is None:
         proposed = {"schema_version": "not-report-v1"}
     outcome = validate_report(proposed, context=context)
     if outcome.accepted:
-        return ModelTurnResult("ACCEPTED", outcome.reason_code, outcome.report)
-    return ModelTurnResult("REJECTED", outcome.reason_code, outcome.report)
+        return ModelTurnResult("ACCEPTED", outcome.reason_code, outcome.report,
+                               provider_model=provider_model)
+    return ModelTurnResult("REJECTED", outcome.reason_code, outcome.report,
+                           provider_model=provider_model)
 
 
 def http_complete(system_prompt, context, *, url, key, name, timeout=MODEL_TIMEOUT_SECONDS,
@@ -213,7 +235,10 @@ def http_complete(system_prompt, context, *, url, key, name, timeout=MODEL_TIMEO
         raise ModelAnswerRejected("MODEL_REFUSAL")
     if finish == "length":
         raise ModelAnswerRejected("MODEL_TRUNCATED")
-    return content
+    reported = payload.get("model") if type(payload) is dict else None
+    if type(reported) is not str or not reported.strip():
+        reported = None
+    return ModelCompletion(content, provider_model=reported)
 
 
 def anthropic_text(payload):
@@ -253,7 +278,10 @@ def anthropic_complete(system_prompt, context, *, key, name, timeout=ANTHROPIC_T
         raise ModelAnswerRejected("MODEL_REFUSAL")
     if stop == "max_tokens":
         raise ModelAnswerRejected("MODEL_TRUNCATED")
-    return anthropic_text(payload)
+    reported = payload.get("model") if type(payload) is dict else None
+    if type(reported) is not str or not reported.strip():
+        reported = None
+    return ModelCompletion(anthropic_text(payload), provider_model=reported)
 
 
 def complete_from_env(*, environ=None, root=None):

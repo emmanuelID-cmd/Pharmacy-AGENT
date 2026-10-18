@@ -228,11 +228,13 @@ explicitly illustrates recovery scenarios; it does not inject live failures.
 Server-only provider configuration: `ANTHROPIC_API_KEY` (also accepts the existing
 `ANTHOPIC_API_KEY` spelling) and `ANTHROPIC_MODEL`. The default is `claude-sonnet-5-5`.
 Haiku and Sonnet ids that match Anthropic’s current Models list are supported via
-`ANTHROPIC_MODEL` (including `claude-haiku-5-5`). Recorded live harness samples on
-benign context (no untrusted free text): 2026-10-15 `claude-haiku-5-5` → ACCEPTED;
-2026-10-16 `claude-sonnet-5-5` → ACCEPTED (`--offline --model`; FDA payload offline).
-Those runs prove the wire and exact `report-v1` copy ability; they do not prove live
-behavior when hostile text reaches the model. No key is sent to the browser, tool
+`ANTHROPIC_MODEL` (including `claude-haiku-5-5`). A live model (`claude-sonnet-5-5`) copied `report-v1` exactly in 10 of 10 runs on the
+benign 20-row fixture with offline FDA data, and `claude-haiku-5-5` did the same in
+10 of 10. These samples show the wire and copy behavior only. How a live model
+behaves when hostile text reaches it has not been tested; the design keeps untrusted
+text out of the model’s context, and a wire test checks that. Counts are counts—not
+a claimed failure rate. Earlier single-run notes (2026-10-15 Haiku; 2026-10-16 Sonnet)
+remain historical one-shots on the same benign path. No key is sent to the browser, tool
 arguments, model context or diagnostic output. `.env.local` is optional; copying a
 key into multiple files is unnecessary.
 
@@ -315,7 +317,7 @@ Qualification: 66 passing behavior-test methods; 85 label fixtures (55 unsafe de
 
 ## Harness implementation
 
-Phase 7 is Kerrian's harness lane. It calls Brahim's read-only tools through Emmanuel's `execute_guarded` dispatcher, validates evidence independently, calculates days of supply under [POLICY.md](docs/requirements/POLICY.md), and prints a human report. It does not run a model.
+Phase 7 is Kerrian's harness lane. It calls Brahim's read-only tools through Emmanuel's `execute_guarded` dispatcher, validates evidence independently, calculates days of supply under [POLICY.md](docs/requirements/POLICY.md), and prints a human report. Phase 7 itself is deterministic (no model). Phase 8 adds one optional guarded model turn (`--model` / `--model-copy`); live benign copy samples are recorded above.
 
 The default 150-product synthetic snapshot is dated 2026-10-07. The CLI defaults to that evaluation clock; `--now` uses the current time and marks it stale. Add `--legacy-fixture` to replay the original 20-row fault/evaluation cases.
 
@@ -339,7 +341,7 @@ py -3.13 -m venv .venv
 .\.venv\Scripts\python.exe -B -m src.pharmacy_harness --offline --json
 ```
 
-Unit tests stub FDA HTTP. They prove harness arithmetic, TrustedFact mapping, and prevention guards. They do not prove how a language model reacts to injected text. `--model-copy` is that same wire without an LLM. `--model` is one live turn: set a Console `ANTHROPIC_API_KEY` (`sk-ant-api…` for `api.anthropic.com`) or a confirmed gateway via `PHARMACY_MODEL_URL`. A returned invented report is `REJECTED`; auth/timeout/transport/empty failures are `MODEL_UNAVAILABLE` (no answer to judge; empty uses shared `MODEL_NO_RESPONSE`); provider refusal or max-token stop are `REJECTED` with `MODEL_REFUSAL` / `MODEL_TRUNCATED` (truncated text is not validated). Recorded live ACCEPTED samples (benign context only): 2026-10-15 `claude-haiku-5-5`; 2026-10-16 `claude-sonnet-5-5` (current default). Wire and copy ability are demonstrated; live hostile-input behavior is untested. `--model` uses the 20-row evaluation fixture. The CLI defaults to the Eval Card clock and prints a manager table. `--offline` uses the recorded Case 1 FDA payload (no network). Omit `--offline` for a live openFDA read; `--now` uses the current clock; `--json` prints `harness-report-v1`. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
+Unit tests stub FDA HTTP. They prove harness arithmetic, TrustedFact mapping, and prevention guards. They do not prove how a language model reacts to injected text. `--model-copy` is that same wire without an LLM. `--model` is one live turn: set a Console `ANTHROPIC_API_KEY` (`sk-ant-api…` for `api.anthropic.com`) or a confirmed gateway via `PHARMACY_MODEL_URL`. Set `ANTHROPIC_MODEL` deliberately (default `claude-sonnet-5-5`); do not leave a stale Haiku id if you intend Sonnet. A returned invented report is `REJECTED`; auth/timeout/transport/empty failures are `MODEL_UNAVAILABLE` (no answer to judge; empty uses shared `MODEL_NO_RESPONSE`); provider refusal or max-token stop are `REJECTED` with `MODEL_REFUSAL` / `MODEL_TRUNCATED` (truncated text is not validated). Live batch counts (benign context, offline FDA, no hostile sample; request model id — these runs preceded `provider_model` capture): 2026-10-18 Sonnet 10 ACCEPTED / 0 REJECTED / 0 MODEL_UNAVAILABLE; 2026-10-18 Haiku 10 / 0 / 0. Do not pool the batches. Do not read them as a 100% rate. Wire and copy ability are demonstrated; live hostile-input behavior is untested; live REJECTED-then-guard is untested (tamper rejection is stubbed offline). `--model` uses the 20-row evaluation fixture at `data/synthetic/store_1618_inventory.json`. Overall `run_state: MANUAL_REVIEW` with `model_turn: ACCEPTED` is expected: the fixture seeds manual-review rows, and the model correctly copied that outcome. The CLI defaults to the Eval Card clock and prints a manager table. `--offline` uses the recorded Case 1 FDA payload (no network). Omit `--offline` for a live openFDA read; `--now` uses the current clock; `--json` prints `harness-report-v1`. Empty, unreadable, or wrong-store sources never mean healthy stock. FDA `NO_MATCH` is not guaranteed supply; `UNAVAILABLE` is not no shortage. Every exact-match FDA record is listed; conflicting records are `NEEDS_REVIEW` and never change the local class.
 
 - [Phase 7 plan](docs/planning/Phase/Phase7/PHASE-7-PLAN.md)
 - [Phase 7 handoff](docs/planning/Phase/Phase7/PHASE-7-HANDOFF.md)

@@ -216,6 +216,7 @@ def build_report(*, run_at, snapshot, item_results, payload, facts, fda_views, i
             model_turn = {
                 "state": outcome.state,
                 "reason_code": outcome.reason_code,
+                "provider_model": outcome.provider_model,
             }
             if outcome.state != "ACCEPTED":
                 run_state = "MANUAL_REVIEW"

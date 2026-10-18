@@ -84,16 +84,20 @@ def format_manager_report(report):
     elif report.get("fda_source") == "LIVE":
         lines.append("FDA source: live openFDA.")
     turn = report.get("model_turn") or {}
+    provider = turn.get("provider_model")
+    provider_note = f" Provider model: {provider}." if provider else ""
     if turn.get("state") == "ACCEPTED":
-        lines.append("Model turn: ACCEPTED. Copied report-v1.")
+        lines.append(f"Model turn: ACCEPTED. Copied report-v1.{provider_note}")
     elif turn.get("state") == "REJECTED":
         reason = turn.get("reason_code") or "OUTPUT_EVIDENCE_MISMATCH"
-        lines.append(f"Model turn: REJECTED ({reason}). Using verified facts only.")
+        lines.append(
+            f"Model turn: REJECTED ({reason}). Using verified facts only.{provider_note}"
+        )
     elif turn.get("state") == "MODEL_UNAVAILABLE":
         reason = turn.get("reason_code") or "MODEL_TRANSPORT_FAILED"
         lines.append(
             f"Model turn: MODEL_UNAVAILABLE ({reason}). "
-            "No live model answer; using verified facts only."
+            f"No live model answer; using verified facts only.{provider_note}"
         )
     elif turn.get("state") == "SKIPPED":
         lines.append("Model turn: skipped (deterministic report only).")
