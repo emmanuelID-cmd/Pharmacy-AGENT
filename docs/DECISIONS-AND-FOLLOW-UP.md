@@ -10,7 +10,11 @@ Status: **Conflict-clear** (no blocking conflict), with corrections below applie
 
 **Docs vs code:** On this feature branch, do **not** claim REVIEW-only replenishment or run_log counters as shipped. Those live on `wip/closing-run-log` until Emmanuel reviews and that branch merges. Phase 8 docs cover the one-turn model path only.
 
-**`closing.py` / closing tests wait for Emmanuel’s review** (he authored the file). Call out the `demo_store.py` commit (`e7b9697` / tip ancestry) in the PR for his review before merge. Brahim or Emmanuel: shared reason names `MODEL_REFUSAL` / `MODEL_NO_RESPONSE`. API key untouched. Live Postgres path is untested here (no `psycopg` in this venv).
+**`closing.py` / closing tests wait for Emmanuel’s review** (he authored the file). Call out the `demo_store.py` commit (`28e5b29` / tip ancestry) in the PR for his review before merge. Brahim or Emmanuel: shared reason names `MODEL_REFUSAL` / `MODEL_NO_RESPONSE`. API key untouched. Live Postgres path is untested here (no `psycopg` in this venv).
+
+### Merge order
+
+Merge `feature/pharmacy-harness` first, then rebase `wip/closing-run-log` onto that tip. Resolve `DECISIONS-AND-FOLLOW-UP.md` and `POLICY.md` in favor of the **present-tense** WIP wording (gate and run_log are shipping with that merge). Run full `python3 -m unittest discover -s tests` after each merge. Conflicts in those docs are expected.
 
 ### PR description items
 
