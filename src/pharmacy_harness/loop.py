@@ -26,13 +26,24 @@ class ModelTurnResult:
     """Outcome of one guarded model turn.
 
     ACCEPTED: live answer matched expected_report.
-    REJECTED: the model returned something that failed validate_report.
-    MODEL_UNAVAILABLE: transport/auth/timeout/shape failure; the model never
-    produced a usable answer. Same idea as FDA UNAVAILABLE vs NO_MATCH.
+    REJECTED: the model returned something that failed validate_report, or the
+    provider stopped with refusal/truncation (distinct reason_code).
+    MODEL_UNAVAILABLE: transport/auth/timeout/shape/empty failure; no answer
+    to judge. Same idea as FDA UNAVAILABLE vs NO_MATCH.
     """
     state: str
     reason_code: str
     report: dict
+
+
+class ModelAnswerRejected(Exception):
+    """Provider finished with a terminal stop that is not a usable report body."""
+
+    def __init__(self, reason_code):
+        self.reason_code = reason_code
+        super().__init__(reason_code)
+
+
 MODEL_ENV_KEYS = (
     "PHARMACY_MODEL_URL", "PHARMACY_MODEL_KEY", "PHARMACY_MODEL_NAME",
     "ANTHROPIC_API_KEY", "ANTHOPIC_API_KEY", "ANTHROPIC_MODEL",
@@ -124,23 +135,45 @@ def _transport_reason(error):
     return "MODEL_TRANSPORT_FAILED"
 
 
+def _manual_review_safety(context):
+    safety = expected_report(context)
+    if safety["run_state"] != "MANUAL_REVIEW":
+        safety = dict(safety)
+        safety["run_state"] = "MANUAL_REVIEW"
+    if "MANUAL_REVIEW_REQUIRED" not in safety["warning_codes"]:
+        safety = dict(safety)
+        safety["warning_codes"] = list(safety["warning_codes"]) + ["MANUAL_REVIEW_REQUIRED"]
+    return safety
+
+
+def _is_empty_reply(raw):
+    """True when a working call produced no answer text to validate."""
+    if raw is None:
+        return True
+    if type(raw) is str and not raw.strip():
+        return True
+    return False
+
+
 def run_model_turn(context, complete):
     """Call complete once, then validate_report when a response body exists.
 
-    Transport failures stay MODEL_UNAVAILABLE. Only a returned answer that fails
-    validation becomes REJECTED (OUTPUT_EVIDENCE_MISMATCH).
+    Transport/shape/empty failures stay MODEL_UNAVAILABLE. A returned answer that
+    fails validation is REJECTED (usually OUTPUT_EVIDENCE_MISMATCH). Provider
+    refusal or max_tokens stop become REJECTED with MODEL_REFUSAL / MODEL_TRUNCATED.
     """
     try:
         raw = complete(wrapped_system_prompt(), context)
+    except ModelAnswerRejected as error:
+        return ModelTurnResult("REJECTED", error.reason_code, _manual_review_safety(context))
     except Exception as error:
-        safety = expected_report(context)
-        if safety["run_state"] != "MANUAL_REVIEW":
-            safety = dict(safety)
-            safety["run_state"] = "MANUAL_REVIEW"
-        if "MANUAL_REVIEW_REQUIRED" not in safety["warning_codes"]:
-            safety = dict(safety)
-            safety["warning_codes"] = list(safety["warning_codes"]) + ["MANUAL_REVIEW_REQUIRED"]
-        return ModelTurnResult("MODEL_UNAVAILABLE", _transport_reason(error), safety)
+        return ModelTurnResult("MODEL_UNAVAILABLE", _transport_reason(error),
+                               _manual_review_safety(context))
+    if _is_empty_reply(raw):
+        # Same reason code name as the web Agent; harness packages it as
+        # MODEL_UNAVAILABLE (no answer to judge), not a validated REJECTED body.
+        return ModelTurnResult("MODEL_UNAVAILABLE", "MODEL_NO_RESPONSE",
+                               _manual_review_safety(context))
     proposed = parse_proposal(raw)
     if proposed is None:
         proposed = {"schema_version": "not-report-v1"}
@@ -171,9 +204,16 @@ def http_complete(system_prompt, context, *, url, key, name, timeout=MODEL_TIMEO
     except (urllib.error.URLError, TimeoutError, ValueError, OSError):
         raise
     try:
-        return payload["choices"][0]["message"]["content"]
+        choice = payload["choices"][0]
+        content = choice["message"]["content"]
+        finish = choice.get("finish_reason")
     except (TypeError, KeyError, IndexError) as error:
         raise ValueError("MODEL_RESPONSE_SHAPE") from error
+    if finish == "content_filter":
+        raise ModelAnswerRejected("MODEL_REFUSAL")
+    if finish == "length":
+        raise ModelAnswerRejected("MODEL_TRUNCATED")
+    return content
 
 
 def anthropic_text(payload):
@@ -208,6 +248,11 @@ def anthropic_complete(system_prompt, context, *, key, name, timeout=ANTHROPIC_T
             payload = json.loads(response.read())
     except (urllib.error.URLError, TimeoutError, ValueError, OSError):
         raise
+    stop = payload.get("stop_reason") if type(payload) is dict else None
+    if stop == "refusal":
+        raise ModelAnswerRejected("MODEL_REFUSAL")
+    if stop == "max_tokens":
+        raise ModelAnswerRejected("MODEL_TRUNCATED")
     return anthropic_text(payload)
 
 

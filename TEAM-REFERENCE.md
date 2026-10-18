@@ -264,7 +264,9 @@ October 13, 2026 integration: catalog/database, harness and historical web previ
 
 October 13, 2026: user approved the web interface and guarded Claude connection on
 `feature/pharmacy-agent-web-interface`, selecting the newest Haiku. Authenticated
-Models API verified active `claude-haiku-5-5`. New code lives in `src/pharmacy_agent`,
+Models API verified active `claude-haiku-5-5`. Current shared default is
+`claude-sonnet-5-5` (do not copy older Haiku strings into new env files without
+checking Anthropic’s Models docs). New code lives in `src/pharmacy_agent`,
 `src/pharmacy_web`, `web/templates`, and `web/assets`; existing contributor modules,
 CLI, local tester and presentations are preserved. This is local implementation,
 not a push record. No commit, PR merge or deployment is claimed.

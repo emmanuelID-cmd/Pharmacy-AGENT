@@ -38,7 +38,8 @@ Repeatable script: tests/browser/pharmacy_web_check.mjs (requires a separate loc
 headless Chrome debugging profile; never point it at a remote service).
 
 Provider verification used the existing server key without showing it. Models API
-returned active claude-haiku-5-5, released October 7. Of two explicitly frozen
+returned active claude-haiku-5-5, released October 7. Current shared default is
+`claude-sonnet-5-5`. Of two explicitly frozen
 synthetic live-model checks with stubbed FDA, one exact report was accepted and one
 was rejected into the safe deterministic fallback. Both ran three model turns and
 19 guarded reads. The actual HTTP/current-clock check also completed three turns

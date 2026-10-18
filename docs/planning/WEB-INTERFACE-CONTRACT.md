@@ -2,7 +2,9 @@
 
 Approved October 13, 2026 after the PLANNER mockup. User selected the newest Haiku;
 the authenticated Models API lists active `claude-haiku-5-5` (released October 7).
-The root remains Pharmacy-Agent-Role on feature/pharmacy-agent-web-interface.
+Current shared default is `claude-sonnet-5-5` (set `ANTHROPIC_MODEL` only to an id
+from Anthropic’s Models docs). The root remains Pharmacy-Agent-Role on
+feature/pharmacy-agent-web-interface.
 
 ## Shared interface
 

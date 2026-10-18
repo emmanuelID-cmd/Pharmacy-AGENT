@@ -266,7 +266,9 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
                 return Response()
         tools = claude_tools()
         with patch("src.pharmacy_agent.anthropic_client.AsyncAnthropic", Client):
-            client = ClaudeClient(Settings(model="claude-haiku-5-5", api_key="synthetic-provider-key"))
+            # Fake Haiku id: AsyncAnthropic is patched; this string never leaves the process.
+            client = ClaudeClient(Settings(model="claude-haiku-test-never-sent",
+                                           api_key="synthetic-provider-key"))
             await client.complete(messages=[{"role": "user", "content": "Synthetic review"}],
                                   tools=tools, choice={"type": "any"}, timeout=1)
             await client.complete(messages=[{"role": "user", "content": "Copy exact JSON"}],

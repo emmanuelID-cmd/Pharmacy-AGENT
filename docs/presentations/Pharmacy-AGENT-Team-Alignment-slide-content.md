@@ -89,7 +89,7 @@ Speaker notes: test_action_output_guards.py, test_security_boundaries.py and tes
 
 ## 8. Tested evidence and next integration work
 
-These evals test harness arithmetic and prevention guards. They do not test how a language model reacts to injected text. `--model-copy` is not an LLM. Auth/timeout failures are `MODEL_UNAVAILABLE`, not proof the guard blocked invented numbers. A live Console/gateway key has not yet completed an ACCEPTED or REJECTED model turn.
+These evals test harness arithmetic and prevention guards. They do not test how a language model reacts to injected text. `--model-copy` is not an LLM. Auth/timeout/empty failures are `MODEL_UNAVAILABLE`, not proof the guard blocked invented numbers, order claims, or authority claims. Live `--offline --model` ACCEPTED samples on benign context (no untrusted free text): 2026-10-15 `claude-haiku-5-5`; 2026-10-16 `claude-sonnet-5-5`. Those show the wire and exact `report-v1` copy; live hostile-input behavior is untested. The harness CLI has no free-text request path. Current default is `claude-sonnet-5-5`.
 
 Fresh qualification run, October 9, 2026:
 

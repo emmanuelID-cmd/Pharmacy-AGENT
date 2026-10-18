@@ -82,7 +82,10 @@ only `MODEL_ERROR`; known fixed adapter codes and existing deadline codes remain
 Turn exhaustion remains bounded by `MODEL_TURN_LIMIT`. The existing evidence
 coordinator constructs any partial report from verified facts, adds a manual-review
 warning and omits raw model/error text. No terminal response enters conversation
-history or authorizes another read. The deterministic CLI harness is unchanged.
+history or authorizes another read. The harness keeps its separate one-turn path
+(`--model` / `--model-copy`); it reuses the shared reason names `MODEL_REFUSAL` and
+`MODEL_NO_RESPONSE` on `model_turn`, adds harness-only `MODEL_TRUNCATED`, and does
+not adopt the web multi-turn tool loop.
 
 ## Approved 150-row Agent limits
 

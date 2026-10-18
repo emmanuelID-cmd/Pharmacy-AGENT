@@ -100,3 +100,5 @@ Sources verified October 13, 2026:
 [Python runtime](https://vercel.com/docs/functions/runtimes/python),
 [function duration](https://vercel.com/docs/functions/configuring-functions/duration),
 [Haiku 5.5](https://platform.claude.com/docs/en/models/haiku-5-5/overview).
+Current shared default model id is `claude-sonnet-5-5`; optional Haiku remains
+`claude-haiku-5-5` per Anthropic’s Models list (confirm before copying into env).
