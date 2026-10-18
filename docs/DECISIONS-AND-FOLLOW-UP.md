@@ -5,8 +5,8 @@
 Status: **Conflict-clear** (no blocking conflict), with corrections below applied. This checklist is an implementer self-check, not an independent review.
 
 **Branch layout (2026-10-18):**
-- `feature/pharmacy-harness` tip: Bundle A + `demo_store` mock-connect fix. Clean worktree `unittest discover` → **356 OK**.
-- `wip/closing-run-log`: replenishment REVIEW-only + `closing.py` run_log (held for Emmanuel). Tip alone broke when replenishment shipped without closing tests (`None != 0` on MAINTAIN); replenishment travels with closing until he reviews.
+- `feature/pharmacy-harness` tip: Bundle A + `demo_store` mock-connect fix + wire/demo_store follow-up tests. Clean tip `unittest discover` → **358 OK** (2026-10-18).
+- `wip/closing-run-log`: replenishment REVIEW-only + `closing.py` run_log (held for Emmanuel). Tip alone broke when replenishment shipped without closing tests (`None != 0` on MAINTAIN); replenishment travels with closing until he reviews. Closing tests on that branch: **27 OK**.
 
 **`closing.py` / closing tests wait for Emmanuel’s review** (he authored the file). Call out the `demo_store.py` commit in the PR for his review before merge. Brahim or Emmanuel: shared reason names `MODEL_REFUSAL` / `MODEL_NO_RESPONSE`. API key untouched. Live Postgres path is untested here (no `psycopg` in this venv).
 
