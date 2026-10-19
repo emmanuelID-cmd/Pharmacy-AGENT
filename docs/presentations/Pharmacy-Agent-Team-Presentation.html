@@ -97,18 +97,18 @@
     <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; letter-spacing:2px; color:#b44e14">ARCHITECTURE</p>
     <h2 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#14213d">Three parts, every step guarded</h2>
   </div>
-  <p id="pa5bb3ed3d706r1-e22bf261" style="position:absolute; top:288px; left:128px; width:1664px; padding:20px 28px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:26px; color:#14213d; background:#e8ebf1; border-radius:12px">Input → validation → minimal facts → model → guarded tools → output → human</p>
+  <p id="pa5bb3ed3d706r1-e22bf261" style="position:absolute; top:288px; left:128px; width:1664px; padding:20px 28px; font-family:'JetBrains Mono', 'Courier New', monospace; font-size:26px; color:#14213d; background:#e8ebf1; border-radius:12px">Input → guarded reads → calculate &amp; assemble → one model copy → validate → human</p>
   <table id="pa5bb3ed3d706r2-e22bf261" style="position:absolute; top:50%; left:112.37px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:26px; color:#14213d; transform:translateY(-50%)">
     <tr><th style="width:24%">Component</th><th style="width:24%">Owner</th><th style="width:52%">Responsibility</th></tr>
-    <tr><td>Harness</td><td>Kerrian Gordon</td><td>Verify units, freshness, policy; calculate; run the loop</td></tr>
+    <tr><td>Harness</td><td>Kerrian Gordon</td><td>Run the review loop: check evidence, calculate, optional model copy, stop at a human report</td></tr>
     <tr><td>Tools + instructions</td><td>Brahim Maouloud</td><td>Inventory reader, FDA adapter, system prompt</td></tr>
     <tr><td>Prevention</td><td>Emmanuel De Jesus</td><td>Isolate context; enforce action and output contracts</td></tr>
   </table>
-  <p id="pa5bb3ed3d706r3-e22bf261" style="position:absolute; top:746px; left:128px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; line-height:1.4; color:#4a5568">Next milestone: connect the three parts end to end, with a real model loop.</p>
-  <aside>Voici comment les trois parties s'assemblent. Les données entrent, sont validées, réduites aux faits minimaux, puis passent au modèle. Le modèle ne peut appeler que des outils protégés, et sa réponse est vérifiée avant d'arriver à l'humain. Le tableau montre qui fait quoi : Kerrian Gordon pour le harnais, moi pour les outils et les instructions, Emmanuel De Jesus pour la protection. Ma partie et celle d'Emmanuel sont construites. Le harnais de Kerrian est prévu. La prochaine étape : tout connecter avec une vraie boucle de modèle.</aside>
+  <p id="pa5bb3ed3d706r3-e22bf261" style="position:absolute; top:746px; left:128px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:28px; line-height:1.4; color:#4a5568">Harness loop is live on synthetic data: it starts on a review run, checkpoints at each guard, and stops when the human report is ready (or the model answer is rejected / unavailable).</p>
+  <aside>Voici comment les trois parties s'assemblent. Les données entrent, les lectures passent par les gardes, puis le harnais calcule et assemble les faits. Ensuite, un seul tour de modèle peut recopier le rapport exact ; s'il invente, la réponse est refusée. Le tableau montre qui fait quoi. Les trois parties sont connectées sur des données synthétiques. La boucle s'arrête quand le rapport humain est prêt. Spoken EN: The harness starts when we run a store review, checkpoints at guarded reads, calculation, and one model copy, and stops when you get a human report — or when a bad model answer is refused and the verified facts stay on screen.</aside>
 </section>
 </div>
-<div class="notes">Voici comment les trois parties s'assemblent. Les données entrent, sont validées, réduites aux faits minimaux, puis passent au modèle. Le modèle ne peut appeler que des outils protégés, et sa réponse est vérifiée avant d'arriver à l'humain. Le tableau montre qui fait quoi : Kerrian Gordon pour le harnais, moi pour les outils et les instructions, Emmanuel De Jesus pour la protection. Ma partie et celle d'Emmanuel sont construites. Le harnais de Kerrian est prévu. La prochaine étape : tout connecter avec une vraie boucle de modèle.</div>
+<div class="notes">Voici comment les trois parties s'assemblent. Les données entrent, les lectures passent par les gardes, puis le harnais calcule et assemble les faits. Ensuite, un seul tour de modèle peut recopier le rapport exact ; s'il invente, la réponse est refusée. Le tableau montre qui fait quoi. Les trois parties sont connectées sur des données synthétiques. La boucle s'arrête quand le rapport humain est prêt. Spoken EN: The harness starts when we run a store review, checkpoints at guarded reads, calculation, and one model copy, and stops when you get a human report — or when a bad model answer is refused and the verified facts stay on screen.</div>
 <div class="frame">
 <section id="tools" data-section="Agent Instructions and Tooling (Brahim)" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
 <div style="display:flex;flex-direction:column;gap:16px">
@@ -163,7 +163,7 @@
 <div class="frame">
 <section id="instructions" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:40px">
 <div style="display:flex;flex-direction:column;gap:16px">
-<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14;letter-spacing:2px">BRAHIM · SYSTEM PROMPT INSTRUCTIONS-V1</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B44E14;letter-spacing:2px">BRAHIM · SYSTEM PROMPT INSTRUCTIONS-V2</p>
 <h2 style="font-size:64px;font-weight:600;line-height:1.1">The model copies facts. It never computes them.</h2>
 </div>
 <div style="display:flex;gap:32px">
@@ -226,18 +226,18 @@
 <tr><td>Wrong store or package NDC</td><td>Rejected before dispatch</td></tr>
 <tr><td>Supply set to 999, warning hidden</td><td>Proposal rejected; safe fallback shown</td></tr>
 </table>
-<p style="font-size:26px;color:#4A5568;line-height:1.4">A passing fixture is not proof that every future attack will be detected. These evals test code and guards, not how a model reacts to injected text.</p>
+<p style="font-size:26px;color:#4A5568;line-height:1.4">A passing fixture is not proof that every future attack will be detected. These evals test code and guards. Live hostile text against a model is still untested; the design keeps untrusted free text out of the model’s context.</p>
 <p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6A7385">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  8 / 10</p>
-<aside>Voici les attaques testées par Emmanuel et ce qui s'est passé : caractères cachés, faux rôles, JSON cassé, commandes interdites, mauvais magasin, et un modèle qui change le stock à 999. À chaque fois, c'est refusé ou remplacé par un résultat sûr. Emmanuel reste honnête : réussir ces tests ne prouve pas que toutes les attaques futures seront détectées. Ces evals testent le code et les gardes, pas la réaction d'un modèle à du texte injecté.</aside>
+<aside>Voici les attaques testées par Emmanuel et ce qui s'est passé : caractères cachés, faux rôles, JSON cassé, commandes interdites, mauvais magasin, et un modèle qui change le stock à 999. À chaque fois, c'est refusé ou remplacé par un résultat sûr. Emmanuel reste honnête : réussir ces tests ne prouve pas que toutes les attaques futures seront détectées. Ces evals testent le code et les gardes. Le comportement d'un modèle face à du texte hostile en direct n'est pas encore testé ; le design garde ce texte hors du contexte du modèle.</aside>
 </section>
 </div>
-<div class="notes">Voici les attaques testées par Emmanuel et ce qui s'est passé : caractères cachés, faux rôles, JSON cassé, commandes interdites, mauvais magasin, et un modèle qui change le stock à 999. À chaque fois, c'est refusé ou remplacé par un résultat sûr. Emmanuel reste honnête : réussir ces tests ne prouve pas que toutes les attaques futures seront détectées. Ces evals testent le code et les gardes, pas la réaction d'un modèle à du texte injecté.</div>
+<div class="notes">Voici les attaques testées par Emmanuel et ce qui s'est passé : caractères cachés, faux rôles, JSON cassé, commandes interdites, mauvais magasin, et un modèle qui change le stock à 999. À chaque fois, c'est refusé ou remplacé par un résultat sûr. Emmanuel reste honnête : réussir ces tests ne prouve pas que toutes les attaques futures seront détectées. Ces evals testent le code et les gardes. Le comportement d'un modèle face à du texte hostile en direct n'est pas encore testé ; le design garde ce texte hors du contexte du modèle.</div>
 <div class="frame">
 <section id="evidence" data-transition="fade" style="background:#14213d">
   <p id="e1-1hv0y78" style="position:absolute; bottom:64px; left:128px; width:1664px; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:24px; color:#9aa5b8">Pharmacy-AGENT · Synthetic tests; human operational decisions · 9 / 10</p>
   <div id="pacfcf9b300edr0-05c78dfa" style="position:absolute; top:128px; left:128px; width:1664px; height:120px; display:flex; flex-direction:column; gap:16px">
     <p style="font-family:'JetBrains Mono', 'Courier New', monospace; font-size:24px; letter-spacing:2px; color:#f2a65a">EVIDENCE AND NEXT STEPS</p>
-    <h2 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#f7f6f2">Tested parts, ready to connect</h2>
+    <h2 style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:64px; font-weight:600; line-height:1.1; color:#f7f6f2">Connected on synthetic data — here is the loop</h2>
   </div>
   <div id="pacfcf9b300edr1-05c78dfa" style="position:absolute; top:292px; left:128px; width:1664px; height:148px; display:flex; flex-direction:row; gap:32px">
     <div style="display:flex; flex-direction:column; gap:8px; flex:1; padding:20px 0 0; border-top:3px solid #f2a65a">
@@ -253,15 +253,16 @@
       <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:26px; color:#c9d3e3">unsafe detected / benign accepted</p>
     </div>
   </div>
-  <div id="pacfcf9b300edr2-05c78dfa" style="position:absolute; top:483px; left:128px; width:1664px; height:154px; display:flex; flex-direction:column; gap:14px">
-    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2">Evals prove harness code and guards. They do not prove how a model reacts to injected text until a live model turn exists.</p>
-    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"><span style="color:#f2a65a">01 </span>Connect harness facts, read tools and guards; test the model loop</p>
-    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"><span style="color:#f2a65a">02 </span>Run the three Eval Card cases end to end</p>
+  <div id="pacfcf9b300edr2-05c78dfa" style="position:absolute; top:483px; left:128px; width:1664px; height:220px; display:flex; flex-direction:column; gap:14px">
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2">The harness loop works end to end on synthetic data. A live model may copy the exact report; invented numbers are rejected. Hostile live input to the model remains untested.</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"><span style="color:#f2a65a">Starts </span>When a review run begins on the synthetic store snapshot</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"><span style="color:#f2a65a">Checkpoints </span>Guarded reads → independent calculate → optional one model copy → output check</p>
+    <p style="font-family:'IBM Plex Sans', Arial, sans-serif; font-size:30px; color:#f7f6f2"><span style="color:#f2a65a">Stops </span>Human report ready — or model rejected / unavailable, with verified facts still shown</p>
   </div>
-  <aside>Les preuves : 94 tests passent dans tout le projet. Sur les 85 cas de test d'Emmanuel, tous les résultats correspondent : 55 attaques détectées, 30 textes normaux acceptés, et aucune erreur. Ce sont des résultats sur les cas testés, pas une garantie contre toutes les attaques. Ils testent le code et les gardes, pas la réaction d'un modèle à du texte injecté. Les prochaines étapes : connecter le harnais, les outils et les protections avec une vraie boucle de modèle, puis tester les trois cas de l'Eval Card de bout en bout.</aside>
+  <aside>Les preuves de détection restent celles d'Emmanuel (fixtures). En plus, le harnais tourne de bout en bout sur des données synthétiques : lectures gardées, calcul indépendant, un éventuel tour de modèle qui doit recopier le rapport exact. La boucle s'arrête quand le rapport humain est prêt, ou si la réponse du modèle est refusée ou indisponible. Le texte hostile en direct vers le modèle n'a pas été testé.</aside>
 </section>
 </div>
-<div class="notes">Les preuves : 94 tests passent dans tout le projet. Sur les 85 cas de test d'Emmanuel, tous les résultats correspondent : 55 attaques détectées, 30 textes normaux acceptés, et aucune erreur. Ce sont des résultats sur les cas testés, pas une garantie contre toutes les attaques. Ils testent le code et les gardes, pas la réaction d'un modèle à du texte injecté. Les prochaines étapes : connecter le harnais, les outils et les protections avec une vraie boucle de modèle, puis tester les trois cas de l'Eval Card de bout en bout.</div>
+<div class="notes">Les preuves de détection restent celles d'Emmanuel (fixtures). En plus, le harnais tourne de bout en bout sur des données synthétiques : lectures gardées, calcul indépendant, un éventuel tour de modèle qui doit recopier le rapport exact. La boucle s'arrête quand le rapport humain est prêt, ou si la réponse du modèle est refusée ou indisponible. Le texte hostile en direct vers le modèle n'a pas été testé.</div>
 <div class="frame">
 <section id="conclusion" data-section="Conclusion: what we built, learned and do next" data-transition="fade" style="background:#F7F6F2;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
 <div style="display:flex;flex-direction:column;gap:16px">
@@ -271,7 +272,7 @@
 <div style="display:flex;gap:32px">
 <div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FFFFFF;padding:36px;border:1px solid #DCDFE5;border-radius:16px">
 <h3 style="font-size:32px;font-weight:600">What we built</h3>
-<p style="font-size:26px;color:#4A5568;line-height:1.4">Two read-only tools, a strict system prompt and five injection controls, all tested on synthetic data.</p>
+<p style="font-size:26px;color:#4A5568;line-height:1.4">Two read-only tools, a strict system prompt, five injection controls, and a harness review loop — including one guarded model copy — on synthetic data.</p>
 </div>
 <div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#FFFFFF;padding:36px;border:1px solid #DCDFE5;border-radius:16px">
 <h3 style="font-size:32px;font-weight:600">What we learned</h3>
@@ -279,7 +280,7 @@
 </div>
 <div style="flex:1;display:flex;flex-direction:column;gap:14px;background:#14213D;padding:36px;border-radius:16px">
 <h3 style="font-size:32px;font-weight:600;color:#F7F6F2">What comes next</h3>
-<p style="font-size:26px;color:#C9D3E3;line-height:1.4">Connect the harness, run the Eval Card end to end, and use real data only after approval.</p>
+<p style="font-size:26px;color:#C9D3E3;line-height:1.4">Keep improving the demo path people see; use live pharmacy data only after approval. Harness model path is already connected on synthetic data.</p>
 </div>
 </div>
 <div style="display:flex;justify-content:space-between;align-items:center;gap:32px">
@@ -287,10 +288,10 @@
 <p style="font-size:28px;color:#4A5568">Kerrian Gordon · Emmanuel De Jesus · Brahim Maouloud</p>
 </div>
 <p style="position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:#6A7385">Pharmacy-AGENT  ·  Synthetic tests; human operational decisions  ·  10 / 10</p>
-<aside>Pour conclure, en trois points. Ce que nous avons construit : deux outils en lecture seule, un prompt système strict et cinq contrôles contre l'injection, tous testés sur des données synthétiques. Ce que nous avons appris : il faut tester les outils pour de vrai ; une panne ou une absence de résultat ne veut jamais dire "pas de pénurie" ; et les règles de sécurité doivent être dans le code, pas seulement dans le prompt. La suite : connecter le harnais, tester les trois cas de l'Eval Card de bout en bout, et n'utiliser de vraies données qu'après approbation. Merci ! Avez-vous des questions ?</aside>
+<aside>Pour conclure, en trois points. Ce que nous avons construit : deux outils en lecture seule, un prompt système strict, cinq contrôles contre l'injection, et une boucle de revue du harnais avec un tour de modèle gardé, tous testés sur des données synthétiques. Ce que nous avons appris : il faut tester les outils pour de vrai ; une panne ou une absence de résultat ne veut jamais dire "pas de pénurie" ; et les règles de sécurité doivent être dans le code, pas seulement dans le prompt. La suite : faire évoluer le parcours de démo visible, et n'utiliser de vraies données pharmacie qu'après approbation. Le harnais avec un tour de modèle gardé est déjà connecté sur des données synthétiques. Merci ! Avez-vous des questions ?</aside>
 </section>
 </div>
-<div class="notes">Pour conclure, en trois points. Ce que nous avons construit : deux outils en lecture seule, un prompt système strict et cinq contrôles contre l'injection, tous testés sur des données synthétiques. Ce que nous avons appris : il faut tester les outils pour de vrai ; une panne ou une absence de résultat ne veut jamais dire "pas de pénurie" ; et les règles de sécurité doivent être dans le code, pas seulement dans le prompt. La suite : connecter le harnais, tester les trois cas de l'Eval Card de bout en bout, et n'utiliser de vraies données qu'après approbation. Merci ! Avez-vous des questions ?</div>
+<div class="notes">Pour conclure, en trois points. Ce que nous avons construit : deux outils en lecture seule, un prompt système strict, cinq contrôles contre l'injection, et une boucle de revue du harnais avec un tour de modèle gardé, tous testés sur des données synthétiques. Ce que nous avons appris : il faut tester les outils pour de vrai ; une panne ou une absence de résultat ne veut jamais dire "pas de pénurie" ; et les règles de sécurité doivent être dans le code, pas seulement dans le prompt. La suite : faire évoluer le parcours de démo visible, et n'utiliser de vraies données pharmacie qu'après approbation. Le harnais avec un tour de modèle gardé est déjà connecté sur des données synthétiques. Merci ! Avez-vous des questions ?</div>
 </main>
 <script>
   function fit() { document.querySelectorAll('.frame').forEach(f => {
